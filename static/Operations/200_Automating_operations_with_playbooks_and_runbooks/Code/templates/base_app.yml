@@ -1,0 +1,534 @@
+Parameters:
+  BaselineVpcStack:
+    Type: String
+  ECRImageURI:
+    Type: String
+
+
+Outputs:
+  OutputLab1ALB:
+    Description: Elastic Load Balancer
+    Value: !Ref Lab1ALB
+    Export:
+      Name: !Sub "${AWS::StackName}-ALB"
+  OutputLab1KMSKey:
+    Description: KMS Key used by app to encrypt / decrypt data
+    Value: !Ref Lab1KMSKey
+  OutputLab1ELBSecurityGroup:
+    Description: Elastic Load Balancer Security Group
+    Value: !Ref Lab1ELBSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-ELBSecurityGroup"
+  OutputLab1ApplicationEndpoint:
+    Description: Application Endpoint
+    Value: !GetAtt Lab1ALB.DNSName
+    Export:
+      Name: !Sub "${AWS::StackName}-ApplicationEndpoint"
+  OutputLab1ECSTaskRole:
+    Description: App Task Role ARN
+    Value: !GetAtt Lab1ECSTaskRole.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-ApplicationTaskRole"
+
+
+Resources:
+#----------------------------------------------------------------------------------------
+# Build load balancer.
+#----------------------------------------------------------------------------------------
+  Lab1ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      SecurityGroups:
+        - !Ref Lab1ELBSecurityGroup
+      Subnets:
+        -
+          Fn::ImportValue:
+            !Sub "${BaselineVpcStack}-PublicSubnet1"
+        -
+          Fn::ImportValue:
+            !Sub "${BaselineVpcStack}-PublicSubnet2"
+      Tags:
+        - Key: Name
+          Value: !Join [ "-", [ !Ref AWS::StackName, "ExternalALB"]]
+        - Key: Application
+          Value: "OpsExcellence-Lab"
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: 5   
+
+  Lab1ALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      TargetType: ip
+      HealthCheckEnabled: True
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPath: /
+      HealthCheckPort: 80
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      UnhealthyThresholdCount: 5
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 0
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${BaselineVpcStack}-VpcId"
+      Port: 80
+      Protocol: HTTP
+      Tags:
+        - Key: Name
+          Value: !Join [ "-", [ !Ref AWS::StackName, "ExternalALBTargetGroup"]]
+        - Key: Application
+          Value: "OpsExcellence-Lab"
+
+  Lab1ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref Lab1ALB
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref Lab1ALBTargetGroup
+
+#----------------------------------------------------------------------------------------
+# Build load balancer security group.
+#----------------------------------------------------------------------------------------
+  Lab1ELBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP from the Internet
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${BaselineVpcStack}-VpcId"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: '0.0.0.0/0'
+      Tags:
+      - Key: Name
+        Value: !Join [ "-", [ !Ref AWS::StackName, "ExternalELBSecurityGroup"]]
+      - Key: Application
+        Value: "OpsExcellence-Lab"
+
+#----------------------------------------------------------------------------------------
+# Build ECS Resources.
+#----------------------------------------------------------------------------------------
+
+  Lab1ContainerSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Join ['', [!Ref 'AWS::StackName', -Lab1ContainerSecGroup]]
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${BaselineVpcStack}-VpcId"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !Ref Lab1ELBSecurityGroup
+
+  Lab1ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      CapacityProviders:
+        - FARGATE
+          # FARGATE_SPOT
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+
+  Lab1ECSService:
+    DependsOn: Lab1ALB
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Lab1ECSCluster
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      HealthCheckGracePeriodSeconds: 60
+      LoadBalancers:
+        - ContainerName: mysecretword-app
+          ContainerPort: 80
+          TargetGroupArn: !Ref Lab1ALBTargetGroup
+      TaskDefinition: !Ref Lab1TaskDefinition
+      ServiceName: !Join ['', [!Ref 'AWS::StackName', -Lab1-app-api]]
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+            - Fn::ImportValue:
+                !Sub "${BaselineVpcStack}-PrivateSubnet1"
+            - Fn::ImportValue:
+                !Sub "${BaselineVpcStack}-PrivateSubnet2"
+          SecurityGroups:
+            - !Ref Lab1ContainerSecGroup
+
+
+  Lab1TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Join ['', [!Ref 'AWS::StackName', -Lab1-app]]
+      TaskRoleArn: !Ref Lab1ECSTaskRole
+      ExecutionRoleArn: !Ref Lab1ECSTaskExecutionRole
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: 256
+      Memory: 0.5GB
+      ContainerDefinitions:
+      # - Name: xray-daemon
+      #   Image: amazon/aws-xray-daemon
+      #   Cpu: 32
+      #   Memory: 256
+      #   PortMappings:
+      #   - ContainerPort: 2000
+      #     Protocol: 'udp'
+      #   LogConfiguration:
+      #     LogDriver: awslogs
+      #     Options:
+      #       awslogs-group: !Ref 'Lab1ECSXrayLogsGroup'
+      #       awslogs-region: !Ref 'AWS::Region'
+      #       awslogs-stream-prefix: !Join ['', [!Ref 'AWS::StackName', -Lab1-xraydaemon]]          
+      - Name: mysecretword-app
+        Essential: 'true'
+        Image: !Ref ECRImageURI 
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Ref 'Lab1ECSCloudWatchLogsGroup'
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: !Join ['', [!Ref 'AWS::StackName', -Lab1-app]]
+        Environment:
+          - Name: DBHOST
+            Value: !GetAtt Lab1RDS.Endpoint.Address
+          - Name: KeyId
+            Value: !Ref Lab1KMSKey
+          - NAME: DBSecret
+            Value: !Ref Lab1RDSSecret
+          - NAME: REGION
+            Value: !Ref AWS::Region
+        PortMappings:
+        - ContainerPort: 80
+
+
+  Lab1ECSCloudWatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['', [!Ref 'AWS::StackName', -Lab1-app-loggroup]]
+      RetentionInDays: 365
+
+  Lab1ECSXrayLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['', [!Ref 'AWS::StackName', -Lab1-xray-loggroup]]
+      RetentionInDays: 365
+
+  #----------------------------------------------------------------------------------------
+  # Build ECS IAM Roles.
+  #----------------------------------------------------------------------------------------
+
+  Lab1ECSServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2008-10-17
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service: ecs.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole'
+
+  Lab1ECSTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join ['', [!Ref 'AWS::StackName', -Lab1ECSTaskRole]]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: /
+      Policies:            
+        - PolicyName: KMSAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: '*'
+                Resource: !GetAtt Lab1KMSKey.Arn
+        - PolicyName: SMAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'secretsmanager:GetSecretValue'
+                Resource: '*'            
+        - PolicyName: CloudWatchLogs
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'logs:*'
+                Resource: !GetAtt Lab1ECSCloudWatchLogsGroup.Arn        
+        - PolicyName: Xray
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'xray:*'
+                Resource: '*'                    
+        ### This needs to be restricted 
+
+  Lab1ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join ['', [!Ref 'AWS::StackName', -Lab1ECSTaskExecutionRole]]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+
+  #----------------------------------------------------------------------------------------
+  # Build RDS Instance.
+  #----------------------------------------------------------------------------------------
+
+  Lab1RDS:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: 5
+      DBInstanceClass: db.t2.micro
+      Engine: MySQL
+      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref Lab1RDSSecret, ':SecretString:username}}' ]]
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref Lab1RDSSecret, ':SecretString:password}}' ]]
+      DBSubnetGroupName: !Ref Lab1RDSSubnetGroup
+      VPCSecurityGroups: 
+        - !Ref Lab1RDSSecGroup
+      MultiAZ: False
+
+
+  Lab1RDSSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Join ['', [!Ref 'AWS::StackName', -Lab1RDSSecGroup]]
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${BaselineVpcStack}-VpcId"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 
+            Fn::ImportValue:
+              !Sub "${BaselineVpcStack}-VpcCidrBlock"
+
+  Lab1RDSSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "Subnet Group"
+      SubnetIds:
+        - Fn::ImportValue:
+            !Sub "${BaselineVpcStack}-PrivateSubnet1"
+        - Fn::ImportValue:
+            !Sub "${BaselineVpcStack}-PrivateSubnet2"
+
+  Lab1RDSSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: 'This is the secret for my RDS instance'
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "masteradmin"}'
+        GenerateStringKey: 'password'
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+
+  #----------------------------------------------------------------------------------------
+  # Build Parameter KMS Key
+  #----------------------------------------------------------------------------------------
+
+  Lab1KMSKey:
+    Type: "AWS::KMS::Key"
+    Properties:
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-Lab1-1
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Join
+                - ""
+                - - "arn:aws:iam::"
+                  - !Ref "AWS::AccountId"
+                  - ":root"
+            Action: "kms:*"
+            Resource: "*"
+            
+  #----------------------------------------------------------------------------------------
+  # Canary
+  #----------------------------------------------------------------------------------------
+  CloudWatchSyntheticsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: CloudWatch Synthetics lambda execution role for running canaries
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+            Condition: {}
+
+  RolePermissions:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        - Ref: CloudWatchSyntheticsRole
+      PolicyName: CloudWatchSyntheticsPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:GetBucketLocation
+            Resource:
+              - Fn::Sub: arn:aws:s3:::${ResultsBucket}/*
+          - Effect: Allow
+            Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - logs:CreateLogGroup
+            Resource:
+              - '*'
+          - Effect: Allow
+            Action:
+              - s3:ListAllMyBuckets
+            Resource: '*'
+          - Effect: Allow
+            Resource: '*'
+            Action: cloudwatch:PutMetricData
+            Condition:
+              StringEquals:
+                cloudwatch:namespace: CloudWatchSynthetics
+
+  ResultsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  SyntheticsCanary:
+    Type: 'AWS::Synthetics::Canary'
+    Properties:
+        Name: mysecretword-canary
+        ExecutionRoleArn: !GetAtt CloudWatchSyntheticsRole.Arn
+        Code: 
+            Handler: apiCanaryBlueprint.handler
+            Script:  
+                  |
+                    var synthetics = require('Synthetics');
+                    const log = require('SyntheticsLogger');
+                    apiCanaryBlueprint = async function (ms) {
+                    
+                            // Handle validation for positive scenario
+                            const validateSuccessfull = async function(res) {
+                                return new Promise((resolve, reject) => {
+                                    if (res.statusCode < 200 || res.statusCode > 299) {
+                                        throw res.statusCode + ' ' + res.statusMessage;
+                                    }
+                             
+                                    let responseBody = '';
+                                    res.on('data', (d) => {
+                                        responseBody += d;
+                                    });
+                             
+                                    res.on('end', () => {
+                                        // Add validation on 'responseBody' here if required.
+                                        resolve();
+                                    });
+                                });
+                            };
+                            
+
+                            let requestOptionsStep1 = {
+                                hostname: process.env.CANARY_ENDPOINT,
+                                method: 'POST',
+                                path: '/encrypt',
+                                port: '80',
+                                protocol: 'http:',
+                                body: "{\"Name\":\"Test User\",\"Text\":\"This Message is a Test!\"}",
+                                headers: {"Content-Type":"application/json"}
+                            };
+                            requestOptionsStep1['headers']['User-Agent'] = [synthetics.getCanaryUserAgentString(), requestOptionsStep1['headers']['User-Agent']].join(' ');
+    
+                           let stepConfig1 = {
+                                includeRequestHeaders: true,
+                                includeResponseHeaders: true,
+                                includeRequestBody: true,
+                                includeResponseBody: true,
+                                restrictedHeaders: [],
+                                continueOnHttpStepFailure: true
+                            };
+                        
+                            await synthetics.executeHttpStep('Verify', requestOptionsStep1, validateSuccessfull, stepConfig1);
+                    
+                        
+                    };
+                    exports.handler = async () => {
+                        return await apiCanaryBlueprint();
+                    };
+        ArtifactS3Location:
+          Fn::Join:
+            - ''
+            - - s3://
+              - Ref: ResultsBucket
+        RuntimeVersion: syn-nodejs-puppeteer-3.0
+        Schedule: 
+          Expression: 'rate(1 minute)'
+          DurationInSeconds: 3600
+        RunConfig: 
+          TimeoutInSeconds: 60
+          EnvironmentVariables: { "CANARY_ENDPOINT" : !GetAtt Lab1ALB.DNSName }
+        FailureRetentionPeriod: 30
+        SuccessRetentionPeriod: 30
+        StartCanaryAfterCreation: true
+        Tags:
+          - Key: Name
+            Value: !Join [ "-", [ !Ref AWS::StackName, "Canary"]]
+          - Key: Application
+            Value: "OpsExcellence-Lab"
+          - Key: TargetEndpoint
+            Value: !GetAtt Lab1ALB.DNSName                
+        
+  SyntheticsCanaryAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Canary Alarm for My Secret Word
+      AlarmName: mysecretword-canary-alarm
+      ComparisonOperator: LessThanThreshold
+      EvaluationPeriods: 1
+      Dimensions:
+        - Name: CanaryName
+          Value: mysecretword-canary
+      Namespace: "CloudWatchSynthetics"
+      MetricName: "SuccessPercent"
+      Period: 10
+      Statistic: Maximum
+      Threshold: 99.0
+      TreatMissingData: breaching
