@@ -3,6 +3,8 @@ Parameters:
     Type: String
   ECRImageURI:
     Type: String
+  NotificationEmail:
+    Type: String
 
 
 Outputs:
@@ -54,7 +56,7 @@ Resources:
           Value: "OpsExcellence-Lab"
       LoadBalancerAttributes:
         - Key: idle_timeout.timeout_seconds
-          Value: 5   
+          Value: 30 
 
   Lab1ALBTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -516,19 +518,30 @@ Resources:
           - Key: TargetEndpoint
             Value: !GetAtt Lab1ALB.DNSName                
         
-  SyntheticsCanaryAlarm:
+  SyntheticsCanaryDurationAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: Canary Alarm for My Secret Word
-      AlarmName: mysecretword-canary-alarm
-      ComparisonOperator: LessThanThreshold
+      AlarmName: mysecretword-canary-duation-alarm
+      AlarmActions:
+        - !Ref SyntheticsCanarySNSTopic      
+      ComparisonOperator: GreaterThanThreshold
       EvaluationPeriods: 1
       Dimensions:
         - Name: CanaryName
           Value: mysecretword-canary
+        - Name: StepName
+          Value: Verify       
       Namespace: "CloudWatchSynthetics"
-      MetricName: "SuccessPercent"
-      Period: 10
-      Statistic: Maximum
-      Threshold: 99.0
-      TreatMissingData: breaching
+      MetricName: "Duration"
+      Period: 60
+      Statistic: Average
+      Threshold: 6000
+      TreatMissingData: ignore
+
+  SyntheticsCanarySNSTopic:
+    Type: AWS::SNS::Topic
+    Properties: 
+      Subscription: 
+      - Endpoint: !Ref NotificationEmail
+        Protocol: "Email"

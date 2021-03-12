@@ -80,6 +80,7 @@ You can now proceed to **Section 2** of the lab where we will build out the actu
 
 {{% /expand%}}
 
+{{< prev_next_button link_prev_url="../" link_next_url="../2_configure_ecs_repository_and_deploy_application_stack/" />}}
 
 
 ___

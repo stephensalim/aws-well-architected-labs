@@ -6,16 +6,14 @@ weight: 2
 pre: "<b>2. </b>"
 ---
 
-### 2.0. Introduction.
 
 In this section, we are going to prepare our sample application API. Our API will be hosted inside docker containers orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/) with [Application Load Balancer]() fronting it. The API will take 2 actions ; **encrypt** / **decrypt**. :
 
 * **encrypt** action will allow the user to pass on a secret message along with it's key identifier, and it will return a secret key id that they can use to decrypt.
 * **decrypt** action will allow the user to pass the key identifier along with the secret key id to obtain the secret message encrypted before. 
 
-Both actions will make a write and read call to the RDS database where encrypted messages are being stored.
 
-The application SLA requires API response time of under 6 seconds, otherwise broader user experience will be severely impacted. This is why in our application we will be monitoring the API response time using [CloudWatch Synthetics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html) and alarm when response time is gone above 6 seconds.  
+Both actions will make a write and read call to the RDS database where encrypted messages are being stored.
 
 
 In preparation for the deployment, we will need to package our application as a docker image and push it into [ECR](https://aws.amazon.com/ecr/). When this is completed, we will use the image which we placed in ECR to build our application cluster. 
@@ -57,7 +55,10 @@ Now we will enter naming details for the environment. To do this enter the follo
 Name: `waopslab-environment`
 Description: `Well Architected Operations Lab`
 
+![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-environment.png)
+
 When you are ready, click on **Next Step** to continue as shown:
+
 
 #### 2.1.4.
 
@@ -80,12 +81,12 @@ We will use this to build our application for upload to the repository.
 Firstly we will need to download the files which contain all of the application dependencies. To do this, run the following command within the **Cloud9 IDE**:
 
 ```
-curl -o sample_app.zip https://www.wellarchitectedlabs.com/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/app/sample_app.zip
+curl -o sample_app.zip https://github.com/stephensalim/walabs-opsexcellence-labs/raw/main/sample_app.zip
 ```
 
 The command should show the file download as follows:
 
-![Section 2 Cloud9 IDE Welcome Screen](/Security/300_Autonomous_Monitoring_Of_Cryptographic_Activity_With_KMS/Images/section2/section2-pattern1-cloud9-application-download.png)
+![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-application-download.png)
 
 #### 2.1.7. 
 
@@ -102,13 +103,12 @@ Now we will build our application and upload to the repository. We have built a 
 Execute the script with the argument of `waopslab-base-vpc` and `v1` as follows:
  
 ```
-cd app/
 ./build-container.sh waopslab-base-vpc v1
 ```
 
 Once your command runs successfully, you should be seeing the image being pushed to ECR and URI marked as shown here:
 
-![Section 2 Cloud9 IDE Application Build](/Security/300_Autonomous_Monitoring_Of_Cryptographic_Activity_With_KMS/Images/section2/section2-pattern1-cloud9-application-build.png)
+![Section 2 Cloud9 IDE Application Build](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-application-build.png)
 
 
 {{% notice note %}}
@@ -121,7 +121,7 @@ Confirm that the ECR repository exists in the ECR console. To do this, launch EC
 
 You can then follow this [guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-info.html) to check to your repository as shown:
 
-![Section2 Script Output](/Security/300_Autonomous_Monitoring_Of_Cryptographic_Activity_With_KMS/Images/section2/section2-pattern1-ECR.png)
+![Section2 Script Output](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-ecr-repo-confirm.png)
 
 
 
@@ -131,13 +131,12 @@ Now that we have pushed the docker image into our [Amazon ECR](https://aws.amazo
 
 Our sample application is configured as follows:
 
-* Our application is built using nodejs express ( You can find the source code under app/app.js file of the [github]() repository ) 
 * The service will expose a REST API wth **/encrypt** and **/decrypt** action.
-* The **/encrypt** will take an input of a JSON payload with key and value as below `'{"Name":"Andy Jassey","Text":"Welcome To ReInvent 2020!"}'`
+* The **/encrypt** will take an input of a JSON payload with key and value as below `'{"Name":"Bob","Text":"Run your operations as code"}'`
 * The **Name** Key will be the identifier that we will use to store the encrypted value of **Text** Value.
 * The application will then call the [KMS Encrypt API](https://docs.aws.amazon.com/kms/latest/APIReference/API_Encrypt.html) and encrypt it again using a KMS key that we designate. (For simplicity, in this mock app we will be using the same KMS key for every **Name** you put in, ideally you want to use individual key for each name)
 * The encrypted value of **Text** key will then be stored in an [RDS](https://aws.amazon.com/rds/) database, and the app will return a **Encryption Key** value that the user will have to pass on to decrypt the Text later
-* The **decrypt** API will do the reverse, taking the **Encryption Key** you pass to decrypt the text `{"Text":"Welcome To ReInvent 2020!"}`
+* The **decrypt** API will do the reverse, taking the **Encryption Key** you pass to decrypt the text `{"Text":"Run your operations as code"}`
 
 {{% notice note %}}
 **Note:** In this section we will be deploying a CloudFormation Stack which will launch an ECS cluster. If this is the first time you are working with the ECS service, you will need to deploy a service linked role which will be able to assume the IAM role to perform the required activities within your account. To do this, run the following from the command line using appropriate profile flags:
@@ -145,7 +144,7 @@ Our sample application is configured as follows:
 
 {{% /notice %}}
 
-Download the application template from [here](/Security/300_Autonomous_Monitoring_Of_Cryptographic_Activity_With_KMS/Code/templates/section2/pattern1-app.yml "Section2 Application template") and deploy according to your preference below.
+Download the application template from [here](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/base_app.yml "Section2 Application template") and deploy according to your preference below.
 
 
 
@@ -161,23 +160,25 @@ Execute below command to create the application stack. Ensure that you pass the 
 
 
 ```
-aws cloudformation create-stack --stack-name pattern1-app \
-                                --template-body file://pattern1-app.yml \
-                                --parameters ParameterKey=BaselineVpcStack,ParameterValue=pattern1-base \
+aws cloudformation create-stack --stack-name waopslab-base-app \
+                                --template-body file://base-app.yml \
+                                --parameters ParameterKey=BaselineVpcStack,ParameterValue=waopslab-base-vpc \
                                             ParameterKey=ECRImageURI,ParameterValue=<ECR Image URI> \
+                                            ParameterKey=NotificationEmail,ParameterValue=testyser@domain.com \
                                 --capabilities CAPABILITY_NAMED_IAM \
-                                --region ap-southeast-2
+                                --tags Key=Application,Value=OpsExcellence-Lab
 ```
 
 **Note:** Our example below shows sample arguments passed into the command for your reference:
 
 ```
-aws cloudformation create-stack --stack-name pattern1-app \
-                                --template-body file://pattern1-app.yml \
-                                --parameters ParameterKey=BaselineVpcStack,ParameterValue=pattern1-base \
-                                            ParameterKey=ECRImageURI,ParameterValue=111111111111.dkr.ecr.ap-southeast-2.amazonaws.com/pattern1appcontainerrepository-cu9vft86ml5e:latest \
+aws cloudformation create-stack --stack-name waopslab-base-app \
+                                --template-body file://base-app.yml \
+                                --parameters ParameterKey=BaselineVpcStack,ParameterValue=waopslab-base-vpc \
+                                            ParameterKey=ECRImageURI,ParameterValue=111111111111.dkr.ecr.region.amazonaws.com/pattern1appcontainerrepository-cu9vft86ml5e:latest \
+                                            ParameterKey=NotificationEmail,ParameterValue=testyser@domain.com \
                                 --capabilities CAPABILITY_NAMED_IAM \
-                                --region ap-southeast-2
+                                --tags Key=Application,Value=OpsExcellence-Lab
 ```
 
 {{% /expand%}}
@@ -196,25 +197,30 @@ Follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGui
 
 Enter the following details into the stack details:
 
-* Use `pattern1-app` as the **Stack Name**.
-* Use `pattern1-base` as the **BaselineVpcStack**.
+* Use `waopslab-base-app` as the **Stack Name**.
+* Use `waopslab-base-vpc` as the **BaselineVpcStack**.
 * Use the URI which you recorded in the application build as the **ECRImageURI**
+* Enter an email address you would like to receive notification about this Application as the **NotificationEmail**
 
 An example would be as follows:
 
-![Section2 App Stack Creation](/Security/300_Autonomous_Monitoring_Of_Cryptographic_Activity_With_KMS/Images/section2/section2-pattern1-application-stack-creation.png)
+![Section2 App Stack Creation](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-application-stack-creation.png)
 
 When you are ready, click **next** to continue.
 
 #### 2.2.3.
 
-On the **Configure Stack Options** click **Next**
+On the **Configure Stack Options** place in a Tag with Key `Application` and `OpsExcellence-Lab` for it's value as per screenshot below
+
+![Section2 App Stack Tag](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-application-stack-tag.png)
+
+click **Next**
 
 #### 2.2.4.
 
-On the **Review pattern1-app** click **Create Stack**.
+On the **Review waopslab-base-app** click **Create Stack**.
 
-**Note** Dont forget to tick the **Capabilities** acknowledgement at the bottom of the screen.
+**Note** Don't forget to tick the **Capabilities** acknowledgement at the bottom of the screen.
 
 {{% /expand%}}
 
@@ -222,7 +228,7 @@ On the **Review pattern1-app** click **Create Stack**.
 
 #### 2.3.1.
 
-Once the command deployed successfully, go to your [Cloudformation console](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2) to locate the stack named `pattern1-app`.
+Once the command deployed successfully, go to your [Cloudformation console](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2) to locate the stack named `waopslab-base-app`.
 
 #### 2.3.2.
 
@@ -234,12 +240,18 @@ Record the following output details as they will be required later:
 
 * Take note of this **stack name**
 * Take note of the DNS value specified under **OutputPattern1ApplicationEndpoint**  of the Outputs.
-* Take note of the ECS Task Role Arn value specified under **OutputPattern1ECSTaskRole**  of the Outputs.
-* Take note of the OutputPattern1ECSTaskRole.
 
 The following diagram shows the output from the cloudformation stack:
 
-![Section2 DNS Output](/Security/300_Autonomous_Monitoring_Of_Cryptographic_Activity_With_KMS/Images/section2/section2-dns-outputs.png)
+![Section2 DNS Output](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-dns-outputs.png)
+
+#### 2.3.4.
+
+Check for an email on the address you've specified, in **NotificationEmail** parameter.
+Click `confirm subscription` to start confirm subscription to the application alarm.
+
+![Section2 DNS Output](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-email-confirm.png)
+
 
 ### 2.4. Test the Application launched.
 
@@ -255,7 +267,7 @@ From your **Cloud9** terminal, replace the < Application Endpoint URL > with the
 ```
 ALBURL="< Application Endpoint URL >"
 
-curl --header "Content-Type: application/json" --request POST --data '{"Name":"Andy Jassey","Text":"Welcome to ReInvent 2020!"}' $ALBURL/encrypt
+curl --header "Content-Type: application/json" --request POST --data '{"Name":"Bob","Text":"Run your operations as code"}' $ALBURL/encrypt
 ```
 
 Once you've executed this you should see an output similar to this:
@@ -263,9 +275,26 @@ Once you've executed this you should see an output similar to this:
 ```
 {"Message":"Data encrypted and stored, keep your key save","Key":"<encrypt key (take note) >"}
 ```
-Take note of the encrypt key value under **Key** from your output as we will need it for decryption later in the lab.
+Take note of the encrypt key value under **Key** and place it under the same **Key** section in the command below to test the decrypt API.
 
-This completes **section 2** of the lab. Proceed to **section 3** where we will be configuring **CloudTrail**.
-___
+
+```
+curl --header "Content-Type: application/json" --request GET --data '{"Name":"Bob","Key":"<encrypt key (taken from previous command ) >"}' $ALBURL/decrypt
+
+```
+
+If the the application is functioning as it should, then you should see response like below 
+
+```
+{"Text":"Run your operations as code"}
+```
+
+
+This completes **section 2** of the lab. Proceed to **section 3** to continue with the lab.
+
+{{< prev_next_button link_prev_url="../1_deploy_the_lab_network_infrastructure/" link_next_url="../3_simulate_application_issue/" />}}
+
+
+
 **END OF SECTION 2**
 ___

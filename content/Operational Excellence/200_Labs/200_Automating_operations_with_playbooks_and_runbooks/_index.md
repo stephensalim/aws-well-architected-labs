@@ -7,6 +7,10 @@ weight: 1
 hidden: false
 ---
 
+## Authors
+* **Stephen Salim**, Well-Architected Geo Solutions Architect.
+* **Brian Carlson**, Well-Architected Operational Excellence Pillar Lead.
+
 ## Introduction
 
 This hands-on lab will guide you through the steps to automate your operational activities using playbook and runbooks built with  AWS tools.
