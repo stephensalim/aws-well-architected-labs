@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AWS Well-Architected Labs</title><link>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/</link><description>Recent content on AWS Well-Architected Labs</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 24 Apr 2020 11:16:08 -0400</lastBuildDate><atom:link href="https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/index.xml" rel="self" type="application/rss+xml"/><item><title/><link>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/crawler-cfn/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/crawler-cfn/</guid><description>Below is a sample crawler config file. It is suggested you modify your existing file, modifications are between &amp;lsquo;***&amp;rsquo; characters.
+Variables that need to be changed in the new code below:
+(region): The region that contains the Lambda function (accountID): The account that contains the Lambda function AWSTemplateFormatVersion: 2010-09-09 Resources: AWSCURDatabase: Type: 'AWS::Glue::Database' Properties: DatabaseInput: Name: '(Database Name)' CatalogId: !Ref AWS::AccountId AWSCURCrawlerComponentFunction: Type: 'AWS::IAM::Role' Properties: AssumeRolePolicyDocument: Version: 2012-10-17 Statement: - Effect: Allow Principal: Service: - glue.</description></item><item><title/><link>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/iam_athena/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/iam_athena/</guid><description>IAM policy for access to Athena
+NOTE: This Policy is to be used as a starting point only. Ensure to follow security best practices and only provide the minimum required access. You will also need to modify the and fields before use.
+{
+&amp;quot;Version&amp;quot;: &amp;quot;2012-10-17&amp;quot;,
+&amp;quot;Statement&amp;quot;: [
+{
+&amp;quot;Sid&amp;quot;: &amp;quot;VisualEditor0&amp;quot;,
+&amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;,
+&amp;quot;Action&amp;quot;: [
+&amp;quot;athena:StartQueryExecution&amp;quot;,
+&amp;quot;glue:GetCrawler&amp;quot;,
+&amp;quot;glue:GetDataCatalogEncryptionSettings&amp;quot;,
+&amp;quot;glue:GetTableVersions&amp;quot;,
+&amp;quot;glue:GetPartitions&amp;quot;,
+&amp;quot;athena:GetQueryResults&amp;quot;,
+&amp;quot;athena:ListWorkGroups&amp;quot;,
+&amp;quot;athena:GetNamedQuery&amp;quot;,
+&amp;quot;glue:GetDevEndpoint&amp;quot;,
+&amp;quot;glue:GetSecurityConfiguration&amp;quot;,
+&amp;quot;glue:GetResourcePolicy&amp;quot;,
+&amp;quot;glue:GetTrigger&amp;quot;,
+&amp;quot;glue:GetUserDefinedFunction&amp;quot;,
+&amp;quot;athena:GetExecutionEngine&amp;quot;,
+&amp;quot;glue:GetJobRun&amp;quot;,
+&amp;quot;athena:GetExecutionEngines&amp;quot;,
+&amp;quot;s3:HeadBucket&amp;quot;,
+&amp;quot;glue:GetUserDefinedFunctions&amp;quot;,
+&amp;quot;glue:GetClassifier&amp;quot;,
+&amp;quot;s3:PutAccountPublicAccessBlock&amp;quot;,
+&amp;quot;athena:GetQueryResultsStream&amp;quot;,
+&amp;quot;glue:GetJobs&amp;quot;,
+&amp;quot;glue:GetTables&amp;quot;,
+&amp;quot;glue:GetTriggers&amp;quot;,
+&amp;quot;athena:GetNamespace&amp;quot;,
+&amp;quot;athena:GetQueryExecutions&amp;quot;,
+&amp;quot;athena:GetCatalogs&amp;quot;,
+&amp;quot;athena:ListNamedQueries&amp;quot;,
+&amp;quot;athena:GetNamespaces&amp;quot;,
+&amp;quot;glue:GetPartition&amp;quot;,
+&amp;quot;glue:GetDevEndpoints&amp;quot;,
+&amp;quot;athena:GetTables&amp;quot;,
+&amp;quot;athena:GetTable&amp;quot;,
+&amp;quot;athena:BatchGetNamedQuery&amp;quot;,
+&amp;quot;athena:BatchGetQueryExecution&amp;quot;,
+&amp;quot;glue:GetJob&amp;quot;,
+&amp;quot;glue:GetConnections&amp;quot;,
+&amp;quot;glue:GetCrawlers&amp;quot;,
+&amp;quot;glue:GetClassifiers&amp;quot;,
+&amp;quot;athena:ListQueryExecutions&amp;quot;,
+&amp;quot;glue:GetCatalogImportStatus&amp;quot;,
+&amp;quot;athena:GetWorkGroup&amp;quot;,
+&amp;quot;glue:GetConnection&amp;quot;,
+&amp;quot;glue:BatchGetPartition&amp;quot;,
+&amp;quot;glue:GetSecurityConfigurations&amp;quot;,
+&amp;quot;glue:GetDatabases&amp;quot;,
+&amp;quot;athena:ListTagsForResource&amp;quot;,
+&amp;quot;glue:GetTable&amp;quot;,
+&amp;quot;glue:GetDatabase&amp;quot;,
+&amp;quot;s3:GetAccountPublicAccessBlock&amp;quot;,
+&amp;quot;glue:GetDataflowGraph&amp;quot;,
+&amp;quot;s3:ListAllMyBuckets&amp;quot;,
+&amp;quot;athena:GetQueryExecution&amp;quot;,
+&amp;quot;glue:GetPlan&amp;quot;,
+&amp;quot;glue:GetCrawlerMetrics&amp;quot;,
+&amp;quot;glue:GetJobRuns&amp;quot;
+],
+&amp;quot;Resource&amp;quot;: &amp;quot;*&amp;quot;
+},
+{
+&amp;quot;Sid&amp;quot;: &amp;quot;VisualEditor1&amp;quot;,
+&amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;,
+&amp;quot;Action&amp;quot;: [
+&amp;quot;s3:PutObject&amp;quot;,
+&amp;quot;s3:GetObject&amp;quot;,
+&amp;quot;s3:ListBucketMultipartUploads&amp;quot;,
+&amp;quot;s3:AbortMultipartUpload&amp;quot;,
+&amp;quot;s3:CreateBucket&amp;quot;,
+&amp;quot;s3:ListBucket&amp;quot;,
+&amp;quot;s3:GetBucketLocation&amp;quot;,
+&amp;quot;s3:ListMultipartUploadParts&amp;quot;
+],
+&amp;quot;Resource&amp;quot;: [
+&amp;quot;arn:aws:s3:::aws-athena-query-results-&amp;lt;Account ID&amp;gt;-us-east-1&amp;quot;,
+&amp;quot;arn:aws:s3:::aws-athena-query-results-&amp;lt;Account ID&amp;gt;-us-east-1/*&amp;quot;
+]
+},
+{
+&amp;quot;Sid&amp;quot;: &amp;quot;VisualEditor2&amp;quot;,
+&amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;,
+&amp;quot;Action&amp;quot;: [
+&amp;quot;s3:ListBucketByTags&amp;quot;,
+&amp;quot;s3:GetLifecycleConfiguration&amp;quot;,
+&amp;quot;s3:GetBucketTagging&amp;quot;,
+&amp;quot;s3:GetInventoryConfiguration&amp;quot;,
+&amp;quot;s3:GetObjectVersionTagging&amp;quot;,
+&amp;quot;s3:ListBucketVersions&amp;quot;,
+&amp;quot;s3:GetBucketLogging&amp;quot;,
+&amp;quot;s3:ListBucket&amp;quot;,
+&amp;quot;s3:GetAccelerateConfiguration&amp;quot;,
+&amp;quot;s3:GetBucketPolicy&amp;quot;,
+&amp;quot;s3:GetObjectVersionTorrent&amp;quot;,
+&amp;quot;s3:GetObjectAcl&amp;quot;,
+&amp;quot;s3:GetEncryptionConfiguration&amp;quot;,
+&amp;quot;s3:GetBucketRequestPayment&amp;quot;,
+&amp;quot;s3:GetObjectVersionAcl&amp;quot;,
+&amp;quot;s3:GetObjectTagging&amp;quot;,
+&amp;quot;s3:GetMetricsConfiguration&amp;quot;,
+&amp;quot;s3:GetBucketPublicAccessBlock&amp;quot;,
+&amp;quot;s3:GetBucketPolicyStatus&amp;quot;,
+&amp;quot;s3:ListBucketMultipartUploads&amp;quot;,
+&amp;quot;s3:GetBucketWebsite&amp;quot;,
+&amp;quot;s3:GetBucketVersioning&amp;quot;,
+&amp;quot;s3:GetBucketAcl&amp;quot;,
+&amp;quot;s3:GetBucketNotification&amp;quot;,
+&amp;quot;s3:GetReplicationConfiguration&amp;quot;,
+&amp;quot;s3:ListMultipartUploadParts&amp;quot;,
+&amp;quot;s3:GetObject&amp;quot;,
+&amp;quot;s3:GetObjectTorrent&amp;quot;,
+&amp;quot;s3:GetBucketCORS&amp;quot;,
+&amp;quot;s3:GetAnalyticsConfiguration&amp;quot;,
+&amp;quot;s3:GetObjectVersionForReplication&amp;quot;,
+&amp;quot;s3:GetBucketLocation&amp;quot;,
+&amp;quot;s3:GetObjectVersion&amp;quot;
+],
+&amp;quot;Resource&amp;quot;: [
+&amp;quot;arn:aws:s3:::&amp;lt;S3 CUR Bucket&amp;gt;/*&amp;quot;,
+&amp;quot;arn:aws:s3:::&amp;lt;S3 CUR Bucket&amp;gt;&amp;quot;
+]
+}
+]
+}</description></item><item><title/><link>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/s3_bucket_policy/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/s3_bucket_policy/</guid><description>Bucket policy for member/linked account access to CUR files
+NOTE: Replace the Account ID [Sub-Account ID] with your own account ID, and the bucket name [S3 Bucket Name] with your bucket name.
+{ &amp;quot;Version&amp;quot;: &amp;quot;2008-10-17&amp;quot;, &amp;quot;Id&amp;quot;: &amp;quot;Policy1335892530063&amp;quot;, &amp;quot;Statement&amp;quot;: [ { &amp;quot;Sid&amp;quot;: &amp;quot;Stmt1335892150622&amp;quot;, &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;, &amp;quot;Principal&amp;quot;: { &amp;quot;AWS&amp;quot;: &amp;quot;arn:aws:iam::386209384616:root&amp;quot; }, &amp;quot;Action&amp;quot;: [ &amp;quot;s3:GetBucketAcl&amp;quot;, &amp;quot;s3:GetBucketPolicy&amp;quot; ], &amp;quot;Resource&amp;quot;: &amp;quot;arn:aws:s3:::[S3 Bucket Name]&amp;quot; }, { &amp;quot;Sid&amp;quot;: &amp;quot;Stmt1335892526596&amp;quot;, &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;, &amp;quot;Principal&amp;quot;: { &amp;quot;AWS&amp;quot;: &amp;quot;arn:aws:iam::386209384616:root&amp;quot; }, &amp;quot;Action&amp;quot;: &amp;quot;s3:PutObject&amp;quot;, &amp;quot;Resource&amp;quot;: &amp;quot;arn:aws:s3:::[S3 Bucket Name]/*&amp;quot; }, { &amp;quot;Sid&amp;quot;: &amp;quot;Stmt1546900919345&amp;quot;, &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;, &amp;quot;Principal&amp;quot;: { &amp;quot;AWS&amp;quot;: &amp;quot;arn:aws:iam::[Sub-Account ID]:root&amp;quot; }, &amp;quot;Action&amp;quot;: &amp;quot;s3:ListBucket&amp;quot;, &amp;quot;Resource&amp;quot;: &amp;quot;arn:aws:s3:::[S3 Bucket Name]&amp;quot; }, { &amp;quot;Sid&amp;quot;: &amp;quot;Stmt1546901049588&amp;quot;, &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;, &amp;quot;Principal&amp;quot;: { &amp;quot;AWS&amp;quot;: &amp;quot;arn:aws:iam::[Sub-Account ID]:root&amp;quot; }, &amp;quot;Action&amp;quot;: &amp;quot;s3:GetObject&amp;quot;, &amp;quot;Resource&amp;quot;: &amp;quot;arn:aws:s3:::[S3 Bucket Name]/*&amp;quot; } ] }</description></item><item><title/><link>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/s3linkedputacl/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/s3linkedputacl/</guid><description>Here is the Lambda function to re-write object ACLs. It is triggered by an S3 Event, reads the folder from the object - and then applies the required object ACL: FULL_CONTROL for the owner, READ for the sub account.
+Edit the following fields in the code below:
+folder1: The name of the folder where new files will be placed Owner Account Name: The owner account name - the account email without the @companyname, they will get FULL_CONTROL permissions Owner Canonical ID: The owner canonical ID, to get the Canonical ID, refer to: https://docs.</description></item><item><title/><link>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/sub_account_split/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/sub_account_split/</guid><description>Below is the code for the lambda function.
+You will need to modify the following variable:
+athena_output: This is where Athena puts output data, this is typically the management/payer Account ID, which is the default folder for Athena output queries bucketname: This is the output bucket for the Athena queries You will need to modify the following arrays, the order is important - the first folder in the subfolder array, will be given the permissions of the first element of the S3ObjectPolicies array.</description></item><item><title/><link>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/subacctsplit_role/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://wellarchitectedlabs.com/cost/300_labs/300_splitting_sharing_cur_access/code/subacctsplit_role/</guid><description>Review the policy below, and use it as a starting point to create your policy for the Lambda fuction.
+The following fields will need to be changed:
+Output bucket: The S3 bucket that will contain the output from the Athena queries Account ID: the management/payer account ID Source bucket: the location of the original CUR files in the management/payer { &amp;quot;Version&amp;quot;: &amp;quot;2012-10-17&amp;quot;, &amp;quot;Statement&amp;quot;: [ { &amp;quot;Sid&amp;quot;: &amp;quot;VisualEditor0&amp;quot;, &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;, &amp;quot;Action&amp;quot;: [ &amp;quot;athena:StartQueryExecution&amp;quot;, &amp;quot;s3:DeleteObjectVersion&amp;quot;, &amp;quot;athena:GetQueryResults&amp;quot;, &amp;quot;s3:ListBucket&amp;quot;, &amp;quot;athena:GetNamedQuery&amp;quot;, &amp;quot;logs:PutLogEvents&amp;quot;, &amp;quot;athena:ListQueryExecutions&amp;quot;, &amp;quot;athena:ListNamedQueries&amp;quot;, &amp;quot;s3:PutObject&amp;quot;, &amp;quot;s3:GetObject&amp;quot;, &amp;quot;logs:CreateLogStream&amp;quot;, &amp;quot;athena:GetQueryExecution&amp;quot;, &amp;quot;s3:DeleteObject&amp;quot; ], &amp;quot;Resource&amp;quot;: [ &amp;quot;arn:aws:s3:::(output bucket)/*&amp;quot;, &amp;quot;arn:aws:logs:us-east-1:(account ID):log-group:/aws/lambda/SubAcctSplit:*&amp;quot;, &amp;quot;arn:aws:athena:*:*:workgroup/*&amp;quot; ] }, { &amp;quot;Sid&amp;quot;: &amp;quot;VisualEditor1&amp;quot;, &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;, &amp;quot;Action&amp;quot;: &amp;quot;s3:ListBucket&amp;quot;, &amp;quot;Resource&amp;quot;: &amp;quot;arn:aws:s3:::*&amp;quot; }, { &amp;quot;Sid&amp;quot;: &amp;quot;VisualEditor2&amp;quot;, &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;, &amp;quot;Action&amp;quot;: [ &amp;quot;glue:GetDatabase&amp;quot;, &amp;quot;glue:CreateTable&amp;quot;, &amp;quot;glue:GetPartitions&amp;quot;, &amp;quot;glue:GetPartition&amp;quot;, &amp;quot;glue:DeleteTable&amp;quot;, &amp;quot;glue:GetTable&amp;quot; ], &amp;quot;Resource&amp;quot;: &amp;quot;*&amp;quot; }, { &amp;quot;Sid&amp;quot;: &amp;quot;VisualEditor3&amp;quot;, &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;, &amp;quot;Action&amp;quot;: [ &amp;quot;s3:GetBucketLocation&amp;quot;, &amp;quot;s3:GetObject&amp;quot;, &amp;quot;s3:ListBucket&amp;quot;, &amp;quot;s3:ListBucketMultipartUploads&amp;quot;, &amp;quot;s3:ListMultipartUploadParts&amp;quot;, &amp;quot;s3:AbortMultipartUpload&amp;quot;, &amp;quot;s3:CreateBucket&amp;quot;, &amp;quot;s3:PutObject&amp;quot; ], &amp;quot;Resource&amp;quot;: [ &amp;quot;arn:aws:s3:::aws-athena-query-results-us-east-1-(account ID)/*&amp;quot;, &amp;quot;arn:aws:s3:::aws-athena-query-results-us-east-1-(account ID)&amp;quot; ] }, { &amp;quot;Sid&amp;quot;: &amp;quot;VisualEditor4&amp;quot;, &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;, &amp;quot;Action&amp;quot;: [ &amp;quot;s3:GetObject&amp;quot;, &amp;quot;s3:ListBucket&amp;quot; ], &amp;quot;Resource&amp;quot;: &amp;quot;arn:aws:s3:::(source bucket)/*&amp;quot; }, { &amp;quot;Sid&amp;quot;: &amp;quot;VisualEditor5&amp;quot;, &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;, &amp;quot;Action&amp;quot;: &amp;quot;logs:CreateLogGroup&amp;quot;, &amp;quot;Resource&amp;quot;: &amp;quot;arn:aws:logs:us-east-1:(account ID):*&amp;quot; } ] }</description></item></channel></rss>
