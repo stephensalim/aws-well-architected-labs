@@ -327,9 +327,8 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 {{%/expand%}}
 
-
-
-Once the document is using any of the above method created, you can find the newly created document under the **Owned by me** tab of the Document resource, click on the playbook called `Playbook-InvestigateAppResources-ELB-ECS-RDS` and click on **Execute Automation** to execute our playbook
+Once the document is using any of the above method created, you can go ahead and do a quick test.
+You can find the newly created document under the **Owned by me** tab of the Document resource, click on the playbook called `Playbook-InvestigateAppResources-ELB-ECS-RDS` and click on **Execute Automation** to execute our playbook
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-investigate-execute.png)
 
@@ -341,9 +340,6 @@ Wait until all steps are completed successfully.
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-investigate-execute-output.png)
 
-
-At this point because this playbook are meant to capture the most recent data points of the application, for the output to make sense, you the application simulation in the previous section needs to be running.
-To have a meaningful data captured by this playbook, Please ensure to have the simulation command running when you execute this playbook.
 
 ### 4.3 Playbook Build - Chaining 2 Playbooks into 1.
 
@@ -450,22 +446,32 @@ Then go to the Systems Manager Automation document we just created in the previo
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook.png)
 
-Wait until the playbook is successfully executed 
-
-![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-observe.png)
-
-One it is done, you should see an email coming through to your email.
+Wait until the playbook is successfully executed. Once it is done, you should see an email coming through to your email.
 This email will contain summary of the investigation done by our playbook.
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-email-summary.png)
 
-Copy and paste the message section, and use a json linter tool such as jsonlint.com to give the json better structure for visibility.
+Copy and paste the message section, and use a json linter tool such as [jsonlint.com](http://jsonlint.com) to give the json better structure for visibility. 
 
-Now let's see what our playbook has found.
+* You should be seeing that there is a large number of ELB504 Count error and a high number of the Target Response Time from the Load balancer that explains the delay we are seeing.
+
+* But what could have caused that delay ? If you then look at the ECS CPUtilization summary over the period of time, you will see that the CPU averages in 99%, and the total task count running is only 1.
+
+* There are also some other Errors identified in the application logs, which sort of indicates some issue with the application code.
+such as ER_CON_COUNT_ERROR: Too many connections.
+
+Looking at these information, it is very likely that the cause of the latency is due to resource constraint at the API level.
+If we increase the number of tasks in the ECS service, the application will be able to handle more requests and hopefully it would not be that CPU constrained. The Error message we see in the application log should also subside.
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-summary.png)
 
+So, with all of these information and hypothesis at hand, lets build out a runbook to automate the remediation of the issue.
+Let's move on now to the next section in the lab.
 
+This concludes **Section 4** of this lab, click on the link below to move on to the next section.
+
+
+{{< prev_next_button link_prev_url="../3_simulate_application_issue/" link_next_url="../5_build_execute_remediation_runbook/" />}}
 
 ___
 **END OF SECTION 4**

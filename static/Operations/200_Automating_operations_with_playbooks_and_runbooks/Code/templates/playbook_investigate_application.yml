@@ -1,0 +1,46 @@
+Parameters:
+  PlaybookIAMRole:
+    Type: String
+
+Resources:
+  PlaybookInvestigateAlarm: 
+    Type: "AWS::SSM::Document"
+    Properties:
+      DocumentType: Automation
+      Name: Playbook-InvestigateApplication-From-CanaryCloudWatchAlarm
+      Content: 
+        description: |2-
+          # What is does this playbook do?
+
+          This playbook will execute **Playbook-GatherAppResources-Canary-CloudWatchAlarm** to gather Application resources monitored by Canary.
+
+          Then subsequently execute **Playbook-InvestigateAppResources-ELB-ECS-RDS** to Investigate the resources for issues. 
+
+          Outputs of the investigation will be sent to SNS Topic Subscriber
+        schemaVersion: '0.3'
+        assumeRole: !Ref PlaybookIAMRole
+        parameters:
+          AlarmARN:
+            type: String
+          SNSTopicARN:
+            type: String
+        mainSteps:
+          - name: PlaybookGatherAppResourcesCanaryCloudWatchAlarm
+            action: 'aws:executeAutomation'
+            inputs:
+              DocumentName: Playbook-GatherAppResources-Canary-CloudWatchAlarm
+              RuntimeParameters:
+                AlarmARN: '{{AlarmARN}}'
+          - name: PlaybookInvestigateAppResourcesELBECSRDS
+            action: 'aws:executeAutomation'
+            inputs:
+              DocumentName: Playbook-InvestigateAppResources-ELB-ECS-RDS
+              RuntimeParameters:
+                Resources: '{{PlaybookGatherAppResourcesCanaryCloudWatchAlarm.Output}}'
+          - name: AWSPublishSNSNotification
+            action: 'aws:executeAutomation'
+            inputs:
+              DocumentName: AWS-PublishSNSNotification
+              RuntimeParameters:
+                TopicArn: '{{SNSTopicARN}}'
+                Message: '{{ PlaybookInvestigateAppResourcesELBECSRDS.Output }}'

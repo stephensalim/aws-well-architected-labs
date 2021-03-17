@@ -1,0 +1,49 @@
+Parameters:
+  PlaybookIAMRole:
+    Type: String
+
+Resources:
+  ScaleECSWithApproval: 
+    Type: "AWS::SSM::Document"
+    Properties:
+      DocumentType: Automation
+      Name: Runbook-Scale-ECS-With-Approval
+      Content: 
+        schemaVersion: '0.3'
+        assumeRole: !Ref PlaybookIAMRole
+        parameters:        
+          ECSClusterName:
+            type: String
+          ECSServiceName:
+            type: String
+          ECSDesiredCount:
+            type: Integer
+          Timer:
+            type: String
+            default: PT10M
+          NotificationTopicArn:
+            type: String
+          NotificationMessage:
+            type: String
+          ApproverRoleArn:
+            type: String
+            default: 'arn:aws:iam::030124216594:role/WellArchitected-Admin'         
+        mainSteps:
+          - name: ExecuteApprovalGateWithTimer
+            action: 'aws:executeAutomation'
+            inputs:
+              DocumentName: Approval-Gate-With-Timer
+              RuntimeParameters:
+                Timer: '{{Timer}}'
+                NotificationTopicArn: '{{NotificationTopicArn}}'
+                NotificationMessage: '{{NotificationMessage}}'
+                ApproverRoleArn: '{{ApproverRoleArn}}'
+          - name: UpdateECSServiceDesiredCount
+            action: aws:executeAwsApi
+            inputs:
+              Service: ecs
+              Api: UpdateService
+              service: '{{ECSServiceName}}'
+              forceNewDeployment: true
+              desiredCount: '{{ECSDesiredCount}}'
+              cluster: '{{ECSClusterName}}'
