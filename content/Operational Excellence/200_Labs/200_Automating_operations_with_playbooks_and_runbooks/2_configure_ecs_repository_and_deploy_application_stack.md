@@ -6,7 +6,6 @@ weight: 2
 pre: "<b>2. </b>"
 ---
 
-
 In this section, we are going to prepare our sample application API. Our API will be hosted inside docker containers orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/) with [Application Load Balancer]() fronting it. The API will take 2 actions ; **encrypt** / **decrypt**. :
 
 * **encrypt** action will allow the user to pass on a secret message along with it's key identifier, and it will return a secret key id that they can use to decrypt.

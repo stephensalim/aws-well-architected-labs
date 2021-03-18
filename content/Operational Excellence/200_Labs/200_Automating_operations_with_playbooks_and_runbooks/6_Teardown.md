@@ -2,8 +2,8 @@
 title: "Teardown"
 date: 2020-04-24T11:16:09-04:00
 chapter: false
-weight: 7
-pre: "<b>7. </b>"
+weight: 6
+pre: "<b>6. </b>"
 ---
 
 The following steps will remove the services which are deployed in the lab. 

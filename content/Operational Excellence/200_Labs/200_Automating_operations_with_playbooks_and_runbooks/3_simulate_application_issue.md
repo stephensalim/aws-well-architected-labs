@@ -6,6 +6,7 @@ weight: 3
 pre: "<b>3. </b>"
 ---
 
+In the previous section we have built a sample vpc environment with a deployed our application API running in it. 
 In this section we will simulate a performance issue to trigger an alarm notifying our the operations team about the founded issue. In our scenario today we will assume a hypothetical API response SLA of under 6 seconds, if API response takes longer than 6 seconds broader user experience is severely impacted, and our Operations team needs to response to this. 
 
 To detect this response time, we have deployed a canary monitoring using [CloudWatch Synthetics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html) to continuously check the application response time and trigger a CloudWatch alarm when response time is gone above the SLA.  

@@ -7,7 +7,7 @@ Resources:
     Type: "AWS::SSM::Document"
     Properties:
       DocumentType: Automation
-      Name: Automatic-Approval-With-Timer
+      Name: Approval-Timer
       Content: 
         schemaVersion: '0.3'
         assumeRole: !Ref PlaybookIAMRole
@@ -67,7 +67,7 @@ Resources:
                 def handler(event, context):
                   client = boto3.client('ssm')
                   response = client.start_automation_execution(
-                      DocumentName='Automatic-Approval-With-Timer',
+                      DocumentName='Approval-Timer',
                       Parameters={
                           'Timer': [ event['Timer'] ],
                           'AutomationExecutionId' : [ event['AutomationExecutionId'] ]
