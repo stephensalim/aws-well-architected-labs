@@ -317,7 +317,7 @@ Now that we have built our runbook to Investigate this issue, lets execute this 
 
 
 This concludes **Section 5** of this lab, click on the link below to move on to the next section.
-{{< prev_next_button link_prev_url="../3_build_execute_investigative_playbook/" link_next_url="../5_Teardown/" />}}
+{{< prev_next_button link_prev_url="../3_build_execute_investigative_playbook/" link_next_url="../5_cleanup/" />}}
 
 
 
