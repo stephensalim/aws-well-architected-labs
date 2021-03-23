@@ -7,7 +7,7 @@ Resources:
     Type: "AWS::SSM::Document"
     Properties:
       DocumentType: Automation
-      Name: Playbook-GatherAppResources-Canary-CloudWatchAlarm
+      Name: Playbook-Gather-Resources
       Content: 
         schemaVersion: '0.3'
         assumeRole: "{{AutomationAssumeRole}}"

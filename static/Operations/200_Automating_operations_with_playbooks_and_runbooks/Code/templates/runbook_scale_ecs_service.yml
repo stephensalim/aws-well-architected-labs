@@ -7,7 +7,7 @@ Resources:
     Type: "AWS::SSM::Document"
     Properties:
       DocumentType: Automation
-      Name: Runbook-Scale-ECS-With-Approval
+      Name: Runbook-ECS-Scale-Up
       Content: 
         schemaVersion: '0.3'
         assumeRole: !Ref PlaybookIAMRole
@@ -32,7 +32,7 @@ Resources:
           - name: ExecuteApprovalGateWithTimer
             action: 'aws:executeAutomation'
             inputs:
-              DocumentName: Approval-Gate-With-Timer
+              DocumentName: Approval-Gate
               RuntimeParameters:
                 Timer: '{{Timer}}'
                 NotificationTopicArn: '{{NotificationTopicArn}}'

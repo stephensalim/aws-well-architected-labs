@@ -9,21 +9,23 @@ hidden: false
 
 ## Authors
 * **Stephen Salim**, Well-Architected Geo Solutions Architect.
-* **Brian Carlson**, Well-Architected Operational Excellence Pillar Lead.
 
 ## Introduction
+ 
+This hands-on lab will guide you through the steps to automate your operational activities using [Playbook](https://wa.aws.amazon.com/wat.concept.playbook.en.html) and [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) built with AWS tools.
 
-This hands-on lab will guide you through the steps to automate your operational activities using playbook and runbooks built with  AWS tools.
+At a glance, both Playbook and Runbooks appears to be similar documents any adequately skilled team members (who are unfamiliar with the workload) can use to execute operational activities. However, the main difference between them is that; a Playbook is intended to document the process /guide to gather applicable information, identify potential sources of failure, isolate faults, and determine root cause of issues. Runbooks contain instructions necessary to successfully complete an activity to resolve the issue. 
 
-At a glance, both Playbook and Runbooks appears to be similar documents that any adequately skilled team members (who are unfamiliar with the workload) can use to execute operational activities. However, the main difference between them is that; a Playbook is intended to document the process /guide to gather applicable information, identify potential sources of failure, isolate faults, and determine root cause of issues. Runbooks contain instructions necessary to successfully complete an activity to resolve the issue. 
+Executing both Playbook and Runbook in an automated fashion is also to achieve operational excellence for your workload. Isolating human element and streamlining the process will make significant impact in the reliability, scalability, traceability of your operations.  
 
-Executing both Playbook and Runbook in an automated fashion is critical to achieve operational excellence for your workload. Isolating human element and streamlining the process will make significant impact in the reliability, scalability, traceability of your operations.  
+In the next few sections of this lab, we will show how you can build an automated Playbook and Runbook to investigate and remediate the issue using a few AWS services.
 
-In this lab, we will show how you can build an automated Playbook to investigate an issue in a workload, and a Runbook to remediate the issue using AWS tools, services we will utilize in this lab includes.
+Services we will utilize in this lab includes.
 
 * Event Bridge Rules
 * Systems Manager Automation Document
 * Simple Notification Service
+* CloudWatch Synthetics 
 
 
 ## Goals:
@@ -40,7 +42,7 @@ In this lab, we will show how you can build an automated Playbook to investigate
 NOTE: You will be billed for any applicable AWS resources used if you complete this lab that are not covered in the [AWS Free Tier](https://aws.amazon.com/free/).
 {{% /notice %}}
 
-{{< prev_next_button link_next_url="./1_deploy_the_lab_network_infrastructure/" button_next_text="Start Lab" first_step="true" />}}
+{{< prev_next_button link_next_url="./1_deploy_base_application_environment/" button_next_text="Start Lab" first_step="true" />}}
 
 Steps:
 {{% children  /%}}

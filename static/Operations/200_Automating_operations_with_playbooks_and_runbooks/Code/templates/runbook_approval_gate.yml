@@ -36,7 +36,7 @@ Resources:
     Type: "AWS::SSM::Document"
     Properties:
       DocumentType: Automation
-      Name: Approval-Gate-With-Timer
+      Name: Approval-Gate
       Content: 
         schemaVersion: '0.3'
         assumeRole: !Ref PlaybookIAMRole

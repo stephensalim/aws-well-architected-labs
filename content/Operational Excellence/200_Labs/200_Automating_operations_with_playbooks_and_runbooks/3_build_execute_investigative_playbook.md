@@ -2,8 +2,8 @@
 title: "Build & Execute Investigative Playbook"
 date: 2020-04-24T11:16:09-04:00
 chapter: false
-weight: 4
-pre: "<b>4. </b>"
+weight: 3
+pre: "<b>3. </b>"
 ---
 
 In the previous section, we have sent through large incoming traffic to the API to simulate an increase with the Application latency driven by the application being overwhelmed. 
@@ -56,14 +56,14 @@ To deploy from the command line, ensure that you have installed and configured A
 ```
 aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
                                 --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<ARN of Playbook IAM role (defined in previous step)> \
-                                --template-body file://playbook_gather-resources.yml 
+                                --template-body file://playbook_gather_resources.yml 
 ```
 Example:
 
 ```
 aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
                                 --parameters ParameterKey=arn:aws:iam::000000000000:role/xxxx-playbook-role \
-                                --template-body file://playbook_gather-resources.yml 
+                                --template-body file://playbook_gather_resources.yml 
 ```
 
 **Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
@@ -84,7 +84,7 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation.png)
 
-  2. Next, enter in `Playbook-GatherAppResources-Canary-CloudWatchAlarm` in the **Name** and past in below notes in the **Description** box. This is to provide descriptions on what this playbook does. Systems Manager supports putting in nots as markdown, so feel free to format it as needed. 
+  2. Next, enter in `Playbook-Gather-Resources` in the **Name** and past in below notes in the **Description** box. This is to provide descriptions on what this playbook does. Systems Manager supports putting in nots as markdown, so feel free to format it as needed. 
 
 
   ```
@@ -249,7 +249,7 @@ to do this, select `Input Payload` under **Input name** and specify `CloudWatchA
 
 Once the document is using any of the above method created, you can find the newly created document under the **Owned by me** tab of the Document resource.
 
-  1. Click on the playbook called `Playbook-GatherAppResources-Canary-CloudWatchAlarm` and click on **Execute Automation** to execute our playbook.
+  1. Click on the playbook called `Playbook-Gather-Resources` and click on **Execute Automation** to execute our playbook.
   2. Paste in the Cloudwatch Alarm ARN (you can refer to the email you received from the simulation we did on section 3), and click on **Execute** to test the playbook
   3. Once the playbook execution is completed, Click on the **Step Id** to see the final message and output of the step. You should be able to see this output listing all the resources of the application
   4. Copy the Resources list output from the section in the screenshot above ( marked in red box )
@@ -324,7 +324,7 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 Once the document is using any of the above method created, you can go ahead and do a quick test.
 You can find the newly created document under the **Owned by me** tab of the Document resource.
 
-  1. Click on the playbook called `Playbook-InvestigateAppResources-ELB-ECS-RDS` and click on **Execute Automation** to execute our playbook.
+  1. Click on the playbook called `Playbook-Investigate-Application-Resources` and click on **Execute Automation** to execute our playbook.
   2. Paste in the Resources List you took note from the output of the previous playbook (refer to previous step) under **Resources** and click on **Execute**
   3. Wait until all steps are completed successfully.
 
@@ -384,7 +384,7 @@ aws cloudformation create-stack --stack-name waopslab-playbook-investigate-appli
 Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
 
 ```
-aws cloudformation describe-stacks --stack-name waopslab-playbook-gather-resources
+aws cloudformation describe-stacks --stack-name waopslab-playbook-investigate-application 
 ```
 
 Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
@@ -396,15 +396,15 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation.png)
 
-  2. Next, enter in `Playbook-InvestigateApplication-From-CanaryCloudWatchAlarm` in the **Name** and past in below notes in the **Description** box. This is to provide descriptions on what this playbook does. Systems Manager supports putting in nots as markdown, so feel free to format it as needed. 
+  2. Next, enter in `Playbook-Investigate-Application-From-Alarm` in the **Name** and past in below notes in the **Description** box. This is to provide descriptions on what this playbook does. Systems Manager supports putting in nots as markdown, so feel free to format it as needed. 
 
 
   ```
   # What is does this playbook do?
 
-  This playbook will execute **Playbook-GatherAppResources-Canary-CloudWatchAlarm** to gather Application resources monitored by Canary.
+  This playbook will execute **Playbook-Gather-Resources** to gather Application resources monitored by Canary.
 
-  Then subsequently execute **Playbook-InvestigateAppResources-ELB-ECS-RDS** to Investigate the resources for issues. 
+  Then subsequently execute **Playbook-Investigate-Application-Resources** to Investigate the resources for issues. 
 
   Outputs of the investigation will be sent to SNS Topic Subscriber
     
@@ -421,7 +421,7 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
   6. Click **Add Step** and  create the first step of `aws:executeAutomation` Action type with StepName `PlaybookGatherAppResourcesCanaryCloudWatchAlarm`
 
-  7. Specify `Playbook-GatherAppResources-Canary-CloudWatchAlarm` as the **Document name** under Inputs, and under **Additional inputs** specify `RuntimeParameters` with `AlarmARN:'{{AlarmARN}}'` as it's value ( refer to screenshot below ) This defines that in this step we will be executing the `Gather-Resources` playbook we created which takes input of the CloudWatch AlarmARN and returns the list of related resources.
+  7. Specify `Playbook-Gather-Resources` as the **Document name** under Inputs, and under **Additional inputs** specify `RuntimeParameters` with `AlarmARN:'{{AlarmARN}}'` as it's value ( refer to screenshot below ) This defines that in this step we will be executing the `Gather-Resources` playbook we created which takes input of the CloudWatch AlarmARN and returns the list of related resources.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-parameter-input-2-step1.png)
 
@@ -429,7 +429,7 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
   
   9. For this second step, specify the **Step name** as `PlaybookInvestigateAppResourcesELBECSRDS` abd action type `aws:executeAutomation`.
   
-  10. Specify `Playbook-InvestigateAppResources-ELB-ECS-RDS` as the **Document name**, and `RuntimeParameters` as `Resources: '{{PlaybookGatherAppResourcesCanaryCloudWatchAlarm.Output}}'` This second step will take the output of the first step and pass that to the second Playbook to execute the investigation of relevant resources.
+  10. Specify `Playbook-Investigate-Application-Resources` as the **Document name**, and `RuntimeParameters` as `Resources: '{{PlaybookGatherAppResourcesCanaryCloudWatchAlarm.Output}}'` This second step will take the output of the first step and pass that to the second Playbook to execute the investigation of relevant resources.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-parameter-input-2-step2.png)
 
@@ -489,8 +489,8 @@ Now that we have built our Playbook to Investigate this issue, lets test this pl
 
 This concludes **Section 4** of this lab, click on the link below to move on to the next section.
 
-{{< prev_next_button link_prev_url="../3_simulate_application_issue/" link_next_url="../5_build_execute_remediation_runbook/" />}}
+{{< prev_next_button link_prev_url="../2_simulate_application_issue/" link_next_url="../4_build_execute_remediation_runbook/" />}}
 
 ___
-**END OF SECTION 4**
+**END OF SECTION 3**
 ___

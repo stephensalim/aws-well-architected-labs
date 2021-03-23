@@ -2,8 +2,8 @@
 title: "Build & Execute Remediation Runbook"
 date: 2020-04-24T11:16:09-04:00
 chapter: false
-weight: 5
-pre: "<b>5. </b>"
+weight: 4
+pre: "<b>4. </b>"
 ---
 
 In the previous section, we have built an automated playbook to investigate the application environment. The output the playbook gathered allows us to come up with a conclusion on the cause of the issue, and for us to decide the next course of action.
@@ -189,7 +189,7 @@ Please follow below steps to build the runbook.
 
       ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation.png)
 
-2. Next, enter in `Approval-Timer` in the **Name** and past in below notes in the **Description** box. This is to provide descriptions on what this playbook does. (Systems Manager supports putting in nots as markdown, so feel free to format it as needed.)
+2. Next, enter in `Runbook-ECS-Scale-Up` in the **Name** and past in below notes in the **Description** box. This is to provide descriptions on what this playbook does. (Systems Manager supports putting in nots as markdown, so feel free to format it as needed.)
 
       ```
         # What is does this automation do?
@@ -268,14 +268,14 @@ To deploy from the command line, ensure that you have installed and configured A
 ```
 aws cloudformation create-stack --stack-name waopslab-runbook-scale-ecs-service \
                                 --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<ARN of Playbook IAM role (defined in previous step)> \
-                                --template-body file://runbook_approval_gate.yml 
+                                --template-body file://runbook_scale_ecs_service.yml 
 ```
 Example:
 
 ```
 aws cloudformation create-stack --stack-name waopslab-runbook-scale-ecs-service \
                                 --parameters ParameterKey=arn:aws:iam::000000000000:role/xxxx-playbook-role \
-                                --template-body file://runbook_approval_gate.yml 
+                                --template-body file://runbook_scale_ecs_service.yml 
 ```
 
 **Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
@@ -317,7 +317,7 @@ Now that we have built our runbook to Investigate this issue, lets execute this 
 
 
 This concludes **Section 5** of this lab, click on the link below to move on to the next section.
-{{< prev_next_button link_prev_url="../4_build_execute_investigative_playbook/" link_next_url="../6_Teardown/" />}}
+{{< prev_next_button link_prev_url="../3_build_execute_investigative_playbook/" link_next_url="../5_Teardown/" />}}
 
 
 

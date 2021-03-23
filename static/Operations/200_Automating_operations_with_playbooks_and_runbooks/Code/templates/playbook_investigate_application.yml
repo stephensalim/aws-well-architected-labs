@@ -7,14 +7,14 @@ Resources:
     Type: "AWS::SSM::Document"
     Properties:
       DocumentType: Automation
-      Name: Playbook-InvestigateApplication-From-CanaryCloudWatchAlarm
+      Name: Playbook-Investigate-Application-From-Alarm
       Content: 
         description: |2-
           # What is does this playbook do?
 
-          This playbook will execute **Playbook-GatherAppResources-Canary-CloudWatchAlarm** to gather Application resources monitored by Canary.
+          This playbook will execute **Playbook-Gather-Resources** to gather Application resources monitored by Canary.
 
-          Then subsequently execute **Playbook-InvestigateAppResources-ELB-ECS-RDS** to Investigate the resources for issues. 
+          Then subsequently execute **Playbook-Investigate-Application-Resources** to Investigate the resources for issues. 
 
           Outputs of the investigation will be sent to SNS Topic Subscriber
         schemaVersion: '0.3'
@@ -25,22 +25,22 @@ Resources:
           SNSTopicARN:
             type: String
         mainSteps:
-          - name: PlaybookGatherAppResourcesCanaryCloudWatchAlarm
+          - name: gatherResources
             action: 'aws:executeAutomation'
             inputs:
-              DocumentName: Playbook-GatherAppResources-Canary-CloudWatchAlarm
+              DocumentName: Playbook-Gather-Resources
               RuntimeParameters:
                 AlarmARN: '{{AlarmARN}}'
-          - name: PlaybookInvestigateAppResourcesELBECSRDS
+          - name: investigateAppResources
             action: 'aws:executeAutomation'
             inputs:
-              DocumentName: Playbook-InvestigateAppResources-ELB-ECS-RDS
+              DocumentName: Playbook-Investigate-Application-Resources
               RuntimeParameters:
-                Resources: '{{PlaybookGatherAppResourcesCanaryCloudWatchAlarm.Output}}'
+                Resources: '{{gatherResources.Output}}'
           - name: AWSPublishSNSNotification
             action: 'aws:executeAutomation'
             inputs:
               DocumentName: AWS-PublishSNSNotification
               RuntimeParameters:
                 TopicArn: '{{SNSTopicARN}}'
-                Message: '{{ PlaybookInvestigateAppResourcesELBECSRDS.Output }}'
+                Message: '{{ investigateAppResources.Output }}'

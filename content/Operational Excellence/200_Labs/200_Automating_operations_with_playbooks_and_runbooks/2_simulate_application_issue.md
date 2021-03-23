@@ -2,8 +2,8 @@
 title: "Simulate Application Issue"
 date: 2020-04-24T11:16:09-04:00
 chapter: false
-weight: 3
-pre: "<b>3. </b>"
+weight: 2
+pre: "<b>2. </b>"
 ---
 
 In the previous section we have built a sample vpc environment with a deployed our application API running in it. 
@@ -31,7 +31,7 @@ Execute below command.
 
 ```
 ALBURL="< Application Endpoint URL captured from section 2>"
-ab -p test.json -T application/json -c 3000 -n 60000000 -v 4 http://$ALBURL/encrypt
+ab -p test.json -T application/json -c 4000 -n 10000000 -v 4 http://$ALBURL/encrypt 
 ```
 
 This command uses Apache Benchmark to send 60000000 requests at 3000 concurrently.
@@ -92,8 +92,8 @@ In a real operational environment, this scenario would trigger an incident notif
 
 So now,let's proceed to the next Section of this lab, where we will be building the Automated playbook to investigate issue in the application. 
 
-{{< prev_next_button link_prev_url="../2_configure_ecs_repository_and_deploy_application_stack/" link_next_url="../4_build_execute_investigative_playbook/" />}}
+{{< prev_next_button link_prev_url="../2_configure_ecs_repository_and_deploy_application_stack/" link_next_url="../3_build_execute_investigative_playbook/" />}}
 
 ___
-**END OF SECTION 3**
+**END OF SECTION 2**
 ___

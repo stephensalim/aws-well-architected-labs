@@ -7,7 +7,7 @@ Resources:
     Type: "AWS::SSM::Document"
     Properties:
       DocumentType: Automation
-      Name: Playbook-InvestigateAppResources-ELB-ECS-RDS
+      Name: Playbook-Investigate-Application-Resources
       Content: 
         schemaVersion: '0.3'
         assumeRole: "{{AutomationAssumeRole}}"
