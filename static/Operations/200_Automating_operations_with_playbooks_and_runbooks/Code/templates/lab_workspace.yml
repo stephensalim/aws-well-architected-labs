@@ -212,7 +212,7 @@ Resources:
       InstanceType: t2.micro
       Name: !Sub "WellArchitectedOps-${AWS::StackName}"
       Repositories:
-        - PathComponent: /well-architected-ops-excellence-lab
+        - PathComponent: /aws-well-architected-labs
           RepositoryUrl: !Ref GitRepositoryURL
       SubnetId: !Ref PublicSubnet1
 
