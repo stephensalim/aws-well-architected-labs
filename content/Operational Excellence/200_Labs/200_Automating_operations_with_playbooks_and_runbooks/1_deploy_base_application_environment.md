@@ -6,13 +6,14 @@ weight: 1
 pre: "<b>1. </b>"
 ---
 
-In this section, we are going to prepare our sample application API. Our API will be hosted inside docker containers orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/) with [Application Load Balancer]() fronting it. The API will take 2 actions ; **encrypt** / **decrypt**. :
+In this section, we are going to prepare our sample application API. The application is essentially an API that hosted inside docker containers orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/) with [Application Load Balancer]() fronting it. The API will **encrypt** / **decrypt** a secret message that the user pass on.  
 
-* **encrypt** action will allow the user to pass on a secret message along with it's key identifier, and it will return a secret key id that they can use to decrypt.
-* **decrypt** action will allow the user to pass the key identifier along with the secret key id to obtain the secret message encrypted before. 
+* The **encrypt** action will allow the user to pass on a secret message along with it's key identifier, and it will return a secret key id that they can use to decrypt.
+* The **decrypt** action will allow the user to pass the key identifier along with the secret key id to obtain the secret message encrypted before. 
 
+Both actions will subsequently make a write and read call to the RDS database where the encrypted messages are being stored. 
 
-Both actions will make a write and read call to the RDS database where encrypted messages are being stored. In preparation for the deployment, we will need to package our application as a docker image and push it into [ECR](https://aws.amazon.com/ecr/). When this is completed, we will use the image which we placed in ECR to build our application cluster. For more information on how ECS works, please refer to this [guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html).
+In preparation for the deployment, we will need to package our application as a docker image and push it into [ECR](https://aws.amazon.com/ecr/). When this is completed, we will use the image which we placed in ECR to build our application cluster. For more information on how ECS works, please refer to this [guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html).
 
 When our application stack is completed, our architecture will look like this:
 ![Section2 App Arch](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-application.png)
