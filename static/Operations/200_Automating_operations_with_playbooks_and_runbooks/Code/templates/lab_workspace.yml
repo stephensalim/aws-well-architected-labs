@@ -199,9 +199,7 @@ Resources:
   AppContainerRepository: 
     Type: AWS::ECR::Repository
     Properties:
-      Tags:
-        - Key: WALabId
-          Value: WALabOpsAutoPlaybookRunbook
+      RepositoryName: walab-ops-sample-application
 
 
   Cloud9:
@@ -220,3 +218,41 @@ Outputs:
   Cloud9DevEnvUrl:
     Description: Cloud9 Development Environment
     Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/cloud9/ide/${Cloud9}"
+
+
+Outputs:
+  OutputVPC:
+    Description: Baseline VPC
+    Value: !Ref VPC
+    Export:
+      Name: !Sub "${AWS::StackName}-VpcId"
+  OutputVPCCidrBlock:
+    Description: Baseline VPC Cidr Block
+    Value: !GetAtt VPC.CidrBlock
+    Export:
+      Name: !Sub "${AWS::StackName}-VpcCidrBlock"      
+  OutputPublicSubnet1:
+    Description: Public Subnet 1 VPC
+    Value: !Ref PublicSubnet1
+    Export:
+      Name: !Sub "${AWS::StackName}-PublicSubnet1"
+  OutputPublicSubnet2:
+    Description: Public Subnet 2 VPC
+    Value: !Ref PublicSubnet2
+    Export:
+      Name: !Sub "${AWS::StackName}-PublicSubnet2"
+  OutputPrivateSubnet1:
+    Description: Private Subnet 1 VPC
+    Value: !Ref PrivateSubnet1
+    Export:
+      Name: !Sub "${AWS::StackName}-PrivateSubnet1"
+  OutputPrivateSubnet2:
+    Description: Private Subnet 2 VPC
+    Value: !Ref PrivateSubnet2
+    Export:
+      Name: !Sub "${AWS::StackName}-PrivateSubnet2"
+  OutputAppContainerRepository:
+    Description: Applicaton ECR Repository
+    Value: !Ref AppContainerRepository
+    Export:
+      Name: !Sub "${AWS::StackName}-AppContainerRepository"
