@@ -30,3 +30,7 @@ echo 'Deleting Base Resources'
 echo '##########################'
 aws cloudformation delete-stack --stack-name $MAIN_STACK
 aws cloudformation wait stack-delete-complete --stack-name $MAIN_STACK
+
+echo '#########################################'
+echo 'Application Teardown Complete'
+echo '#########################################'

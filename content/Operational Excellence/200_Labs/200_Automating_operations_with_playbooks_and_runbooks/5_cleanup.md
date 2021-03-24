@@ -6,4 +6,9 @@ weight: 5
 pre: "<b>5. </b>"
 ---
 
-Coming Soon
+To all resources related to the Lab. execute below commands.
+
+```
+      cd aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
+      bash teardown_resources.sh
+```

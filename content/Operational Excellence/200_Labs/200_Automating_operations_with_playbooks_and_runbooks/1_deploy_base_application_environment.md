@@ -67,7 +67,7 @@ This email will be used to receive application notifications.
 
   6. In the CloudFormation console, you should see a new stack being deployed called `walab-ops-sample-application`, wait until the stack reached **CREATE_COMPLETE** state and proceed to the next step.
   
-      ![Section 2 CreateComplete](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-application-build.png)
+      ![Section 2 CreateComplete](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-app-creatte-complete.png)
 
 ### 1.2. Confirm Application Status.
 

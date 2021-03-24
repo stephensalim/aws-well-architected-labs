@@ -44,3 +44,7 @@ echo '#########################################'
 echo 'Waiting for Application Stack to complete'
 echo '#########################################'
 aws cloudformation wait stack-create-complete --stack-name $ECR_REPONAME
+
+echo '#########################################'
+echo 'Application create complete'
+echo '#########################################'
