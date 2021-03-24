@@ -3,7 +3,7 @@
 LABEL='latest'
 ECR_REPONAME='walab-ops-sample-application'
 SAMPLE_APPNAME=$ECR_REPONAME
-MAIN_STACK=$1
+MAIN_STACK='walab-ops-base-resources'
 EMAIL=$2
 
 sudo yum install jq -y -q

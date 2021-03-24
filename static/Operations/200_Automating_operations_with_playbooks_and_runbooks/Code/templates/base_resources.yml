@@ -13,6 +13,7 @@ Parameters:
     Type: String
     Default: https://github.com/stephensalim/aws-well-architected-labs.git
 
+
 Resources:
   #------------------------------------------------------------
   # Create a VPC with a public and private subnet

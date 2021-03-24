@@ -6,7 +6,6 @@ Parameters:
   NotificationEmail:
     Type: String
 
-
 Outputs:
   OutputALB:
     Description: Elastic Load Balancer

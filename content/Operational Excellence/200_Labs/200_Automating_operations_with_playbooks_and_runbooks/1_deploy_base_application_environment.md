@@ -13,103 +13,57 @@ In this section, we are going to prepare our sample application API. The applica
 
 Both actions will subsequently make a write and read call to the RDS database where the encrypted messages are being stored. 
 
-In preparation for the deployment, we will need to package our application as a docker image and push it into [ECR](https://aws.amazon.com/ecr/). When this is completed, we will use the image which we placed in ECR to build our application cluster. For more information on how ECS works, please refer to this [guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html).
+To simplify the application provisioning process, we have created a script you can execute. Please follow below steps to prepare the Cloud9 workspace and execute the script to build our application.
 
 When our application stack is completed, our architecture will look like this:
-![Section2 App Arch](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-application.png)
-
-Move through the sections below to complete the repository configuration and application stack deployment:
+![Section1 App Arch](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-application.png)
 
 
+### 1.0 Deploy baseline resources.
 
-### 1.0 Deploy base VPC infrastructure.
-
-To deploy the VPC infrastructure  you can either deploy the CloudFormation template directly from the command line or via the console. 
-You can get the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/base_vpc.yml "VPC template")
-
-{{%expand "Click here for CloudFormation command-line deployment steps"%}}
-
-
-  1. To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
-  
-  ```
-  aws cloudformation create-stack --stack-name waopslab-base-vpc \
-                                  --template-body file://base_vpc.yml 
-  ```
-
-  Please adjust your command-line if you are using profiles within your aws command line as required.
-
-  2. Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
-
-  ```
-  aws cloudformation describe-stacks --stack-name waopslab-base-vpc 
-  ```
-
-  Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** as shown here:
-
-  ![Section1 CF Outputs](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section1-cloudformation-cli-output.png)
-  
-  3. Take note of this stack output as we will need it for later sections of the lab.
-
-{{% /expand%}}
-
-{{%expand "Click here for CloudFormation console deployment steps"%}}
-#### Console:
-
-If you decide to deploy the stack from the console, ensure that you follow below requirements & step:
-
-  1. Please follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) for information on how to deploy the cloudformation template.
-
-  2. Use `waopslab-base-vpc` as the **Stack Name**, as this is referenced by other stacks later in the lab.
-  3. When the CloudFormation template deployment is completed, note the outputs produced by the newly created stack as these will be required at later points in the lab. You can do this by clicking on the stack name you just created, and select the Outputs Tab as shown in diagram below.
-
-
-  ![Section1 Base Outputs](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section1-cloudformation-output.png)
-
-
-
-{{% /expand%}}
-
-### 1.1 Configure the ECS Container Repository.
-
-Our sample application preparation will require running several docker commands to create a local image in your computer which we will push into Amazon ECR. The following diagram shows the image creation process:
-
-![Section2 ecr Arch](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-ecr-architecture.png)
-
-To make this process simple for you, we have created a basic application and script to build the container. 
-Complete the instructions as follows to download the application and deploy them to the repository:
+Our baseline resource includes the VPC where our application will be deployed, as well as the Cloud9 IDE environment where we will use to package and deploy our application. Click on the link below to deploy the base resources in your region. Follow the options and whenever possible, take the default values in the options.
 
 {{% notice note %}}
-You can either execute the following commands from your own laptop, or follow the steps using AWS Cloud9. If you are running this from your own machine, please ensure to have `Docker version 18.09.9` or above installed. 
+For simplicity keep the cloudformation stack name as `walab-ops-base-resources`, and take the default values on the others.
 {{% /notice %}}
 
+* **us-west-2** : [here](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)
+* **ap-southeast-2** : [here](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)
+* **ap-southeast-1** : [here](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)
+
+Once the template is deployed, wait until the CloudFormation Stack reached the **CREATE_COMPLETE** state.
+
+![Section1 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-resources-create-complete.png)
+
+
+### 2.0 Run build application script.
+
+Next, we are going to execute the script to build and deploy our application environment
+
   1. From the main console, launch the **Cloud9** service. 
-  2. When you get to the welcome screen, select **Create Environment** as shown here:
+  2. Under **Your environments** section locate an `WellArchitectedOps-walab-ops-base-resources` environment and click **Open IDE**.
 
-      ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-welcome-screen.png)
+      ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-environment-open-ide.png)
 
-  3. Now we will enter naming details for the environment. To do this enter the following into the **name environment** dialog box:
+  3. This will take you into the IDE environment. At first instance, your environment will bootstrap the lab repository, once it is complete you should see a folder called `aws-well-architected-labs` as below. 
+  
+      ![Section 2](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-bootstrap.png)
 
-      * Name: `waopslab-environment`
-      * Description: `Well Architected Operations Lab`
-
-      ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-environment.png)
-
-  4. When you are ready, click on **Next Step** to continue as shown:
-  5. On the **Configure Settings** dialog box, leave defaults and click **Next Step**
-  6. On the **Review** dialog box, click **Create Environment**
-
-      The Cloud9 IDE environment will now build, integrating the AWS command line and all docker components that we require to build out our lab.This step can take a few minutes, so please be patient.
-
-  7. Once our environment is built, you will be greeted with a command prompt to your environment. We will use this to build our application for upload to the repository. Firstly we will need to download the files which contain all of the application dependencies. To do this, run the following command within the **Cloud9 IDE**:
+  4. In the Terminal console run below command.
 
       ```
-      curl -L -o sample_app.zip https://github.com/stephensalim/walabs-opsexcellence-labs/raw/main/sample_app.zip
+      cd aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
+      bash build_application.sh walab-ops-base-resources <youremail@domain.com>
       ```
+        
+{{% notice note %}}
+Change the `<youremail@domain.com>` with your email address.
+This email will be used to receive application notifications.
+{{% /notice %}}
 
-      The command should show the file download as follows:
+  5. The script should then execute to build and deploy the application stack.  Wait until the script is complete, this process should take about 20 mins.
 
-      ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-application-download.png)
+        ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-application-download.png)
 
   8. When you have downloaded the application, unzip it as follows:
 
