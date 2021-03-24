@@ -8,40 +8,42 @@ Parameters:
 
 
 Outputs:
-  OutputLab1ALB:
+  OutputALB:
     Description: Elastic Load Balancer
-    Value: !Ref Lab1ALB
+    Value: !Ref ALB
     Export:
       Name: !Sub "${AWS::StackName}-ALB"
-  OutputLab1KMSKey:
+  OutputKMSKey:
     Description: KMS Key used by app to encrypt / decrypt data
-    Value: !Ref Lab1KMSKey
-  OutputLab1ELBSecurityGroup:
+    Value: !Ref KMSKey
+  OutputELBSecurityGroup:
     Description: Elastic Load Balancer Security Group
-    Value: !Ref Lab1ELBSecurityGroup
+    Value: !Ref ELBSecurityGroup
     Export:
       Name: !Sub "${AWS::StackName}-ELBSecurityGroup"
-  OutputLab1ApplicationEndpoint:
+  OutputApplicationEndpoint:
     Description: Application Endpoint
-    Value: !GetAtt Lab1ALB.DNSName
+    Value: !GetAtt ALB.DNSName
     Export:
       Name: !Sub "${AWS::StackName}-ApplicationEndpoint"
-  OutputLab1ECSTaskRole:
+  OutputECSTaskRole:
     Description: App Task Role ARN
-    Value: !GetAtt Lab1ECSTaskRole.Arn
+    Value: !GetAtt ECSTaskRole.Arn
     Export:
       Name: !Sub "${AWS::StackName}-ApplicationTaskRole"
-
+  OutputCanaryResultsBucket:
+    Description: CanaryResultBucket
+    Value: !Ref ResultsBucket
 
 Resources:
 #----------------------------------------------------------------------------------------
 # Build load balancer.
 #----------------------------------------------------------------------------------------
-  Lab1ALB:
+  ALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       SecurityGroups:
-        - !Ref Lab1ELBSecurityGroup
+        - !Ref ELBSecurityGroup
       Subnets:
         -
           Fn::ImportValue:
@@ -58,7 +60,7 @@ Resources:
         - Key: idle_timeout.timeout_seconds
           Value: 30 
 
-  Lab1ALBTargetGroup:
+  ALBTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       TargetType: ip
@@ -84,20 +86,20 @@ Resources:
         - Key: Application
           Value: "OpsExcellence-Lab"
 
-  Lab1ALBListener:
+  ALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
-      LoadBalancerArn: !Ref Lab1ALB
+      LoadBalancerArn: !Ref ALB
       Port: 80
       Protocol: HTTP
       DefaultActions:
         - Type: forward
-          TargetGroupArn: !Ref Lab1ALBTargetGroup
+          TargetGroupArn: !Ref ALBTargetGroup
 
 #----------------------------------------------------------------------------------------
 # Build load balancer security group.
 #----------------------------------------------------------------------------------------
-  Lab1ELBSecurityGroup:
+  ELBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Enable HTTP from the Internet
@@ -119,10 +121,10 @@ Resources:
 # Build ECS Resources.
 #----------------------------------------------------------------------------------------
 
-  Lab1ContainerSecGroup:
+  ContainerSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: !Join ['', [!Ref 'AWS::StackName', -Lab1ContainerSecGroup]]
+      GroupDescription: !Join ['', [!Ref 'AWS::StackName', -ContainerSecGroup]]
       VpcId:
         Fn::ImportValue:
           !Sub "${BaselineVpcStack}-VpcId"
@@ -130,9 +132,9 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          SourceSecurityGroupId: !Ref Lab1ELBSecurityGroup
+          SourceSecurityGroupId: !Ref ELBSecurityGroup
 
-  Lab1ECSCluster:
+  ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
       CapacityProviders:
@@ -142,11 +144,11 @@ Resources:
         - CapacityProvider: FARGATE
           Weight: 1
 
-  Lab1ECSService:
-    DependsOn: Lab1ALB
+  ECSService:
+    DependsOn: ALB
     Type: AWS::ECS::Service
     Properties:
-      Cluster: !Ref Lab1ECSCluster
+      Cluster: !Ref ECSCluster
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -155,9 +157,9 @@ Resources:
       LoadBalancers:
         - ContainerName: mysecretword-app
           ContainerPort: 80
-          TargetGroupArn: !Ref Lab1ALBTargetGroup
-      TaskDefinition: !Ref Lab1TaskDefinition
-      ServiceName: !Join ['', [!Ref 'AWS::StackName', -Lab1-app-api]]
+          TargetGroupArn: !Ref ALBTargetGroup
+      TaskDefinition: !Ref TaskDefinition
+      ServiceName: !Join ['', [!Ref 'AWS::StackName', --app-api]]
       LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
@@ -168,15 +170,15 @@ Resources:
             - Fn::ImportValue:
                 !Sub "${BaselineVpcStack}-PrivateSubnet2"
           SecurityGroups:
-            - !Ref Lab1ContainerSecGroup
+            - !Ref ContainerSecGroup
 
 
-  Lab1TaskDefinition:
+  TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Join ['', [!Ref 'AWS::StackName', -Lab1-app]]
-      TaskRoleArn: !Ref Lab1ECSTaskRole
-      ExecutionRoleArn: !Ref Lab1ECSTaskExecutionRole
+      Family: !Join ['', [!Ref 'AWS::StackName', --app]]
+      TaskRoleArn: !Ref ECSTaskRole
+      ExecutionRoleArn: !Ref ECSTaskExecutionRole
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
@@ -193,48 +195,48 @@ Resources:
       #   LogConfiguration:
       #     LogDriver: awslogs
       #     Options:
-      #       awslogs-group: !Ref 'Lab1ECSXrayLogsGroup'
+      #       awslogs-group: !Ref 'ECSXrayLogsGroup'
       #       awslogs-region: !Ref 'AWS::Region'
-      #       awslogs-stream-prefix: !Join ['', [!Ref 'AWS::StackName', -Lab1-xraydaemon]]          
+      #       awslogs-stream-prefix: !Join ['', [!Ref 'AWS::StackName', --xraydaemon]]          
       - Name: mysecretword-app
         Essential: 'true'
         Image: !Ref ECRImageURI 
         LogConfiguration:
           LogDriver: awslogs
           Options:
-            awslogs-group: !Ref 'Lab1ECSCloudWatchLogsGroup'
+            awslogs-group: !Ref 'ECSCloudWatchLogsGroup'
             awslogs-region: !Ref 'AWS::Region'
-            awslogs-stream-prefix: !Join ['', [!Ref 'AWS::StackName', -Lab1-app]]
+            awslogs-stream-prefix: !Join ['', [!Ref 'AWS::StackName', --app]]
         Environment:
           - Name: DBHOST
-            Value: !GetAtt Lab1RDS.Endpoint.Address
+            Value: !GetAtt RDS.Endpoint.Address
           - Name: KeyId
-            Value: !Ref Lab1KMSKey
+            Value: !Ref KMSKey
           - NAME: DBSecret
-            Value: !Ref Lab1RDSSecret
+            Value: !Ref RDSSecret
           - NAME: REGION
             Value: !Ref AWS::Region
         PortMappings:
         - ContainerPort: 80
 
 
-  Lab1ECSCloudWatchLogsGroup:
+  ECSCloudWatchLogsGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Join ['', [!Ref 'AWS::StackName', -Lab1-app-loggroup]]
+      LogGroupName: !Join ['', [!Ref 'AWS::StackName', --app-loggroup]]
       RetentionInDays: 365
 
-  Lab1ECSXrayLogsGroup:
+  ECSXrayLogsGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Join ['', [!Ref 'AWS::StackName', -Lab1-xray-loggroup]]
+      LogGroupName: !Join ['', [!Ref 'AWS::StackName', --xray-loggroup]]
       RetentionInDays: 365
 
   #----------------------------------------------------------------------------------------
   # Build ECS IAM Roles.
   #----------------------------------------------------------------------------------------
 
-  Lab1ECSServiceRole:
+  ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -248,10 +250,10 @@ Resources:
       ManagedPolicyArns:
         - 'arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole'
 
-  Lab1ECSTaskRole:
+  ECSTaskRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Join ['', [!Ref 'AWS::StackName', -Lab1ECSTaskRole]]
+      RoleName: !Join ['', [!Ref 'AWS::StackName', -ECSTaskRole]]
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -266,7 +268,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: '*'
-                Resource: !GetAtt Lab1KMSKey.Arn
+                Resource: !GetAtt KMSKey.Arn
         - PolicyName: SMAccess
           PolicyDocument:
             Version: 2012-10-17
@@ -280,7 +282,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: 'logs:*'
-                Resource: !GetAtt Lab1ECSCloudWatchLogsGroup.Arn        
+                Resource: !GetAtt ECSCloudWatchLogsGroup.Arn        
         - PolicyName: Xray
           PolicyDocument:
             Version: 2012-10-17
@@ -290,10 +292,10 @@ Resources:
                 Resource: '*'                    
         ### This needs to be restricted 
 
-  Lab1ECSTaskExecutionRole:
+  ECSTaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Join ['', [!Ref 'AWS::StackName', -Lab1ECSTaskExecutionRole]]
+      RoleName: !Join ['', [!Ref 'AWS::StackName', -ECSTaskExecutionRole]]
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -307,24 +309,24 @@ Resources:
   # Build RDS Instance.
   #----------------------------------------------------------------------------------------
 
-  Lab1RDS:
+  RDS:
     Type: AWS::RDS::DBInstance
     Properties:
       AllocatedStorage: 5
       DBInstanceClass: db.t2.micro
       Engine: MySQL
-      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref Lab1RDSSecret, ':SecretString:username}}' ]]
-      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref Lab1RDSSecret, ':SecretString:password}}' ]]
-      DBSubnetGroupName: !Ref Lab1RDSSubnetGroup
+      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref RDSSecret, ':SecretString:username}}' ]]
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref RDSSecret, ':SecretString:password}}' ]]
+      DBSubnetGroupName: !Ref RDSSubnetGroup
       VPCSecurityGroups: 
-        - !Ref Lab1RDSSecGroup
+        - !Ref RDSSecGroup
       MultiAZ: False
 
 
-  Lab1RDSSecGroup:
+  RDSSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: !Join ['', [!Ref 'AWS::StackName', -Lab1RDSSecGroup]]
+      GroupDescription: !Join ['', [!Ref 'AWS::StackName', -RDSSecGroup]]
       VpcId:
         Fn::ImportValue:
           !Sub "${BaselineVpcStack}-VpcId"
@@ -336,7 +338,7 @@ Resources:
             Fn::ImportValue:
               !Sub "${BaselineVpcStack}-VpcCidrBlock"
 
-  Lab1RDSSubnetGroup:
+  RDSSubnetGroup:
     Type: "AWS::RDS::DBSubnetGroup"
     Properties:
       DBSubnetGroupDescription: "Subnet Group"
@@ -346,7 +348,7 @@ Resources:
         - Fn::ImportValue:
             !Sub "${BaselineVpcStack}-PrivateSubnet2"
 
-  Lab1RDSSecret:
+  RDSSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
       Description: 'This is the secret for my RDS instance'
@@ -360,12 +362,12 @@ Resources:
   # Build Parameter KMS Key
   #----------------------------------------------------------------------------------------
 
-  Lab1KMSKey:
+  KMSKey:
     Type: "AWS::KMS::Key"
     Properties:
       KeyPolicy:
         Version: 2012-10-17
-        Id: key-Lab1-1
+        Id: key--1
         Statement:
           - Sid: Enable IAM User Permissions
             Effect: Allow
@@ -506,7 +508,7 @@ Resources:
           DurationInSeconds: 3600
         RunConfig: 
           TimeoutInSeconds: 60
-          EnvironmentVariables: { "CANARY_ENDPOINT" : !GetAtt Lab1ALB.DNSName }
+          EnvironmentVariables: { "CANARY_ENDPOINT" : !GetAtt ALB.DNSName }
         FailureRetentionPeriod: 30
         SuccessRetentionPeriod: 30
         StartCanaryAfterCreation: true
@@ -516,7 +518,7 @@ Resources:
           - Key: Application
             Value: "OpsExcellence-Lab"
           - Key: TargetEndpoint
-            Value: !GetAtt Lab1ALB.DNSName                
+            Value: !GetAtt ALB.DNSName                
         
   SyntheticsCanaryDurationAlarm:
     Type: AWS::CloudWatch::Alarm
