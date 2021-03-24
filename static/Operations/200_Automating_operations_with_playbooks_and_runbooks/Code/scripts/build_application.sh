@@ -11,7 +11,6 @@ AWS_REGION=$(curl --silent http://169.254.169.254/latest/dynamic/instance-identi
 AWS_ACCOUNT=$(curl --silent http://169.254.169.254/latest/dynamic/instance-identity/document | jq '.accountId' | sed -e 's/^"//' -e 's/"$//')
 RESOURCEID=$(curl --silent http://169.254.169.254/latest/dynamic/instance-identity/document | jq '.instanceId' | sed -e 's/^"//' -e 's/"$//')
 
-aws ec2 describe-tags --filters Name=resource-id,Values=$RESOURCEID Name=tagkey,Values=aws:cloudformation:stack-name
 
 echo '#################################################'
 echo 'Script will deploy application with below details'
@@ -39,7 +38,7 @@ aws cloudformation create-stack --stack-name $ECR_REPONAME \
                                             ParameterKey=ECRImageURI,ParameterValue=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPONAME:$LABEL \
                                             ParameterKey=NotificationEmail,ParameterValue=$EMAIL \
                                 --capabilities CAPABILITY_NAMED_IAM \
-                                --tags Key=Application,Value=$SAMPLE_APPNAME
+                                --tags Key=Application,Value=OpsExcellence-Lab
 
 echo '#########################################'
 echo 'Waiting for Application Stack to complete'

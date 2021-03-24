@@ -36,7 +36,7 @@ Once the template is deployed, wait until the CloudFormation Stack reached the *
 ![Section1 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-resources-create-complete.png)
 
 
-### 2.0 Run build application script.
+### 1.1 Run build application script.
 
 Next, we are going to execute the script to build and deploy our application environment
 
@@ -63,129 +63,15 @@ This email will be used to receive application notifications.
 
   5. The script should then execute to build and deploy the application stack.  Wait until the script is complete, this process should take about 20 mins.
 
-        ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-application-download.png)
+        ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-app-build.png)
 
-  8. When you have downloaded the application, unzip it as follows:
-
-      ```
-      unzip sample_app.zip
-      ```
-
-  Now we will build our application and upload to the repository. We have built a script to help you with this process, which will query the previous CloudFormation stack which you created for the necessary repository information, build an image and then upload to the new repository.
+  6. In the CloudFormation console, you should see a new stack being deployed called `walab-ops-sample-application`, wait until the stack reached **CREATE_COMPLETE** state and proceed to the next step.
   
-  9. Execute the script with the argument of `waopslab-base-vpc` and `v1` as follows:
- 
-        ```
-        ./build-container.sh waopslab-base-vpc v1
-        ```
+      ![Section 2 CreateComplete](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-application-build.png)
 
-  10. Once your command runs successfully, you should be seeing the image being pushed to ECR and URI marked as shown here:
+### 1.2. Confirm Application Status.
 
-      ![Section 2 Cloud9 IDE Application Build](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-cloud9-application-build.png)
-
-
-  {{% notice note %}}
-  Take note of the ECS Image URI produced at the end of the script as we will require it later. This is highlighted in the screenshot above.
-  {{% /notice %}}
-
-  11. Confirm that the ECR repository exists in the ECR console. To do this, launch ECR in your AWS Console. You can then follow this [guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-info.html) to check to your repository as shown:
-
-      ![Section2 Script Output](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-ecr-repo-confirm.png)
-
-
-
-### 1.2 Deploy The Application Stack
-
-Now that we have pushed the docker image into our [Amazon ECR](https://aws.amazon.com/ecr/) repository, we will now deploy it within [Amazon ECS](https://aws.amazon.com/ecs/). 
-
-Our sample application is configured as follows:
-
-* The service will expose a REST API wth **/encrypt** and **/decrypt** action.
-* The **/encrypt** will take an input of a JSON payload with key and value as below `'{"Name":"Bob","Text":"Run your operations as code"}'`
-* The **Name** Key will be the identifier that we will use to store the encrypted value of **Text** Value.
-* The application will then call the [KMS Encrypt API](https://docs.aws.amazon.com/kms/latest/APIReference/API_Encrypt.html) and encrypt it again using a KMS key that we designate. (For simplicity, in this mock app we will be using the same KMS key for every **Name** you put in, ideally you want to use individual key for each name)
-* The encrypted value of **Text** key will then be stored in an [RDS](https://aws.amazon.com/rds/) database, and the app will return a **Encryption Key** value that the user will have to pass on to decrypt the Text later
-* The **decrypt** API will do the reverse, taking the **Encryption Key** you pass to decrypt the text `{"Text":"Run your operations as code"}`
-
-{{% notice note %}}
-**Note:** In this section we will be deploying a CloudFormation Stack which will launch an ECS cluster. If this is the first time you are working with the ECS service, you will need to deploy a service linked role which will be able to assume the IAM role to perform the required activities within your account. To do this, run the following from the command line using appropriate profile flags:
-`aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com `
-
-{{% /notice %}}
-
-Download the application template from [here](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/base_app.yml "Section2 Application template") and deploy according to your preference below.
-
-
-
-{{%expand "Click here for CloudFormation command-line deployment steps"%}}
-
-To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
-
-Execute below command to create the application stack. Ensure that you pass the ECR Image URI you noted at the end of section **1.1** as follows:
-
-
-```
-aws cloudformation create-stack --stack-name waopslab-base-app \
-                                --template-body file://base_app.yml \
-                                --parameters ParameterKey=BaselineVpcStack,ParameterValue=waopslab-base-vpc \
-                                            ParameterKey=ECRImageURI,ParameterValue=<ECR Image URI> \
-                                            ParameterKey=NotificationEmail,ParameterValue=testyser@domain.com \
-                                --capabilities CAPABILITY_NAMED_IAM \
-                                --tags Key=Application,Value=OpsExcellence-Lab
-```
-
-**Note:** Our example below shows sample arguments passed into the command for your reference:
-
-```
-aws cloudformation create-stack --stack-name waopslab-base-app \
-                                --template-body file://base_app.yml \
-                                --parameters ParameterKey=BaselineVpcStack,ParameterValue=waopslab-base-vpc \
-                                            ParameterKey=ECRImageURI,ParameterValue=111111111111.dkr.ecr.region.amazonaws.com/pattern1appcontainerrepository-cu9vft86ml5e:latest \
-                                            ParameterKey=NotificationEmail,ParameterValue=testyser@domain.com \
-                                --capabilities CAPABILITY_NAMED_IAM \
-                                --tags Key=Application,Value=OpsExcellence-Lab
-```
-
-{{% /expand%}}
-
-{{%expand "Click here for CloudFormation console deployment steps"%}}
-
-If you decide to deploy the stack from the console, ensure that you follow below requirements & step:
-
-  1. Follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) for information on how to deploy the cloudformation template via the console.
-
-      Enter the following details into the stack details:
-
-      * Use `waopslab-base-app` as the **Stack Name**.
-      * Use `waopslab-base-vpc` as the **BaselineVpcStack**.
-      * Use the URI which you recorded in the application build as the **ECRImageURI**
-      * Enter an email address you would like to receive notification about this Application as the **NotificationEmail**
-
-      An example would be as follows:
-
-      ![Section2 App Stack Creation](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-application-stack-creation.png)
-
-  2. When you are ready, click **next** to continue.
-  3. On the **Configure Stack Options** place in a Tag with Key `Application` and `OpsExcellence-Lab` for it's value as per screenshot below
-
-      ![Section2 App Stack Tag](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-application-stack-tag.png)
-
-  4. click **Next**
-  5. On the **Review waopslab-base-app** click **Create Stack**.
-
-**Note** Don't forget to tick the **Capabilities** acknowledgement at the bottom of the screen.
-
-{{% /expand%}}
-
-{{% notice note %}}
-**Note:** The application stack has several resources it needs to deploy, the process should take about 10-15 mins to complete.
-Please be patient.
-{{% /notice %}}
-
-
-### 1.3. Confirm Stack Status.
-
-Once the command deployed successfully, go to your [Cloudformation console](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2) to locate the stack named `waopslab-base-app`.
+Once the command deployed successfully, go to your [Cloudformation console](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2) to locate the stack named `walab-ops-sample-application`.
 
   1. Confirm that the stack is in a **'CREATE_COMPLETE'** state. 
   2. Record the following output details as they will be required later:
@@ -202,7 +88,7 @@ Once the command deployed successfully, go to your [Cloudformation console](http
       ![Section2 DNS Output](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-email-confirm.png)
 
 
-### 1.4. Test the Application launched.
+### 1.3. Test the Application launched.
 
 In this part of the Lab, we will be testing the encrypt API of the sample application we just deployed. Our application will basically take a JSON payload with `Name` and `Text` key, and it will encrypt the value under text key with a designated KMS key. Once the text is encrypted, it will store the encrypted text in the RDS database with the `Name` as the primary key.
 
