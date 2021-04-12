@@ -6,22 +6,21 @@ weight: 1
 pre: "<b>1. </b>"
 ---
 
-In this section, we are going to prepare our sample application API. The application is essentially an API that hosted inside docker containers orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/) with [Application Load Balancer]() fronting it. The API will **encrypt** / **decrypt** a secret message that the user pass on.  
+Before we begin with our playbook, we are going to prepare our sample application. The application is essentially an API that hosted inside docker containers orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/) with [Application Load Balancer]() fronting it. The API will take 2 action that you can trigger by dong a POST call to the **/encrypt** / **/decrypt** URI of the application api. 
 
 * The **encrypt** action will allow the user to pass on a secret message along with it's key identifier, and it will return a secret key id that they can use to decrypt.
 * The **decrypt** action will allow the user to pass the key identifier along with the secret key id to obtain the secret message encrypted before. 
 
-Both actions will subsequently make a write and read call to the RDS database where the encrypted messages are being stored. 
+Both actions will subsequently make a write and read call to the application database hosted in RDS, where the encrypted messages are being stored. 
 
-To simplify the application provisioning process, we have created a script you can execute. Please follow below steps to prepare the Cloud9 workspace and execute the script to build our application.
+To simplify the application provisioning process, we have created a script you can execute. Please follow below steps to prepare the Cloud9 workspace and execute the script to build our application. When our application stack is completed, our architecture will look like this:
 
-When our application stack is completed, our architecture will look like this:
 ![Section1 App Arch](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-application.png)
 
 
 ### 1.0 Deploy baseline resources.
 
-Our baseline resource includes the VPC where our application will be deployed, as well as the Cloud9 IDE environment where we will use to package and deploy our application. Click on the link below to deploy the base resources in your region. Follow the options and whenever possible, take the default values in the options.
+Our baseline resource includes the VPC where our application will be deployed, as well as the Cloud9 IDE environment where we will use to package and deploy our application. Click on the link below to deploy the base resources in your region. Follow the options and whenever possible, take the default values.
 
 {{% notice note %}}
 For simplicity keep the cloudformation stack name as `walab-ops-base-resources`, and take the default values on the others.
@@ -67,7 +66,7 @@ This email will be used to receive application notifications.
 
   6. In the CloudFormation console, you should see a new stack being deployed called `walab-ops-sample-application`, wait until the stack reached **CREATE_COMPLETE** state and proceed to the next step.
   
-      ![Section 2 CreateComplete](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-app-creatte-complete.png)
+      ![Section 2 CreateComplete](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-app-create-complete.png)
 
 ### 1.2. Confirm Application Status.
 
@@ -124,8 +123,10 @@ If the the application is functioning as it should, then you should see response
 {"Text":"Run your operations as code"}
 ```
 
+Congratulations ! You have completed the first section of the Lab.
+We now have an application API we can use throughout the remaining sections in this lab.
 
-This completes **section 2** of the lab. Proceed to **section 3** to continue with the lab.
+This completes **section 2** of the lab. Please proceed to **section 3** and continue with the lab.
 
 {{< prev_next_button link_prev_url="..//" link_next_url="../2_simulate_application_issue/" />}}
 

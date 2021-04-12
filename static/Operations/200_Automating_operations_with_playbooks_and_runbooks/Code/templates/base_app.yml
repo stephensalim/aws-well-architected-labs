@@ -504,9 +504,9 @@ Resources:
         RuntimeVersion: syn-nodejs-puppeteer-3.0
         Schedule: 
           Expression: 'rate(1 minute)'
-          DurationInSeconds: 3600
+          DurationInSeconds: 0
         RunConfig: 
-          TimeoutInSeconds: 60
+          TimeoutInSeconds: 6
           EnvironmentVariables: { "CANARY_ENDPOINT" : !GetAtt ALB.DNSName }
         FailureRetentionPeriod: 30
         SuccessRetentionPeriod: 30
@@ -526,7 +526,7 @@ Resources:
       AlarmName: mysecretword-canary-duation-alarm
       AlarmActions:
         - !Ref SyntheticsCanarySNSTopic      
-      ComparisonOperator: GreaterThanThreshold
+      ComparisonOperator: LessThanThreshold
       EvaluationPeriods: 1
       Dimensions:
         - Name: CanaryName
@@ -534,10 +534,10 @@ Resources:
         - Name: StepName
           Value: Verify       
       Namespace: "CloudWatchSynthetics"
-      MetricName: "Duration"
+      MetricName: "SuccessPercent"
       Period: 60
       Statistic: Average
-      Threshold: 6000
+      Threshold: 100
       TreatMissingData: ignore
 
   SyntheticsCanarySNSTopic:

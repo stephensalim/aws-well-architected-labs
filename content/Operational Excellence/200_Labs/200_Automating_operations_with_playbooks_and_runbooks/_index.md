@@ -14,11 +14,13 @@ hidden: false
  
 This hands-on lab will guide you through the steps to automate your operational activities using [Playbook](https://wa.aws.amazon.com/wat.concept.playbook.en.html) and [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) built with AWS tools.
 
-At a glance, both Playbook and Runbooks appears to be similar documents any adequately skilled team members (who are unfamiliar with the workload) can use to execute operational activities. However, the main difference between them is that; a Playbook is intended to document the process /guide to gather applicable information, identify potential sources of failure, isolate faults, and determine root cause of issues. Runbooks contain instructions necessary to successfully complete an activity to resolve the issue. 
+At a glance, both Playbook and Runbooks appears to be similar documents that any adequately skilled team members (who are unfamiliar with the workload) can use to execute operational activities. However, there an essential difference between them. 
 
-Executing both Playbook and Runbook in an automated fashion is also to achieve operational excellence for your workload. Isolating human element and streamlining the process will make significant impact in the reliability, scalability, traceability of your operations.  
+A [Playbook](https://wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/wat.concept.playbook.en.html) intends to document the process /guide to gather applicable information, identify potential sources of failure, isolate faults, and determine root cause of issues, [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html)  on the other hand contain instructions necessary to successfully complete an activity to resolve the issue. 
 
-In the next few sections of this lab, we will show how you can build an automated Playbook and Runbook to investigate and remediate the issue using a few AWS services.
+In any case, at a certain scale, executing either [Playbook](https://wa.aws.amazon.com/wat.concept.playbook.en.html) / [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) activities manually, is not going to be adequate.  Organization, and Operation teams will have to start looking into streamlining Playbook and Runbook process through automation. Isolating human element from the process will have significant impact to the reliability, scalability, traceability of the workloads operational posture.
+
+In the next few sections of this lab, we will show how you can build an automated [Playbook](https://wa.aws.amazon.com/wat.concept.playbook.en.html) and [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) to investigate and remediate application issue using a few AWS services.
 
 Services we will utilize in this lab includes.
 

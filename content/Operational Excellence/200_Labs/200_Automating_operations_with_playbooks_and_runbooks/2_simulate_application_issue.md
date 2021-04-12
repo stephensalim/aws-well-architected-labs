@@ -6,12 +6,16 @@ weight: 2
 pre: "<b>2. </b>"
 ---
 
-In the previous section we have built a sample vpc environment with a deployed our application API running in it. 
-In this section we will simulate a performance issue to trigger an alarm notifying our the operations team about the founded issue. In our scenario today we will assume a hypothetical API response SLA of under 6 seconds, if API response takes longer than 6 seconds broader user experience is severely impacted, and our Operations team needs to response to this. 
+Being able to understand the health of your workload is essential in building a reliable operational practice for your workload. To do this, you need to adopt the appropriate monitoring tool to gain visibility and analyze your workload state, along with defining the right metric based on identified key performance indicator. This will create an opportunity you to streamline it with automatic detection and alerting that will allow you to detect issue or potential issue early and react promptly to remediate.
 
-To detect this response time, we have deployed a canary monitoring using [CloudWatch Synthetics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html) to continuously check the application response time and trigger a CloudWatch alarm when response time is gone above the SLA.  
+In the previous section, we have deployed sample application API running within in a VPC. Now, in this section we will simulate a performance issue and trigger an alarm notifying our the operations team. In our scenario thr SLA for our API response is defined to be under 6 seconds, if out API response takes longer than 6 seconds broader user experience is severely impacted, hence our operations team needs to be alerted to response to this. 
 
-The resources needed for this section is already deployed along with the cloudformation template of your application in previous section. to proceed with this section, please ensure you have completed Section 2 of this lab.
+To do this we want to continuously monitor our API, and emulate what our customer experience in our API.
+We can do this by deploying a Canary monitor using [CloudWatch Synthetics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html) to continuously check the API response time. If the duration of the check is taking longer than our defined SLA, we will trigger a CloudWatch alarm that will in turn send notification to our Operation team..  
+
+The resources needed for this section is already deployed along with the cloudformation template of your application in previous section. But please follow along below instructions to simulate the API issue and gain understanding on what happen 
+
+To proceed with this section, please ensure you have completed Section 2 of this lab.
 
 ![Section3 Base Architecture](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-testing-canary-alarm-architecture.png)
 
@@ -19,15 +23,19 @@ The resources needed for this section is already deployed along with the cloudfo
 
 In this part of the lab we will be sending multiple concurrent requests to the application to simulate large incoming traffic. This is intended to overwhelm the service, and as time goes, response time to the application will become slower thus, setting of the CloudWatch Alarm that will notify our Operations team via email.
 
-From the cloud9 do the following
+From the cloud9 terminal do the following :
 
-Confirm that you have the `test.json` in your working folder that contains this text.
+```
+cd aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
+```
+
+Confirm that you have the `test.json` in the above folder that contains this text.
 
 ```
 {"Name":"Test User","Text":"This Message is a Test!"}
 ```
 
-Execute below command.
+Once that's confirmed execute below command.
 
 ```
 ALBURL="< Application Endpoint URL captured from section 2>"

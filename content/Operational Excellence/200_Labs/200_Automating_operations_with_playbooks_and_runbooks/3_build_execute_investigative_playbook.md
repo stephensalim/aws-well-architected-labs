@@ -21,12 +21,14 @@ So, in this section we will focus on how we can troubleshoot the issue with our 
 Instructions to be added
 ### 4.1 Building the "Gather-Resources" Playbook.
 
-As an administrator / engineer, before we even investigate anything in the application, we need to know what are the services / components involved. When we receive the alarm from cloudwatch in the inbox, the information presented does not contain straight away these components / services involved. So the first thing we need to do is to build a playbook step to acquire all the related resources using information tha tis contained in the alarm. please follow below steps to continue.
+As an administrator / engineer, before we even investigate anything in the application, we need to know what are the services / components involved. When we receive the alarm from cloudwatch in the inbox, the information presented does not contain straight away these components / services involved. So the first thing we need to do is to build a playbook step to acquire all the related resources using information tha is contained in the alarm. 
+
+When creating a playbook code or any code in general, re-usability is something that is very important to consider early on. By codifying your playbook, you are enabling the playbook document to be created once and to be executed in multiple different context, this will prevents your operation engineer having to re-write codes that has identical objectives.   
+
+Please follow below steps to continue.
 
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-architecture-graphics1.png)
-
-
 
 
 {{% notice note %}}
@@ -62,7 +64,7 @@ Example:
 
 ```
 aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
-                                --parameters ParameterKey=arn:aws:iam::000000000000:role/xxxx-playbook-role \
+                                --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/xxxx-playbook-role \
                                 --template-body file://playbook_gather_resources.yml 
 ```
 
@@ -305,7 +307,7 @@ Example:
 
 ```
 aws cloudformation create-stack --stack-name waopslab-playbook-investigate-resources \
-                                --parameters ParameterKey=arn:aws:iam::000000000000:role/xxxx-playbook-role \
+                                --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/xxxx-playbook-role \
                                 --template-body file://playbook_investigate_application_resources.yml 
 ```
 
