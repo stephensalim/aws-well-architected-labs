@@ -202,13 +202,14 @@ Resources:
     Properties:
       RepositoryName: walab-ops-sample-application
 
-
   Cloud9:
     Type: AWS::Cloud9::EnvironmentEC2
     Properties:
       AutomaticStopTimeMinutes: 30
       Description: Well Architected Operational Excellence lab workspace
       InstanceType: t2.micro
+      ConnectionType: CONNECT_SSM
+      ImageId: amazonlinux-2-x86_64
       Name: !Sub "WellArchitectedOps-${AWS::StackName}"
       Repositories:
         - PathComponent: /aws-well-architected-labs

@@ -377,7 +377,7 @@ Example:
 
 ```
 aws cloudformation create-stack --stack-name waopslab-playbook-investigate-application \
-                                --parameters ParameterKey=arn:aws:iam::000000000000:role/xxxx-playbook-role \
+                                --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/xxxx-playbook-role \
                                 --template-body file://playbook_investigate_application.yml 
 ```
 

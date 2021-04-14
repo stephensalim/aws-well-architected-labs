@@ -57,18 +57,18 @@ Resources:
           Value: "OpsExcellence-Lab"
       LoadBalancerAttributes:
         - Key: idle_timeout.timeout_seconds
-          Value: 30 
+          Value: 30
 
   ALBTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       TargetType: ip
       HealthCheckEnabled: True
-      HealthCheckIntervalSeconds: 30
+      HealthCheckIntervalSeconds: 60
       HealthCheckPath: /
       HealthCheckPort: 80
       HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 5
+      HealthCheckTimeoutSeconds: 30
       HealthyThresholdCount: 3
       UnhealthyThresholdCount: 5
       TargetGroupAttributes:
@@ -184,19 +184,6 @@ Resources:
       Cpu: 256
       Memory: 0.5GB
       ContainerDefinitions:
-      # - Name: xray-daemon
-      #   Image: amazon/aws-xray-daemon
-      #   Cpu: 32
-      #   Memory: 256
-      #   PortMappings:
-      #   - ContainerPort: 2000
-      #     Protocol: 'udp'
-      #   LogConfiguration:
-      #     LogDriver: awslogs
-      #     Options:
-      #       awslogs-group: !Ref 'ECSXrayLogsGroup'
-      #       awslogs-region: !Ref 'AWS::Region'
-      #       awslogs-stream-prefix: !Join ['', [!Ref 'AWS::StackName', --xraydaemon]]          
       - Name: mysecretword-app
         Essential: 'true'
         Image: !Ref ECRImageURI 
@@ -435,6 +422,7 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
+    DeletionPolicy: Retain          
 
   SyntheticsCanary:
     Type: 'AWS::Synthetics::Canary'
@@ -506,7 +494,7 @@ Resources:
           Expression: 'rate(1 minute)'
           DurationInSeconds: 0
         RunConfig: 
-          TimeoutInSeconds: 6
+          TimeoutInSeconds: 60
           EnvironmentVariables: { "CANARY_ENDPOINT" : !GetAtt ALB.DNSName }
         FailureRetentionPeriod: 30
         SuccessRetentionPeriod: 30
@@ -526,18 +514,19 @@ Resources:
       AlarmName: mysecretword-canary-duation-alarm
       AlarmActions:
         - !Ref SyntheticsCanarySNSTopic      
-      ComparisonOperator: LessThanThreshold
-      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold 
+      EvaluationPeriods: 12
+      DatapointsToAlarm: 3
       Dimensions:
         - Name: CanaryName
           Value: mysecretword-canary
         - Name: StepName
           Value: Verify       
       Namespace: "CloudWatchSynthetics"
-      MetricName: "SuccessPercent"
-      Period: 60
+      MetricName: "Duration"
+      Period: 30
       Statistic: Average
-      Threshold: 100
+      Threshold: 5000
       TreatMissingData: ignore
 
   SyntheticsCanarySNSTopic:

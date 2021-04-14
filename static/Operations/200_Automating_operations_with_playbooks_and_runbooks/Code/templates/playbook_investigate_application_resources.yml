@@ -473,9 +473,9 @@ Resources:
                 response = cwclient.get_metric_statistics(
                   Namespace='AWS/ECS',
                   MetricName=metricname,
-                  StartTime=datetime.now() - timedelta(minutes=5),
+                  StartTime=datetime.now() - timedelta(minutes=6),
                   EndTime=datetime.now(),
-                  Period=60,      
+                  Period=1,      
                   Dimensions=[
                       {
                           'Name':'ServiceName',
@@ -494,7 +494,7 @@ Resources:
                 if len(response['Datapoints']) > 0:
                   for i in response['Datapoints']:
                     x.append(i[stat])
-                    result['OverallValue'] = cal_average(x)
+                  result['OverallValue'] = cal_average(x)
                 else:
                   result['OverallValue'] = None
                 result['Statistics'] = stat

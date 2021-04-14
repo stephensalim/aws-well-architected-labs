@@ -26,7 +26,7 @@ In this part of the lab we will be sending multiple concurrent requests to the a
 From the cloud9 terminal do the following :
 
 ```
-cd aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
+cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/src/
 ```
 
 Confirm that you have the `test.json` in the above folder that contains this text.
@@ -35,10 +35,20 @@ Confirm that you have the `test.json` in the above folder that contains this tex
 {"Name":"Test User","Text":"This Message is a Test!"}
 ```
 
-Once that's confirmed execute below command.
+
+
+Once that's confirmed go to cloudformation console, and take note of the **OutputApplicationEndpoint** value under Output tab of `walab-ops-sample-application` stack. Then paste the value into the command below.
+
+![Section3 Succces Screenshot](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-stackoutput.png)
+
 
 ```
-ALBURL="< Application Endpoint URL captured from section 2>"
+ALBURL="< OutputApplicationEndpoint value you copied before>"
+```
+
+Then this command below
+
+```
 ab -p test.json -T application/json -c 4000 -n 10000000 -v 4 http://$ALBURL/encrypt 
 ```
 

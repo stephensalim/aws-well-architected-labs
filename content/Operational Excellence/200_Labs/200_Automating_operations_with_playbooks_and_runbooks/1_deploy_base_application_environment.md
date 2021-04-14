@@ -51,9 +51,15 @@ Next, we are going to execute the script to build and deploy our application env
   4. In the Terminal console run below command.
 
       ```
-      cd aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
+      cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
+      ```
+
+        Then paste in below command replacing `<youremail@domain.com>` with the email address you would like the application to notify you with.
+
+      ```
       bash build_application.sh walab-ops-base-resources <youremail@domain.com>
       ```
+
         
 {{% notice note %}}
 Change the `<youremail@domain.com>` with your email address.
