@@ -67,8 +67,11 @@ Keep the command running in the background and proceed to the next step.
 
 ### 3.2 Observing the alarm being triggered.
 
-After approximately 1-3 minutes you should now see an alarm being triggered.
-You can check this by going to the Cloudwatch console, and click on the Alarms section on the left menu.
+After approximately 6 minutes you should now see an alarm being triggered, and if you've confirmed subscription on the SNS topic, you should be seeing an email being generated as below, indicating the CloudWatch alarm that has been triggered.
+
+![Section3 Email](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-email.png)
+ 
+You can check alarm this by going to the Cloudwatch console, and click on the Alarms section on the left menu.
 Click on the Alarms called `mysecretword-canary-duation-alarm` that should currently be in an Alarm State.
 
 ![Section3 Failure Screenshot](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-alarm.png)
@@ -87,6 +90,8 @@ Monitoring application health, can be done from multiple angles, system / applic
 
 This is why in this scenario a canary is implemented to regularly call and check the health of the API from it's external endpoint using [ CloudWatch synthetics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html)
 
+
+
 To look at the Canary configuration, go to CloudWatch Console, and click on **Synthetics** and **Canaries** on the left menu. Locate and click the Canary called `mysecret-canary` 
 
 ![Section3 Canary](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-canary.png)
@@ -100,9 +105,6 @@ And under **Monitoring** tab you will be able to see a visualization of the Dura
 
 ![Section3 Canary](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-canary-monitor.png)
 
-Now that we have successfully triggered the Alarm, you should also see that an email arriving in your mailbox notifying about the Alarm.
-
-![Section3 Email](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-email.png)
 
 This concludes **Section 2** of this lab. 
 With this section concluded we have simulated a large incoming traffic to our application API overwhelming the application, causing the API to response slowly and occasionally timed out. In a real operational scenario, this scenario would trigger an incident notification alerting the operations team to take action.

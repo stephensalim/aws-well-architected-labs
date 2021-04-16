@@ -18,15 +18,15 @@ There are various different tools you can use to build an automated playbook, an
 In this part of the lab we will focus on how we build an automated playbook to help troubleshoot the issue with our API.
 Please follow below steps to continue.
 
-### 3.0 Prepare Playbook IAM Role
+### 3.0 Prepare Automation Document IAM Role
 
 The Systems Manager Automation Document we are building will require to assume a permission to executes the investigative / remediation steps. For this we will need to create an IAM role to assume permission allowed to conduct these playbook. To simplify the deployment process, we have created a cloudformation template that you can deploy via the console or aws cli.
 Please choose one of below deployment step
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
-  1. Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/playbook_role.yml "Resources template")
+  1. Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/automation_role.yml "Resources template")
   2. Please follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) for information on how to deploy the cloudformation template.
-  3. Use `waopslab-playbook-role` as the **Stack Name**, as this is referenced by other stacks later in the lab.
+  3. Use `waopslab-automation-role` as the **Stack Name**, as this is referenced by other stacks later in the lab.
 
 {{%/expand%}}
 
@@ -44,6 +44,7 @@ Then execute below command :
 
 ```
 aws cloudformation create-stack --stack-name waopslab-playbook-role \
+                                --capabilities CAPABILITY_NAMED_IAM \
                                 --template-body file://playbook_role.yml 
 ```
 

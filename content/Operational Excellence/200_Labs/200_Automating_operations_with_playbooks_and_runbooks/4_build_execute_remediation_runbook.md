@@ -18,47 +18,7 @@ That said, scaling up the service directly as such, may not be suitable as a lon
 **Note:** In the post-mortem review of the event, the team should decide on what is the next course of action they should take to implement a more long term solution, such as implementing Automatic Scaling in the ECS Cluster (This will be discussed further in the next Lab )
 {{% /notice %}}
 
-### 4.0 Prepare Runbook IAM Role
-
-The Systems Manager Automation Document we are building will require to assume a permission to executes the remediation steps. For this we will need to create an IAM role to assume permission allowed to conduct these playbook. To simplify the deployment process, we have created a cloudformation template that you can deploy via the console or aws cli.
-Please choose one of below deployment step
-
-{{%expand "Click here for CloudFormation Console deployment step"%}}
-  1. Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/runbook_role.yml "Resources template")
-  2. Please follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) for information on how to deploy the cloudformation template.
-  3. Use `waopslab-runbook-role` as the **Stack Name**, as this is referenced by other stacks later in the lab.
-{{%/expand%}}
-
-{{%expand "Click here for CloudFormation CLI deployment step"%}}
-
-**Note:** To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
-
-In the Cloud9 terminal go to the templates folder using the following command.
-
-```
-cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
-```
-
-Then execute below command :
-
-```
-aws cloudformation create-stack --stack-name waopslab-runbook-role \
-                                --template-body file://runbook_role.yml 
-```
-
-Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
-
-```
-aws cloudformation describe-stacks --stack-name waopslab-runbook-role
-```
-
-Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
-{{%/expand%}}
-
-Once you have deployed the cloudformation stack, you should be able to see an IAM role named **RunbookRole** in the IAM console.
-Now that we have the IAM role, let's move on to next step to create the actual playbook.
-
-### 4.1 Building the "Approval-Gate" Runbooks.
+### 4.0 Building the "Approval-Gate" Runbooks.
 
 As mentioned in previous section, when building your playbook or runbooks, repeatability is very important. You want avoid repeating the same effort of writing / building mechanism if it could be re-used for other things in the future.
 
@@ -229,7 +189,7 @@ aws cloudformation describe-stacks --stack-name waopslab-runbook-approval-gate
 Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
 {{%/expand%}}
 
-### 4.2 Building the "ECS-Scale-Up" runbook.
+### 4.1 Building the "ECS-Scale-Up" runbook.
 
 Now that we've created a repeatable auto approval mechanism ( with automatic approval timer), let's go ahead and use it in our runbook to scape our ECS service. 
 
@@ -354,7 +314,7 @@ aws cloudformation describe-stacks --stack-name waopslab-runbook-scale-ecs-servi
 Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
 {{%/expand%}}
 
-### 4.3 Executing remediation Runbook.
+### 4.2 Executing remediation Runbook.
 
 Now that we have built our runbook to Investigate this issue, lets execute this runbook while our traffic simulation is running, to see what impact this will have to our application the application. 
 
@@ -385,7 +345,7 @@ Now that we have built our runbook to Investigate this issue, lets execute this 
   8. Once the service is scaled up, you should be seeing the API response time back to normal, and the Alarm gone back to OK state.
 
 
-This concludes **Section 5** of this lab, click on the link below to move on to the next section.
+This concludes **Section 6** of this lab, click on the link below to move on to the next section.
 {{< prev_next_button link_prev_url="../3_build_execute_investigative_playbook/" link_next_url="../5_cleanup/" />}}
 
 
