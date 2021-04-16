@@ -6,23 +6,77 @@ weight: 4
 pre: "<b>4. </b>"
 ---
 
-In the previous section, we have built an automated playbook to investigate the application environment. The output the playbook gathered allows us to come up with a conclusion on the cause of the issue, and for us to decide the next course of action.
+In the previous section, we've built an automated playbook to investigate the application environment. The output the playbook investigation allows us to come up with the next course of action to of remediation.
 
-In this section we will build an automated [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) to scale up the application cluster. The runbook will also send a notification for systems owner to give them the chance to intervene should they do not want this to go ahead.
+Hence in this section, we will build an automated [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html). To scale up the application cluster. A runbook are a pre-defined procedures for a well understood events to achieve a specific outcome. 
 
-### 5.0 Prepare playbook IAM Role & SNS Topic
+In this scenario, it is visible that the the ECS service CPU was very high, and that there is not enough ECS task running in the service to serve incoming requests. This is understood, and the immediate course of action to remediate it is to increase the number of Task, scaling up the service to mee the demand. 
 
-Instructions to be added
+That said, scaling up the service directly as such, may not be suitable as a long term solution into the fix. Therefore it is important to make that clear to the owner of the workload, and to give them the options to intervene. The runbook will also send a notification for systems owner to give them the chance to intervene should they do not want this to go ahead.
 
-### 5.1 Building the "Approval-Gate" Runbooks.
+{{% notice note %}}
+**Note:** In the post-mortem review of the event, the team should decide on what is the next course of action they should take to implement a more long term solution, such as implementing Automatic Scaling in the ECS Cluster (This will be discussed further in the next Lab )
+{{% /notice %}}
 
-When building your playbook or runbooks, repeatability is very important. You do not want to repeat the same effort of writing / building same mechanism if it could be re-used for other things in the future.
+### 4.0 Prepare Runbook IAM Role
+
+The Systems Manager Automation Document we are building will require to assume a permission to executes the remediation steps. For this we will need to create an IAM role to assume permission allowed to conduct these playbook. To simplify the deployment process, we have created a cloudformation template that you can deploy via the console or aws cli.
+Please choose one of below deployment step
+
+{{%expand "Click here for CloudFormation Console deployment step"%}}
+  1. Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/runbook_role.yml "Resources template")
+  2. Please follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) for information on how to deploy the cloudformation template.
+  3. Use `waopslab-runbook-role` as the **Stack Name**, as this is referenced by other stacks later in the lab.
+{{%/expand%}}
+
+{{%expand "Click here for CloudFormation CLI deployment step"%}}
+
+**Note:** To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
+
+In the Cloud9 terminal go to the templates folder using the following command.
+
+```
+cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
+```
+
+Then execute below command :
+
+```
+aws cloudformation create-stack --stack-name waopslab-runbook-role \
+                                --template-body file://runbook_role.yml 
+```
+
+Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
+
+```
+aws cloudformation describe-stacks --stack-name waopslab-runbook-role
+```
+
+Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
+{{%/expand%}}
+
+Once you have deployed the cloudformation stack, you should be able to see an IAM role named **RunbookRole** in the IAM console.
+Now that we have the IAM role, let's move on to next step to create the actual playbook.
+
+### 4.1 Building the "Approval-Gate" Runbooks.
+
+As mentioned in previous section, when building your playbook or runbooks, repeatability is very important. You want avoid repeating the same effort of writing / building mechanism if it could be re-used for other things in the future.
 
 As described above, our runbook will need an approval mechanism, our approval will wait for a certain amount of time, to give an opportunity for the approver to trigger a deny. When the time lapsed, execution will continue.
 
   ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation-graphics1.png)
 
-Please follow below steps to build the runbook.
+The way we achieve this is described below :
+
+1. First, we execute a separate runbook called `Approve-Timer`. This runbook will wait for a designated amount of time that we specify. When the wait time lapse, `Approve-Timer` runbook will automatically send an Approval signal to the gate.
+
+2. Secondly, we will then send the Approval request to the owner via the SNS topic designated for them. 
+
+    If they choose to approve, the runbook will continue to the next step (which we will define later). At the same time, if the approval is ignored, the `Approve-Timer` runbook will automatically approve the request.
+
+    Alternatively, if they choose to deny then the step in the runbook will fail, blocking any further steps that we will decide later.
+
+Please go ahead and follow below steps to build this runbook.
 
 {{% notice note %}}
 **Note:** For the following step to build and execute the runbook. You can follow a step by step guide via AWS console or you can deploy a cloudformation template to build the runbook.
@@ -142,7 +196,11 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%expand "Click here for CloudFormation CLI deployment step"%}}
 
-Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/runbook_approval_gate.yml "Resources template")
+In the Cloud9 terminal go to the templates folder using the following command.
+
+```
+cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
+```
 
 
 To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
@@ -156,7 +214,7 @@ Example:
 
 ```
 aws cloudformation create-stack --stack-name waopslab-runbook-approval-gate \
-                                --parameters ParameterKey=arn:aws:iam::000000000000:role/xxxx-playbook-role \
+                                --parameters ParameterKey=arn:aws:iam::000000000000:role/xxxx-runbook-role \
                                 --template-body file://runbook_approval_gate.yml 
 ```
 
@@ -171,13 +229,20 @@ aws cloudformation describe-stacks --stack-name waopslab-runbook-approval-gate
 Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
 {{%/expand%}}
 
-### 5.2 Building the "ECS-Scale-Up" runbook.
+### 4.2 Building the "ECS-Scale-Up" runbook.
 
-Now that we have created the repeatable approval mechanism, we can now use it in our runbook for scaling up our ECS service. 
+Now that we've created a repeatable auto approval mechanism ( with automatic approval timer), let's go ahead and use it in our runbook to scape our ECS service. 
 
   ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation-graphics2.png)
 
+
+Our next runbook will do the following :
+
+1. Execute the `Approval-Gate` runbook we created in previous step, and the mechanism described previously will follow. 
+2. If the `Approval-Gate` returns successful, then we will execute the next step to increase the number of ECS service by our defined task to meet the immediate demand.
+
 Please follow below steps to build the runbook.
+
 
 {{% notice note %}}
 **Note:** For the following step to build and execute the runbook. You can follow a step by step guide via AWS console or you can deploy a cloudformation template to build the runbook.
@@ -289,7 +354,7 @@ aws cloudformation describe-stacks --stack-name waopslab-runbook-scale-ecs-servi
 Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
 {{%/expand%}}
 
-### 5.3 Executing remediation Runbook.
+### 4.3 Executing remediation Runbook.
 
 Now that we have built our runbook to Investigate this issue, lets execute this runbook while our traffic simulation is running, to see what impact this will have to our application the application. 
 
@@ -297,8 +362,12 @@ Now that we have built our runbook to Investigate this issue, lets execute this 
 
   ```
   ALBURL="< Application Endpoint URL captured from section 2>"
+  ```
+  
+  ```
   ab -p test.json -T application/json -c 3000 -n 60000000 -v 4 http://$ALBURL/encrypt
   ```
+
   Leave it running for about 2-3 minutes, and wait until the notification email from the alarm arrives.
   
   2. Once the alarm notification email arrived, confirm in cloudwatch console that the Alarm is currently on 'Alarm State'.

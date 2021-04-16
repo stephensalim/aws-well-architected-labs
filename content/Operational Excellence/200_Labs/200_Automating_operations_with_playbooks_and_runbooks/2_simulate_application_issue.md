@@ -104,11 +104,10 @@ Now that we have successfully triggered the Alarm, you should also see that an e
 
 ![Section3 Email](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-email.png)
 
-This concludes **Section 3** of this lab. With this section concluded we have simulated a large incoming traffic to our application API overwhelming the application, causing the API to response slowly and occasionally timed out. 
+This concludes **Section 2** of this lab. 
+With this section concluded we have simulated a large incoming traffic to our application API overwhelming the application, causing the API to response slowly and occasionally timed out. In a real operational scenario, this scenario would trigger an incident notification alerting the operations team to take action.
 
-In a real operational environment, this scenario would trigger an incident notification, alerting the operations team to take action.
-
-So now,let's proceed to the next Section of this lab, where we will be building the Automated playbook to investigate issue in the application. 
+So now,let's proceed to the next Section, where we will be building the Automated playbook to investigate issue in the application. 
 
 {{< prev_next_button link_prev_url="../2_configure_ecs_repository_and_deploy_application_stack/" link_next_url="../3_build_execute_investigative_playbook/" />}}
 

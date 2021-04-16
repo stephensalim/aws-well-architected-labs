@@ -513,7 +513,7 @@ Resources:
       AlarmDescription: Canary Alarm for My Secret Word
       AlarmName: mysecretword-canary-duation-alarm
       AlarmActions:
-        - !Ref SyntheticsCanarySNSTopic      
+        - !Ref SystemOpsNotificationTopic
       ComparisonOperator: GreaterThanOrEqualToThreshold 
       EvaluationPeriods: 12
       DatapointsToAlarm: 3
@@ -529,7 +529,7 @@ Resources:
       Threshold: 5000
       TreatMissingData: ignore
 
-  SyntheticsCanarySNSTopic:
+  SystemOpsNotificationTopic:
     Type: AWS::SNS::Topic
     Properties: 
       Subscription: 
