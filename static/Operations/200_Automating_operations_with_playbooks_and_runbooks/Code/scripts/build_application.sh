@@ -4,7 +4,8 @@ LABEL='latest'
 ECR_REPONAME='walab-ops-sample-application'
 SAMPLE_APPNAME=$ECR_REPONAME
 MAIN_STACK='walab-ops-base-resources'
-EMAIL=$2
+SYSOPSEMAIL=$1
+SYSOWNEREMAIL=$2
 
 sudo yum install jq -y -q
 AWS_REGION=$(curl --silent http://169.254.169.254/latest/dynamic/instance-identity/document | jq '.region' | sed -e 's/^"//' -e 's/"$//')
@@ -36,7 +37,8 @@ aws cloudformation create-stack --stack-name $ECR_REPONAME \
                                 --template-body file://../templates/base_app.yml \
                                 --parameters ParameterKey=BaselineVpcStack,ParameterValue=$MAIN_STACK \
                                             ParameterKey=ECRImageURI,ParameterValue=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPONAME:$LABEL \
-                                            ParameterKey=NotificationEmail,ParameterValue=$EMAIL \
+                                            ParameterKey=SystemOpsNotificationEmail,ParameterValue=$SYSOPSEMAIL \
+                                            ParameterKey=SystemOwnerNotificationEmail,ParameterValue=$SYSOWNEREMAIL \
                                 --capabilities CAPABILITY_NAMED_IAM \
                                 --tags Key=Application,Value=OpsExcellence-Lab
 

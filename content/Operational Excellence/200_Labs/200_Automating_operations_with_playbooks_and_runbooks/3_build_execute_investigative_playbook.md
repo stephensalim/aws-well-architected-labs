@@ -58,6 +58,10 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 {{%/expand%}}
 
 Once you have deployed the cloudformation stack, you should be able to see an IAM role named **AutomationRole** in the IAM console.
+
+  
+![Section3 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-automationrole.png)
+
 Now that we have the IAM role, let's move on to next step to create the actual playbook.
 
 ### 3.1 Building the "Gather-Resources" Playbook.
