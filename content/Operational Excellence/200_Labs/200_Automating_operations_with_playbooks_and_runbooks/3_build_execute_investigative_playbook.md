@@ -43,7 +43,7 @@ cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_oper
 Then execute below command :
 
 ```
-aws cloudformation create-stack --stack-name waopslab-playbook-role \
+aws cloudformation create-stack --stack-name waopslab-automation-role \
                                 --capabilities CAPABILITY_NAMED_IAM \
                                 --template-body file://automation_role.yml 
 ```
@@ -51,13 +51,13 @@ aws cloudformation create-stack --stack-name waopslab-playbook-role \
 Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
 
 ```
-aws cloudformation describe-stacks --stack-name waopslab-playbook-role
+aws cloudformation describe-stacks --stack-name waopslab-automation-role
 ```
 
 Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
 {{%/expand%}}
 
-Once you have deployed the cloudformation stack, you should be able to see an IAM role named **PlaybookRole** in the IAM console.
+Once you have deployed the cloudformation stack, you should be able to see an IAM role named **AutomationRole** in the IAM console.
 Now that we have the IAM role, let's move on to next step to create the actual playbook.
 
 ### 3.1 Building the "Gather-Resources" Playbook.
@@ -519,7 +519,6 @@ Then execute below command :
 ```
 aws cloudformation create-stack --stack-name waopslab-playbook-investigate-application \
                                 --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<ARN of Playbook IAM role (defined in previous step)> \
-                                             ParameterKey=NotificationEmail,ParameterValue=<your email address> \
                                 --template-body file://playbook_investigate_application.yml 
 ```
 Example:
@@ -527,7 +526,6 @@ Example:
 ```
 aws cloudformation create-stack --stack-name waopslab-playbook-investigate-application \
                                 --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/xxxx-playbook-role \
-                                             ParameterKey=NotificationEmail,ParameterValue=youremail@domain.com \
                                 --template-body file://playbook_investigate_application.yml 
 ```
 

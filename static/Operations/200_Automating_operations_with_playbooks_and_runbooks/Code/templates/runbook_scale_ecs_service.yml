@@ -25,9 +25,8 @@ Resources:
             type: String
           NotificationMessage:
             type: String
-          ApproverRoleArn:
-            type: String
-            default: 'arn:aws:iam::030124216594:role/WellArchitected-Admin'         
+          ApproverArn:
+            type: String      
         mainSteps:
           - name: ExecuteApprovalGateWithTimer
             action: 'aws:executeAutomation'

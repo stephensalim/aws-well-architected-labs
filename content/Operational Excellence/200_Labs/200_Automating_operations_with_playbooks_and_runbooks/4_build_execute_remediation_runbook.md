@@ -321,19 +321,24 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 Now that we have built our runbook to Investigate this issue, lets execute it to remediate the performance event.
 
-  1. Go to the Systems Manager Automation document we just created in the previous step, `Runbook-ECS-Scale-Up`.
+  1. Go to the output tab Cloudformation stack deployed named `walab-ops-sample-application`. Take note following values; OutputECSCluster, OutputECSService, OutputSystemOwnersTopicArn
+
+  2. Go to the IAM User console, and locate the IAM user arn you are using to login to the console in this lab. If you are using an assume role mechanism take note of the IAM role ARN you use to login to this console.  
+
+  3. Go to the Systems Manager Automation document we just created in the previous step, `Runbook-ECS-Scale-Up`.
   
-  2. And then execute the runbook passing the values needed.
+  4. And then execute the runbook passing the values you just noted as per screenshot and click **Execute**.
 
-      * Refer to the CloudFormation Stack outputs ** for the name of ECS Service.
-      * Refer to the CloudFormation Stack outputs ** for the name of ECS Cluster.
-      * Use the Arn of the IAM user / role you currently use to access the console. 
-        (This will be the user / role used to approve.) 
+      * Place **OutputECSService** value under for the name of **ECSServiceName**.
+      * Place **OutputECSCluster** value under for the name of **ECSClusterName**.
+      * Place the IAM user / role you took note on step 2 above under **ApproverArn**.
+      * Enter `100` as the **ECSDesiredCount**.
+      * Place **OutputSystemOwnersTopicArn** value under for the name of **NotificationTopicArn**.
+      * Type in your Notification message to the user.
+  
+  4. Once the runbook is executed, you should see an email coming with instructions on how to approve / deny.
 
-
-  3. Once the runbook is executed, you should see an email coming with instructions on how to approve / deny.
-
-  4. Execute the approve command / url or don't do anything until the timer lapsed. (If you execute deny the runbook will fail)
+  5. Execute the approve command / url or don't do anything until the timer lapsed. (If you execute deny the runbook will fail)
 
   5. Once the runbook moved on to the next step, observe the ECS task increased to the number of desired count you specified.
 

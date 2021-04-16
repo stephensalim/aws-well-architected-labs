@@ -3,7 +3,9 @@ Parameters:
     Type: String
   ECRImageURI:
     Type: String
-  NotificationEmail:
+  SystemOpsNotificationEmail:
+    Type: String
+  SystemOwnerNotificationEmail:
     Type: String
 
 Outputs:
@@ -16,9 +18,12 @@ Outputs:
   OutputECSCluster:
     Description: App Task ECS Cluster
     Value: !Ref ECSCluster
-  OutputSNSTopicArn:
+  OutputSystemOwnersTopicArn:
+    Description: Arn of the SNS Topic for System Owners
+    Value: !Ref SystemOwnersTopic    
+  OutputSystemEventTopicArn:
     Description: Arn of the SNS Topic for System Events
-    Value: !Ref SystemOpsNotificationTopic    
+    Value: !Ref SystemOpsNotificationTopic        
   SyntheticsCanaryDurationAlarmArn:
     Description: Arn CloudWatch Alarm
     Value: !GetAtt SyntheticsCanaryDurationAlarm.Arn    
@@ -164,7 +169,7 @@ Resources:
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Join ['', [!Ref 'AWS::StackName', --app]]
+      Family: !Join ['', [!Ref 'AWS::StackName', -app]]
       TaskRoleArn: !Ref ECSTaskRole
       ExecutionRoleArn: !Ref ECSTaskExecutionRole
       NetworkMode: awsvpc
@@ -181,7 +186,7 @@ Resources:
           Options:
             awslogs-group: !Ref 'ECSCloudWatchLogsGroup'
             awslogs-region: !Ref 'AWS::Region'
-            awslogs-stream-prefix: !Join ['', [!Ref 'AWS::StackName', --app]]
+            awslogs-stream-prefix: !Join ['', [!Ref 'AWS::StackName', -app]]
         Environment:
           - Name: DBHOST
             Value: !GetAtt RDS.Endpoint.Address
@@ -198,7 +203,7 @@ Resources:
   ECSCloudWatchLogsGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Join ['', [!Ref 'AWS::StackName', --app-loggroup]]
+      LogGroupName: !Join ['', [!Ref 'AWS::StackName', -app-loggroup]]
       RetentionInDays: 365
 
   #----------------------------------------------------------------------------------------
@@ -512,10 +517,18 @@ Resources:
       Threshold: 5000
       TreatMissingData: ignore
 
-  SystemOpsNotificationTopic:
+  SystemEventTopic:
     Type: AWS::SNS::Topic
     Properties: 
       TopicName: SystemEventTopic
       Subscription: 
-      - Endpoint: !Ref NotificationEmail
+      - Endpoint: !Ref SystemOpsNotificationEmail
+        Protocol: "Email"
+
+  SystemOwnersTopic:
+    Type: AWS::SNS::Topic
+    Properties: 
+      TopicName: SystemOwnersTopic
+      Subscription: 
+      - Endpoint: !Ref SystemOwnerNotificationEmail
         Protocol: "Email"

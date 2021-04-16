@@ -1,8 +1,6 @@
 Parameters:
   PlaybookIAMRole:
     Type: String
-  NotificationEmail:
-    Type: String
     
 Resources:
   PlaybookInvestigateAlarm: 
