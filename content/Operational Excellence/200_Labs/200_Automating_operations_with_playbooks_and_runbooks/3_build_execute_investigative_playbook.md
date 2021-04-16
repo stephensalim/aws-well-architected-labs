@@ -618,26 +618,25 @@ Click `confirm subscription` to start confirm subscription to the application al
 
 Now that we have built all of our our Playbook to Investigate this issue, lets test our traffic high traffic simulation is running, to see what our we'll discover. 
 
-  1. Go to the Systems Manager Automation document we just created in the previous step, `Playbook-Investigate-Application-From-Alarm`.
-  
-  2. And then execute the playbook passing the ARN as the **AlarmARN** input value, along with the **SNSTopicArn**.
-    
-      You can find the AlarmARN, and the SNSTopicArn, in the email notification or by looking at the cloudformation stack `walab-ops-sample-application` output.
+  1. Go to the Output section of the deployed cloudformation stack `walab-ops-sample-application`, and take note of below output values.
 
+  2. Go to the Systems Manager Automation document we just created in the previous step, `Playbook-Investigate-Application-From-Alarm`.
+  
+  3. And then execute the playbook passing the ARN as the **AlarmARN** input value, along with the **SNSTopicArn**.
+    
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook.png)
 
 
-
-  3. Wait until the playbook is successfully executed. Once it is done, you should see an email coming through to your email. This email will contain summary of the investigation done by our playbook.
+  4. Wait until the playbook is successfully executed. Once it is done, you should see an email coming through to your email. This email will contain summary of the investigation done by our playbook.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-email-summary.png)
 
-  4. Copy and paste the message section, and use a json linter tool such as [jsonlint.com](http://jsonlint.com) to give the json better structure for visibility. The result you are seeing from your playbook execution might vary slightly, but the overall findings should show as below. go to the next step for explanation on our findings
+  5. Copy and paste the message section, and use a json linter tool such as [jsonlint.com](http://jsonlint.com) to give the json better structure for visibility. The result you are seeing from your playbook execution might vary slightly, but the overall findings should show as below. go to the next step for explanation on our findings
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-summary.png)
 
-  5. From the report being generated you You would be seeing a large number of ELB504 Count error and a high number of the Target Response Time from the Load balancer that explains the delay we are seeing from our canary alarm. 
+  6. From the report being generated you You would be seeing a large number of ELB504 Count error and a high number of the Target Response Time from the Load balancer that explains the delay we are seeing from our canary alarm. 
   
       If you then look at the ECS CPUtilization summary, you will see that the CPU averages in 99%, and the while the total ECS task count running is only 1. If you refer to the previous step, we have explained that our playbook will create an average of the maximum value of the ECS service's CPUUtilization, in the last 6 minutes time window. ( So this information should be very recent)
       
