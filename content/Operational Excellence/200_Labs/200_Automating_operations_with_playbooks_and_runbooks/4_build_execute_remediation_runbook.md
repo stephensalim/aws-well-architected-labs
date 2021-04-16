@@ -323,7 +323,13 @@ Now that we have built our runbook to Investigate this issue, lets execute it to
 
   1. Go to the Systems Manager Automation document we just created in the previous step, `Runbook-ECS-Scale-Up`.
   
-  2. And then execute the runbook passing the values below.
+  2. And then execute the runbook passing the values needed.
+
+      * Refer to the CloudFormation Stack outputs ** for the name of ECS Service.
+      * Refer to the CloudFormation Stack outputs ** for the name of ECS Cluster.
+      * Use the Arn of the IAM user / role you currently use to access the console. 
+        (This will be the user / role used to approve.) 
+
 
   3. Once the runbook is executed, you should see an email coming with instructions on how to approve / deny.
 

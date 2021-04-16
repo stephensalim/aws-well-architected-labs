@@ -7,32 +7,15 @@ Parameters:
     Type: String
 
 Outputs:
-  OutputALB:
-    Description: Elastic Load Balancer
-    Value: !Ref ALB
-    Export:
-      Name: !Sub "${AWS::StackName}-ALB"
-  OutputKMSKey:
-    Description: KMS Key used by app to encrypt / decrypt data
-    Value: !Ref KMSKey
-  OutputELBSecurityGroup:
-    Description: Elastic Load Balancer Security Group
-    Value: !Ref ELBSecurityGroup
-    Export:
-      Name: !Sub "${AWS::StackName}-ELBSecurityGroup"
   OutputApplicationEndpoint:
     Description: Application Endpoint
     Value: !GetAtt ALB.DNSName
-    Export:
-      Name: !Sub "${AWS::StackName}-ApplicationEndpoint"
-  OutputECSTaskRole:
-    Description: App Task Role ARN
-    Value: !GetAtt ECSTaskRole.Arn
-    Export:
-      Name: !Sub "${AWS::StackName}-ApplicationTaskRole"
-  OutputCanaryResultsBucket:
-    Description: CanaryResultBucket
-    Value: !Ref ResultsBucket
+  OutputECSService:
+    Description: App Task ECS Service
+    Value: !GetAtt ECSService.Name
+  OutputECSCluster:
+    Description: App Task ECS Service
+    Value: !GetAtt ECSCluster.Name    
 
 Resources:
 #----------------------------------------------------------------------------------------
@@ -136,9 +119,9 @@ Resources:
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
+      ClusterName: mysecretword-cluster
       CapacityProviders:
         - FARGATE
-          # FARGATE_SPOT
       DefaultCapacityProviderStrategy:
         - CapacityProvider: FARGATE
           Weight: 1
@@ -148,6 +131,7 @@ Resources:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref ECSCluster
+      ServiceName: mysecretword-service
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -158,7 +142,6 @@ Resources:
           ContainerPort: 80
           TargetGroupArn: !Ref ALBTargetGroup
       TaskDefinition: !Ref TaskDefinition
-      ServiceName: !Join ['', [!Ref 'AWS::StackName', --app-api]]
       LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
@@ -210,12 +193,6 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Join ['', [!Ref 'AWS::StackName', --app-loggroup]]
-      RetentionInDays: 365
-
-  ECSXrayLogsGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Join ['', [!Ref 'AWS::StackName', --xray-loggroup]]
       RetentionInDays: 365
 
   #----------------------------------------------------------------------------------------
@@ -532,6 +509,7 @@ Resources:
   SystemOpsNotificationTopic:
     Type: AWS::SNS::Topic
     Properties: 
+      TopicName: SystemEventTopic
       Subscription: 
       - Endpoint: !Ref NotificationEmail
         Protocol: "Email"

@@ -26,7 +26,7 @@ In this part of the lab we will be sending multiple concurrent requests to the a
 From the cloud9 terminal do the following :
 
 ```
-cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/src/
+cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
 ```
 
 Confirm that you have the `test.json` in the above folder that contains this text.
@@ -40,11 +40,6 @@ Confirm that you have the `test.json` in the above folder that contains this tex
 Once that's confirmed go to cloudformation console, and take note of the **OutputApplicationEndpoint** value under Output tab of `walab-ops-sample-application` stack. Then paste the value into the command below.
 
 ![Section3 Succces Screenshot](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-stackoutput.png)
-
-
-```
-cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts
-```
 
 ```
 bash simulate_request.sh '<OutputApplicationEndpoint value you copied before>'
@@ -61,7 +56,7 @@ The requests we are generating is overwhelming our application triggering the oc
 
 ![Section3 Failure Screenshot](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-failure-traffic-requests.png)
 
-Keep the command running in the background and proceed to the next step.
+Keep the command running in the background throughout the lab and proceed to the next step.
 
 ### 3.2 Observing the alarm being triggered.
 
