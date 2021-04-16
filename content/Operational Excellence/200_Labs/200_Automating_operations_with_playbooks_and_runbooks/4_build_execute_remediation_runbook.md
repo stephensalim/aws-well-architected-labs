@@ -285,10 +285,13 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%expand "Click here for CloudFormation CLI deployment step"%}}
 
-Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/runbook_scale_ecs_service.yml "Resources template")
+In the Cloud9 terminal go to the templates folder using the following command.
 
+```
+cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
+```
 
-To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
+Then execute below command :
   
 ```
 aws cloudformation create-stack --stack-name waopslab-runbook-scale-ecs-service \
@@ -316,33 +319,19 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 ### 4.2 Executing remediation Runbook.
 
-Now that we have built our runbook to Investigate this issue, lets execute this runbook while our traffic simulation is running, to see what impact this will have to our application the application. 
+Now that we have built our runbook to Investigate this issue, lets execute it to remediate the performance event.
 
-  1. Go back to your **Cloud9** terminal you created in Section 2, execute the command to send traffic to the application. (If the command is still running from previous step, leave the command running)
-
-  ```
-  ALBURL="< Application Endpoint URL captured from section 2>"
-  ```
+  1. Go to the Systems Manager Automation document we just created in the previous step, `Runbook-ECS-Scale-Up`.
   
-  ```
-  ab -p test.json -T application/json -c 3000 -n 60000000 -v 4 http://$ALBURL/encrypt
-  ```
+  2. And then execute the runbook passing the values below.
 
-  Leave it running for about 2-3 minutes, and wait until the notification email from the alarm arrives.
-  
-  2. Once the alarm notification email arrived, confirm in cloudwatch console that the Alarm is currently on 'Alarm State'.
+  3. Once the runbook is executed, you should see an email coming with instructions on how to approve / deny.
 
-  3. Then go to the Systems Manager Automation document we just created in the previous step, `Runbook-ECS-Scale-Up`.
-  
-  4. And then execute the runbook passing the values below.
+  4. Execute the approve command / url or don't do anything until the timer lapsed. (If you execute deny the runbook will fail)
 
-  5. Once the runbook is executed, you should see an email coming with instructions on how to approve / deny.
+  5. Once the runbook moved on to the next step, observe the ECS task increased to the number of desired count you specified.
 
-  6. Execute the approve command / url or don't do anything until the timer lapsed. (If you execute deny the runbook will fail)
-
-  7. Once the runbook moved on to the next step, observe the ECS task increased to the number of desired count you specified.
-
-  8. Once the service is scaled up, you should be seeing the API response time back to normal, and the Alarm gone back to OK state.
+  6. Once the service is scaled up, you should be seeing the API response time back to normal, and the Alarm gone back to OK state.
 
 
 This concludes **Section 6** of this lab, click on the link below to move on to the next section.

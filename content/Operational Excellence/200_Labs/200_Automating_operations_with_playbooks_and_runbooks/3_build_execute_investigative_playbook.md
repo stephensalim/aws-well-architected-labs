@@ -45,7 +45,7 @@ Then execute below command :
 ```
 aws cloudformation create-stack --stack-name waopslab-playbook-role \
                                 --capabilities CAPABILITY_NAMED_IAM \
-                                --template-body file://playbook_role.yml 
+                                --template-body file://automation_role.yml 
 ```
 
 Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
@@ -544,7 +544,7 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 Check for an email on the address you've specified, in **NotificationEmail** parameter.
 Click `confirm subscription` to start confirm subscription to the application alarm.
 
-      ![Section2 DNS Output](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-email-confirm.png)
+  ![Section2 DNS Output](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-email-confirm.png)
 
 
 {{%/expand%}}
@@ -618,36 +618,21 @@ Click `confirm subscription` to start confirm subscription to the application al
 
 Now that we have built all of our our Playbook to Investigate this issue, lets test our traffic high traffic simulation is running, to see what our we'll discover. 
 
-  1. Go back to your **Cloud9** terminal you created in Section 2, execute the command to send traffic to the application.
-
-  ```
-  ALBURL="< Application Endpoint URL captured from section 2>"
-  ```
-  ```
-  ab -p test.json -T application/json -c 3000 -n 60000000 -v 4 http://$ALBURL/encrypt
-  ```
+  1. Go to the Systems Manager Automation document we just created in the previous step, `Playbook-Investigate-Application-From-Alarm`.
   
-  Leave it running for about 2-3 minutes, and wait until the notification email from the alarm arrives.
-  
-  2. Once the alarm notification email arrived, capture the CloudWatch Alarm ARN 
-
-  ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-email.png)
-
-  3. Then go to the Systems Manager Automation document we just created in the previous step, `Playbook-Investigate-Application-From-Alarm`.
-  
-  4. And then execute the playbook passing the ARN as the **AlarmARN** input value, along with the **SNSTopicArn**
+  2. And then execute the playbook passing the ARN as the **AlarmARN** input value, along with the **SNSTopicArn**
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook.png)
 
-  5. Wait until the playbook is successfully executed. Once it is done, you should see an email coming through to your email. This email will contain summary of the investigation done by our playbook.
+  3. Wait until the playbook is successfully executed. Once it is done, you should see an email coming through to your email. This email will contain summary of the investigation done by our playbook.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-email-summary.png)
 
-  6. Copy and paste the message section, and use a json linter tool such as [jsonlint.com](http://jsonlint.com) to give the json better structure for visibility. The result you are seeing from your playbook execution might vary slightly, but the overall findings should show as below. go to the next step for explanation on our findings
+  4. Copy and paste the message section, and use a json linter tool such as [jsonlint.com](http://jsonlint.com) to give the json better structure for visibility. The result you are seeing from your playbook execution might vary slightly, but the overall findings should show as below. go to the next step for explanation on our findings
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-summary.png)
 
-  7. From the report being generated you You would be seeing a large number of ELB504 Count error and a high number of the Target Response Time from the Load balancer that explains the delay we are seeing from our canary alarm. 
+  5. From the report being generated you You would be seeing a large number of ELB504 Count error and a high number of the Target Response Time from the Load balancer that explains the delay we are seeing from our canary alarm. 
   
       If you then look at the ECS CPUtilization summary, you will see that the CPU averages in 99%, and the while the total ECS task count running is only 1. If you refer to the previous step, we have explained that our playbook will create an average of the maximum value of the ECS service's CPUUtilization, in the last 6 minutes time window. ( So this information should be very recent)
       

@@ -43,16 +43,14 @@ Once that's confirmed go to cloudformation console, and take note of the **Outpu
 
 
 ```
-ALBURL="< OutputApplicationEndpoint value you copied before>"
+cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts
 ```
 
-Then this command below
-
 ```
-ab -p test.json -T application/json -c 4000 -n 10000000 -v 4 http://$ALBURL/encrypt 
+bash simulate_request.sh '<OutputApplicationEndpoint value you copied before>'
 ```
 
-This command uses Apache Benchmark to send 60000000 requests at 3000 concurrently.
+This script uses Apache Benchmark to send 60000000 requests at 3000 concurrently.
 
 Once you executed this command, you will see the command output gradually from successful 200 response 
 
