@@ -620,11 +620,13 @@ Now that we have built all of our our Playbook to Investigate this issue, lets t
 
   1. Go to the Systems Manager Automation document we just created in the previous step, `Playbook-Investigate-Application-From-Alarm`.
   
-  2. And then execute the playbook passing the ARN as the **AlarmARN** input value, along with the **SNSTopicArn**
+  2. And then execute the playbook passing the ARN as the **AlarmARN** input value, along with the **SNSTopicArn**.
+    
+      You can find the AlarmARN, and the SNSTopicArn, in the email notification or by looking at the cloudformation stack `walab-ops-sample-application` output.
+
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook.png)
 
-    You can find the AlarmARN, and the SNSTopicArn, in the email as per below screenshot or by looking at the cloudformation stack output.
 
 
   3. Wait until the playbook is successfully executed. Once it is done, you should see an email coming through to your email. This email will contain summary of the investigation done by our playbook.
