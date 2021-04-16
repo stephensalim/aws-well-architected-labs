@@ -14,8 +14,14 @@ Outputs:
     Description: App Task ECS Service
     Value: !GetAtt ECSService.Name
   OutputECSCluster:
-    Description: App Task ECS Service
-    Value: !GetAtt ECSCluster.Name    
+    Description: App Task ECS Cluster
+    Value: !Ref ECSCluster
+  OutputSNSTopicArn:
+    Description: Arn of the SNS Topic for System Events
+    Value: !Ref SystemOpsNotificationTopic    
+  SyntheticsCanaryDurationAlarmArn:
+    Description: Arn CloudWatch Alarm
+    Value: !GetAtt SyntheticsCanaryDurationAlarm.Arn    
 
 Resources:
 #----------------------------------------------------------------------------------------

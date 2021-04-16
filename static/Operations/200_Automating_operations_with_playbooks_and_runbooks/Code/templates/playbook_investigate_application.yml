@@ -46,10 +46,3 @@ Resources:
               RuntimeParameters:
                 TopicArn: '{{SNSTopicARN}}'
                 Message: '{{ investigateAppResources.Output }}'
-  PlaybookNotificationSNSTopic:
-    Type: AWS::SNS::Topic
-    Properties: 
-      TopicName: PlaybookNotificationSNSTopic
-      Subscription: 
-      - Endpoint: !Ref NotificationEmail
-        Protocol: "Email"
