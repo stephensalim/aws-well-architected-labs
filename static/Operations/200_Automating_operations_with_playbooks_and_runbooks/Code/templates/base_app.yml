@@ -23,11 +23,14 @@ Outputs:
     Value: !Ref SystemOwnersTopic    
   OutputSystemEventTopicArn:
     Description: Arn of the SNS Topic for System Events
-    Value: !Ref SystemOpsNotificationTopic        
+    Value: !Ref SystemEventTopic        
   SyntheticsCanaryDurationAlarmArn:
     Description: Arn CloudWatch Alarm
     Value: !GetAtt SyntheticsCanaryDurationAlarm.Arn    
-
+  OutputCanaryResultsBucket:
+    Description: Canary Result Bucket
+    Value: !Ref ResultsBucket
+    
 Resources:
 #----------------------------------------------------------------------------------------
 # Build load balancer.
@@ -501,7 +504,7 @@ Resources:
       AlarmDescription: Canary Alarm for My Secret Word
       AlarmName: mysecretword-canary-duation-alarm
       AlarmActions:
-        - !Ref SystemOpsNotificationTopic
+        - !Ref SystemEventTopic
       ComparisonOperator: GreaterThanOrEqualToThreshold 
       EvaluationPeriods: 12
       DatapointsToAlarm: 3

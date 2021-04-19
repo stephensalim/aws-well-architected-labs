@@ -6,6 +6,8 @@ CANARY_RESULT_BUCKET=$(aws cloudformation describe-stacks --stack-name $SAMPLE_A
 MAIN_STACK='walab-ops-base-resources'
 
 
+
+
 echo '############'
 echo 'Cleanup Repo'
 echo '############'
@@ -25,6 +27,27 @@ echo '##########################'
 aws cloudformation delete-stack --stack-name $SAMPLE_APPNAME
 aws cloudformation wait stack-delete-complete --stack-name $SAMPLE_APPNAME
 
+echo '################################'
+echo 'Deleting Playbook/Runbook Stacks'
+echo '################################'
+aws cloudformation delete-stack --stack-name waopslab-runbook-approval-gate
+aws cloudformation wait stack-delete-complete --stack-name waopslab-runbook-approval-gate
+
+aws cloudformation delete-stack --stack-name waopslab-automation-role
+aws cloudformation wait stack-delete-complete --stack-name waopslab-automation-role
+
+aws cloudformation delete-stack --stack-name waopslab-runbook-scale-ecs-service
+aws cloudformation wait stack-delete-complete --stack-name waopslab-runbook-scale-ecs-service
+
+aws cloudformation delete-stack --stack-name waopslab-playbook-gather-resources
+aws cloudformation wait stack-delete-complete --stack-name waopslab-playbook-gather-resources
+
+aws cloudformation delete-stack --stack-name waopslab-playbook-investigate-resources
+aws cloudformation wait stack-delete-complete --stack-name waopslab-playbook-investigate-resources
+
+aws cloudformation delete-stack --stack-name waopslab-playbook-investigate-application
+aws cloudformation wait stack-delete-complete --stack-name waopslab-playbook-investigate-application
+
 echo '##########################'
 echo 'Deleting Base Resources'
 echo '##########################'
@@ -34,3 +57,5 @@ aws cloudformation wait stack-delete-complete --stack-name $MAIN_STACK
 echo '#########################################'
 echo 'Application Teardown Complete'
 echo '#########################################'
+
+

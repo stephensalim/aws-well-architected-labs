@@ -36,7 +36,7 @@ Resources:
                 Timer: '{{Timer}}'
                 NotificationTopicArn: '{{NotificationTopicArn}}'
                 NotificationMessage: '{{NotificationMessage}}'
-                ApproverRoleArn: '{{ApproverRoleArn}}'
+                ApproverArn: '{{ApproverArn}}'
           - name: UpdateECSServiceDesiredCount
             action: aws:executeAwsApi
             inputs:

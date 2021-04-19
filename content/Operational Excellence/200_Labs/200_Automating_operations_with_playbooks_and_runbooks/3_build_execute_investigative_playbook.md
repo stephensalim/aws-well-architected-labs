@@ -346,10 +346,14 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%expand "Click here for CloudFormation CLI deployment step"%}}
 
-Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/playbook_investigate_application_resources.yml "Resources template")
+In the Cloud9 terminal go to the templates folder using the following command.
 
+```
+cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
+```
 
-To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
+Then execute below command :
+
   
 ```
 aws cloudformation create-stack --stack-name waopslab-playbook-investigate-resources \

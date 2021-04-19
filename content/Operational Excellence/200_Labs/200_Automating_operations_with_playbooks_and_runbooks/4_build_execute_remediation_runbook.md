@@ -323,26 +323,52 @@ Now that we have built our runbook to Investigate this issue, lets execute it to
 
   1. Go to the output tab Cloudformation stack deployed named `walab-ops-sample-application`. Take note following values; OutputECSCluster, OutputECSService, OutputSystemOwnersTopicArn
 
-  2. Go to the IAM User console, and locate the IAM user arn you are using to login to the console in this lab. If you are using an assume role mechanism take note of the IAM role ARN you use to login to this console.  
+  ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-output.png)
 
-  3. Go to the Systems Manager Automation document we just created in the previous step, `Runbook-ECS-Scale-Up`.
+
+  2. Also, take note of your the ARN of the IAM user, or IAM role that you will use to assume execute the approval request. To do this you can go to the IAM User console, and click **Users**/**Roles** on the left side menu, and click on the user User/Roles. Form here you should be able so see something like below, take now the ARN value, as we need it for our next step.
+
+  ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-iam.png)
+
+
+  3. Go to the Systems Manager Automation console, click on **Document** under **Shared Resources**, locate and click an automation document called `Runbook-ECS-Scale-Up`. 
   
-  4. And then execute the runbook passing the values you just noted as per screenshot and click **Execute**.
+  4. Then click *Execute automation* and  passing the values you just noted as per screenshot. (This will be where all the values you took note in step 1-2 be put to use.)
+
+      ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-scale-up.png)
 
       * Place **OutputECSService** value under for the name of **ECSServiceName**.
       * Place **OutputECSCluster** value under for the name of **ECSClusterName**.
       * Place the IAM user / role you took note on step 2 above under **ApproverArn**.
       * Enter `100` as the **ECSDesiredCount**.
+      * You can put in any message to the **NotificationMessage** section. Here is a sample :
+
+        ```
+        Hello, your mysecretword app is experiencing performance degradation, To manage customer experience we will have to manually scale up the cluster. Action will take in 10 mins, Please deny if you do not consent.  
+        ```  
       * Place **OutputSystemOwnersTopicArn** value under for the name of **NotificationTopicArn**.
-      * Type in your Notification message to the user.
+      * You can leave **Timer** as it is, this will be the waiting time until it's automatically approved defined in ISO 8601 duration format
   
-  4. Once the runbook is executed, you should see an email coming with instructions on how to approve / deny.
+  5. Once it's done then click on **Execute**. 
 
-  5. Execute the approve command / url or don't do anything until the timer lapsed. (If you execute deny the runbook will fail)
+  6. Once the runbook is executed, you should see an email coming with instructions on how to approve / deny. Follow the link in the email, using the **User**/**Role** of the ApproverArn you placed in step. It will take you to the SSM Console where you can approve / deny the request. 
 
-  5. Once the runbook moved on to the next step, observe the ECS task increased to the number of desired count you specified.
+      ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-approveordeny.png)
 
-  6. Once the service is scaled up, you should be seeing the API response time back to normal, and the Alarm gone back to OK state.
+      If you choose leave / ignore this email, the request will be automatically approved after the Timer set in the playbook.
+
+      If you execute deny the runbook will fail, and nothing will be actioned.
+
+  7. Once the runbook moved on to the next step, You can observe the ECS task increased to the number of desired count you specified. 
+
+      Go to ECS console, and click in **Clusters** and select `mysecretword-cluster`, then click on `mysecretword-service` **Service**. you should see as the number of running tasks reaches 100, the CPUUtilization average comes down. 
+
+      ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-scale-up2.png)
+
+      ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-scale-up3.png)
+
+
+  8. Following after the service is scaled up, you should be seeing the API response time back to normal, and the Alarm gone back to OK state. You can check them via your CloudWatch Console, as per previous step.
 
 
 This concludes **Section 6** of this lab, click on the link below to move on to the next section.

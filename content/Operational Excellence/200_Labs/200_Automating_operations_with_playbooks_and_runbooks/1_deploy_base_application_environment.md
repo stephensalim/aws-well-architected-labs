@@ -54,10 +54,10 @@ Next, we are going to execute the script to build and deploy our application env
       cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
       ```
 
-        Then paste in below command replacing `<youremail@domain.com>` with the email address you would like the application to notify you with.
+        Then paste in below command replacing `<sysops@domain.com>` and `<owner@domain.com>` with the email address you would like the application to notify you with.
 
       ```
-      bash build_application.sh walab-ops-base-resources <youremail@domain.com>
+      bash build_application.sh walab-ops-base-resources <sysops@domain.com> <owner@domain.com>
       ```
 
         

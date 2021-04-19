@@ -48,9 +48,8 @@ Resources:
             type: String
           NotificationMessage:
             type: String
-          ApproverRoleArn:
+          ApproverArn:
             type: String
-            default: 'arn:aws:iam::030124216594:role/WellArchitected-Admin'
         outputs:
           - getApprovalStatus.approvalStatusVariable            
         mainSteps:
@@ -83,7 +82,7 @@ Resources:
               Message: '{{NotificationMessage}}'
               MinRequiredApprovals: 1
               Approvers:
-                - '{{ApproverRoleArn}}'
+                - '{{ApproverArn}}'
                 - !Ref PlaybookIAMRole
           - name: getApprovalStatus
             action: 'aws:executeAwsApi'
