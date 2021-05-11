@@ -4,8 +4,8 @@ LABEL='latest'
 ECR_REPONAME='walab-ops-sample-application'
 SAMPLE_APPNAME=$ECR_REPONAME
 MAIN_STACK='walab-ops-base-resources'
-SYSOPSEMAIL=$1
-SYSOWNEREMAIL=$2
+SYSOPSEMAIL=$2
+SYSOWNEREMAIL=$3
 
 sudo yum install jq -y -q
 AWS_REGION=$(curl --silent http://169.254.169.254/latest/dynamic/instance-identity/document | jq '.region' | sed -e 's/^"//' -e 's/"$//')
@@ -33,6 +33,7 @@ echo '########################'
 echo 'Deploy Application Stack'
 echo '########################'
 aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
+sleep 10
 aws cloudformation create-stack --stack-name $ECR_REPONAME \
                                 --template-body file://../templates/base_app.yml \
                                 --parameters ParameterKey=BaselineVpcStack,ParameterValue=$MAIN_STACK \
