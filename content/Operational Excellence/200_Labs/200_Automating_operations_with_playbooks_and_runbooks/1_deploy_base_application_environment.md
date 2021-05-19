@@ -6,77 +6,80 @@ weight: 1
 pre: "<b>1. </b>"
 ---
 
-Before we begin with our playbook, we are going to prepare our sample application. The application is essentially an API that hosted inside docker containers orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/) with [Application Load Balancer]() fronting it. The API will take 2 action that you can trigger by dong a POST call to the **/encrypt** / **/decrypt** URI of the application api. 
+I this section, you are going to prepare a sample application. The application is an API hosted inside docker container orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. The API will take 2 action that you can trigger by doing a POST call to the */encrypt* / */decrypt* action.
 
-* The **encrypt** action will allow the user to pass on a secret message along with it's key identifier, and it will return a secret key id that they can use to decrypt.
-* The **decrypt** action will allow the user to pass the key identifier along with the secret key id to obtain the secret message encrypted before. 
+* The *encrypt* action will allow you to pass a secret message along with a 'Name' key as the identifier, and it will return a 'Secret Key Id' that you can use later to decrypt your message.
+* The *decrypt* action allows you to then decrypt the secret message passing along the 'Name' key and 'Secret Key Id' you obtained before to get your secret message.
 
-Both actions will subsequently make a write and read call to the application database hosted in RDS, where the encrypted messages are being stored. 
+Both actions will subsequently make a write and read call to the application database hosted in RDS, where the encrypted messages are being stored. Because the goal of this lab is to show how you can use runbook and playbook to support the operation of your workload, the steps on how to build / provision this sample application and it's underlying infrastructure along with it, is not within the context of the lab. Therefore so simplify the process, we have created a step by step instruction you can follow to automate the provisioning of this application.  
 
-To simplify the application provisioning process, we have created a script you can execute. Please follow below steps to prepare the Cloud9 workspace and execute the script to build our application. When our application stack is completed, our architecture will look like this:
+#### Actions items in this section :
+1. Prepare the [Cloud9](https://aws.amazon.com/cloud9/) workspace launched with a new VPC.
+2. Execute application build script from Cloud9 console, to build the sample application. 
 
 ![Section1 App Arch](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-application.png)
 
 
-### 1.0 Deploy baseline resources.
+### 1.0 Prepare Cloud9 workspace.
 
-Our baseline resource includes the VPC where our application will be deployed, as well as the Cloud9 IDE environment where we will use to package and deploy our application. Click on the link below to deploy the base resources in your region. Follow the options and whenever possible, take the default values.
+In this first step you are going to provision a [Cloudformation](https://aws.amazon.com/cloudformation/) stack that builds a Cloud9 workspace along with the VPC for the sample application. This Cloud9 workspace will be used to execute the provisioning script of the sample application. You can choose the to deploy stack in one of the region below. 
 
-{{% notice note %}}
-For simplicity keep the cloudformation stack name as `walab-ops-base-resources`, and take the default values on the others.
-{{% /notice %}}
+1. Click on the link below to deploy the stack. This will take you to the Cloudformation console in your account. Use `walab-ops-base-resources` as the stack name, and take the default values for all options
 
-* **us-west-2** : [here](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)
-* **ap-southeast-2** : [here](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)
-* **ap-southeast-1** : [here](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)
+    * **us-west-2** : [here](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)
+    * **ap-southeast-2** : [here](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)
+    * **ap-southeast-1** : [here](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)
 
-Once the template is deployed, wait until the CloudFormation Stack reached the **CREATE_COMPLETE** state.
+2. Once the template is deployed, wait until the CloudFormation Stack reached the **CREATE_COMPLETE** state.
 
 ![Section1 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-resources-create-complete.png)
 
 
 ### 1.1 Run build application script.
 
-Next, we are going to execute the script to build and deploy our application environment
+Next, you are going to execute a script to build and deploy our application environment from the Cloud9 workspace you deployed in the first step
 
-  1. From the main console, launch the **Cloud9** service. 
-  2. Under **Your environments** section locate an `WellArchitectedOps-walab-ops-base-resources` environment and click **Open IDE**.
+  1. From the main console, search and click for the **Cloud9** to get into the Cloud9 console. 
+  2. Click **Your environments** section on the left menu, and locate an environment named `WellArchitectedOps-walab-ops-base-resources` as below, then click **Open IDE**.
 
       ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-environment-open-ide.png)
 
-  3. This will take you into the IDE environment. At first instance, your environment will bootstrap the lab repository, once it is complete you should see a folder called `aws-well-architected-labs` as below. 
+  3. This will take you into the IDE environment. At first instance, your environment will bootstrap the lab repository and you should see a terminal output showing git clone output as below. Once it is complete you will see a folder called `aws-well-architected-labs`. 
   
       ![Section 2](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-bootstrap.png)
 
-  4. In the Terminal console run below command.
+  4. In the IDE Terminal console copy and paste below command to get into the working folder where the build script is located.
 
       ```
       cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
       ```
 
-        Then paste in below command replacing `<sysops@domain.com>` and `<owner@domain.com>` with the email address you would like the application to notify you with.
+  5. Then copy and paste below command replacing `<sysops@domain.com>` and `<owner@domain.com>` with the email address you would like the application to notify you with.  
 
       ```
       bash build_application.sh walab-ops-base-resources <sysops@domain.com> <owner@domain.com>
       ```
 
-        
-{{% notice note %}}
-Change the `<youremail@domain.com>` with your email address.
-This email will be used to receive application notifications.
-{{% /notice %}}
+  {{% notice note %}}
+  Replace the value of `<sysops@domain.com>` with email address that represents the system operators team of the workload.
+  `<owner@domain.com>` with email address that represents business owner of the workload.
+  {{% /notice %}}
 
-  5. The script should then execute to build and deploy the application stack.  Wait until the script is complete, this process should take about 20 mins.
+  6. Run the above command to execute to build and provisioning of the application stack.  Wait until the script is complete, this process should take about 20 mins.
 
         ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-app-build.png)
 
-  6. In the CloudFormation console, you should see a new stack being deployed called `walab-ops-sample-application`, wait until the stack reached **CREATE_COMPLETE** state and proceed to the next step.
+  {{% notice note %}}
+  The `build_application.sh` will build the application docker image and push it to [Amazon ECR](https://aws.amazon.com/ecr/) that [Amazon ECS](https://aws.amazon.com/ecs/) will use. Once this is done, it will deploy another CloudFormation Stack containing the application resources (ECS, RDS, ALB, and others), and wait until the stack creation is complete.
+  {{% /notice %}}
+
+  7. In the CloudFormation console, you should see a new stack being deployed called `walab-ops-sample-application`, wait until the stack reached **CREATE_COMPLETE** state and proceed to the next step.
   
       ![Section 2 CreateComplete](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-app-create-complete.png)
 
 ### 1.2. Confirm Application Status.
 
-Once the command deployed successfully, go to your [Cloudformation console](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2) to locate the stack named `walab-ops-sample-application`.
+Once the application is deployed successfully, go to your [Cloudformation console](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2) and locate the stack named `walab-ops-sample-application`.
 
   1. Confirm that the stack is in a **'CREATE_COMPLETE'** state. 
   2. Record the following output details as they will be required later:
@@ -95,44 +98,51 @@ Once the command deployed successfully, go to your [Cloudformation console](http
 
 ### 1.3. Test the Application launched.
 
-In this part of the Lab, we will be testing the encrypt API of the sample application we just deployed. Our application will basically take a JSON payload with `Name` and `Text` key, and it will encrypt the value under text key with a designated KMS key. Once the text is encrypted, it will store the encrypted text in the RDS database with the `Name` as the primary key.
-
+In this section you will be testing the encrypt API of the application you just deployed. 
+The application will take a JSON payload with `Name` ad the identifier and `Text` key as the value of the secret message.
+It will encrypt the value under text key with a designated KMS key and store the encrypted text in the RDS database with the `Name` as the primary key.
 
 {{% notice note %}}
-**Note:** For simplicity our sample application is not generating individual KMS keys for each record generated. Should you wish to deploy this pattern to production, we recommend that you use a separate KMS key for each record.
+**Note:** For simplicity purpose this sample application will re-use same KMS keys for each record generated. For better security practice we recommend that you use a isolate each KMS key for each identifier.
 {{% /notice %}}
 
-From your **Cloud9** terminal, replace the < Application Endpoint URL > with the **OutputPattern1ApplicationEndpoint** from previous step.
+1. In the **Cloud9** terminal, copy , paste, and run below command replacing the < Application Endpoint URL > with the **OutputPattern1ApplicationEndpoint** from previous step. This command will run [curl](https://curl.se/) to send a POST request with the secret message payload `{"Name":"Bob","Text":"Run your operations as code"}` to the API.
 
-```
-ALBURL="< Application Endpoint URL >"
+    ```
+    ALBURL="< Application Endpoint URL >"
 
-curl --header "Content-Type: application/json" --request POST --data '{"Name":"Bob","Text":"Run your operations as code"}' $ALBURL/encrypt
-```
+    curl --header "Content-Type: application/json" --request POST --data '{"Name":"Bob","Text":"Run your operations as code"}' $ALBURL/encrypt
+    ```
 
-Once you've executed this you should see an output similar to this:
+2. Once you execute this command you should see an output like below :
 
-```
-{"Message":"Data encrypted and stored, keep your key save","Key":"<encrypt key (take note) >"}
-```
-Take note of the encrypt key value under **Key** and place it under the same **Key** section in the command below to test the decrypt API.
+    ```
+    {"Message":"Data encrypted and stored, keep your key save","Key":"<encrypt key (take note) >"}
+    ```
+
+3. Take note of the encrypt key value under **Key** .
+
+4. Copy, paste, and run below command. paste the encrypt key you took note before under the **Key** section in the command below to test the decrypt API.
 
 
-```
-curl --header "Content-Type: application/json" --request GET --data '{"Name":"Bob","Key":"<encrypt key (taken from previous command ) >"}' $ALBURL/decrypt
+    ```
+    curl --header "Content-Type: application/json" --request GET --data '{"Name":"Bob","Key":"<encrypt key (taken from previous command ) >"}' $ALBURL/decrypt
 
-```
+    ```
 
-If the the application is functioning as it should, then you should see response like below 
+5. Once you execute the command you should see an output like below :
 
-```
-{"Text":"Run your operations as code"}
-```
+    ```
+    {"Text":"Run your operations as code"}
+    ```
 
-Congratulations ! You have completed the first section of the Lab.
-We now have an application API we can use throughout the remaining sections in this lab.
+## Congratulations ! 
 
-This completes **section 2** of the lab. Please proceed to **section 3** and continue with the lab.
+You have now completed the first section of the Lab.
+
+By now you should have a sample application API we can use throughout the remaining this lab.
+
+This concludes **Section 1** of the lab. Click on **Next Step** to continue to the next section.
 
 {{< prev_next_button link_prev_url="..//" link_next_url="../2_simulate_application_issue/" />}}
 

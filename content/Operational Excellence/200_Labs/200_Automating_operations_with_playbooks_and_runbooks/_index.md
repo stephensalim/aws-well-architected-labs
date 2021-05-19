@@ -9,31 +9,39 @@ hidden: false
 
 ## Authors
 * **Stephen Salim**, Well-Architected Geo Solutions Architect.
+
+#### Contributors
 * **Brian Carlson**, Well-Architected Operational Excellence Pillar Lead.
+* **Jang Whan Han**, Well-Architected Geo Solutions Architect.
+
 ## Introduction
- 
-This hands-on lab will guide you through the steps to automate your operational activities using [Playbook](https://wa.aws.amazon.com/wat.concept.playbook.en.html) and [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) built with AWS tools.
 
-At a glance, both Playbook and Runbooks appears to be similar documents that any adequately skilled team members (who are unfamiliar with the workload) can use to execute operational activities. However, there an essential difference between them. 
+This hands-on lab will guide you through the steps to automate your operational activities using  [Runbooks](https://wa.aws.amazon.com/wat.concept.runbook.en.html) and [Playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) built with AWS tools.
 
-A [Playbook](https://wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/wat.concept.playbook.en.html) intends to document the process /guide to gather applicable information, identify potential sources of failure, isolate faults, and determine root cause of issues, [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html)  on the other hand contain instructions necessary to successfully complete an activity to resolve the issue. 
+At a glance, both Runbooks and Playbooks appears to be similar documents that any appropriately skilled team members, with the necessary permissions, can use to perform operational activities. However, there an essential difference between them:
 
-In any case, at a certain scale, executing either [Playbook](https://wa.aws.amazon.com/wat.concept.playbook.en.html) / [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) activities manually, is not going to be adequate.  Organization, and Operation teams will have to start looking into streamlining Playbook and Runbook process through automation. Isolating human element from the process will have significant impact to the reliability, scalability, traceability of the workloads operational posture.
+* A [Playbook](https://wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/wat.concept.playbook.en.html) documents a process that guides you through an activity. For example, gathering applicable information, identifying potential sources of failure, isolating faults, or determining the root cause of issues. Playbooks can follow multiple paths and yield more than one outcome. 
 
-In the next few sections of this lab, we will show how you can build an automated [Playbook](https://wa.aws.amazon.com/wat.concept.playbook.en.html) and [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) to investigate and remediate application issue using a few AWS services.
+* A [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) contains the procedure necessary for you to successfully complete an activity. For example, creating a user, or resolving a specific issue. When successfully executed a specific outcome is expected.
 
-Services we will utilize in this lab includes.
+Executing either [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) or [Playbook](https://wa.aws.amazon.com/wat.concept.playbook.en.html)  activities manually is prone to error, does not scale, and will not be adequate to support your needs as you grow. Your will want to evaluate ways to streamline Runbook and Playbook activities through automation to relieve your operational burden. 
 
-* Event Bridge Rules
-* Systems Manager Automation Document
+Automation can support improved reliability by preventing the introduction of errors through manual processes, scalability by deploying and decommissioning resources dynamically, traceability of the workloads operational posture through logs of the automation activity, and response time by triggering automation in response to events. We will go into traceability of activities in more detail in our next lab.
+
+
+In this lab, we will show how you can build an automated [Runbooks](https://wa.aws.amazon.com/wat.concept.runbook.en.html) and [Playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) to investigate and remediate an application issue using AWS services. Services we will use in this lab include:
+
+* Event Bridge
+* Systems Manager Automation
 * Simple Notification Service
-* CloudWatch Synthetics 
+* CloudWatch Synthetics
 
+## Goals: 
 
-## Goals:
-* Build & Execute Automated Investigative Playbook & Remediative Runbook
-* Build & Execute Automated Issue remediation Runbook
-* Enabling traceability of Operational Activity in environment.
+* Build & execute automated playbooks to support your investigations
+* Build & execute automated runbooks to remediate specific faults
+* Enabling traceability of operations activities in environment
+
 
 ## Prerequisites:
 * An [AWS account](https://portal.aws.amazon.com/gp/aws/developer/registration/index.html) that you are able to use for testing, that is not used for production or other purposes.  

@@ -6,13 +6,10 @@ weight: 4
 pre: "<b>4. </b>"
 ---
 
-In the previous section, we've built an automated playbook to investigate the application environment. The output the playbook investigation allows us to come up with the next course of action to of remediation.
+In the previous section, you have built an automated playbook to investigate the application environment. In this section, you will build an automated [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html). to remediate the issue by manually scaling up the application cluster. A runbook are a pre-defined procedures for a well understood events to achieve a specific outcome. 
 
-Hence in this section, we will build an automated [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html). To scale up the application cluster. A runbook are a pre-defined procedures for a well understood events to achieve a specific outcome. 
-
-In this scenario, it is visible that the the ECS service CPU was very high, and that there is not enough ECS task running in the service to serve incoming requests. This is understood, and the immediate course of action to remediate it is to increase the number of Task, scaling up the service to mee the demand. 
-
-That said, scaling up the service directly as such, may not be suitable as a long term solution into the fix. Therefore it is important to make that clear to the owner of the workload, and to give them the options to intervene. The runbook will also send a notification for systems owner to give them the chance to intervene should they do not want this to go ahead.
+In this scenario, it is visible that the the ECS service CPU utilization was at peak, and there is enough ECS task running to serve incoming requests. This is understood, and the immediate course of action to remediate it is to increase the number of Task, scaling up the service to mee the demand. 
+That said, scaling up the service directly as such, may not be suitable as a long term solution into the fix. Therefore it is important to communicate this issue to the owner of the workload, and to give them the options to intervene if they choose to do so. 
 
 {{% notice note %}}
 **Note:** In the post-mortem review of the event, the team should decide on what is the next course of action they should take to implement a more long term solution, such as implementing Automatic Scaling in the ECS Cluster (This will be discussed further in the next Lab )
@@ -22,21 +19,21 @@ That said, scaling up the service directly as such, may not be suitable as a lon
 
 As mentioned in previous section, when building your playbook or runbooks, repeatability is very important. You want avoid repeating the same effort of writing / building mechanism if it could be re-used for other things in the future.
 
-As described above, our runbook will need an approval mechanism, our approval will wait for a certain amount of time, to give an opportunity for the approver to trigger a deny. When the time lapsed, execution will continue.
+As described above, the runbook will have an approval mechanism that will wait for a certain amount of time, to give opportunity for the approver to trigger a deny to the scale up. When the time in the runbook lapsed, execution will continue with an automatic approve.
 
   ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation-graphics1.png)
 
-The way we achieve this is described below :
+The way to achieve this is described below :
 
-1. First, we execute a separate runbook called `Approve-Timer`. This runbook will wait for a designated amount of time that we specify. When the wait time lapse, `Approve-Timer` runbook will automatically send an Approval signal to the gate.
+1. First, the runbook will execute a separate runbook called `Approve-Timer`. This runbook will wait for a designated amount of time that we specify. When the wait time lapse, `Approve-Timer` runbook will automatically send an Approval signal to the gate.
 
-2. Secondly, we will then send the Approval request to the owner via the SNS topic designated for them. 
+2. Secondly, the runbook will send the Approval request to the owner via the SNS topic designated for them. 
 
     If they choose to approve, the runbook will continue to the next step (which we will define later). At the same time, if the approval is ignored, the `Approve-Timer` runbook will automatically approve the request.
 
     Alternatively, if they choose to deny then the step in the runbook will fail, blocking any further steps that we will decide later.
 
-Please go ahead and follow below steps to build this runbook.
+Follow below steps to build this runbook.
 
 {{% notice note %}}
 **Note:** For the following step to build and execute the runbook. You can follow a step by step guide via AWS console or you can deploy a cloudformation template to build the runbook.
@@ -319,7 +316,7 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 ### 4.2 Executing remediation Runbook.
 
-Now that we have built our runbook to Investigate this issue, lets execute it to remediate the performance event.
+Now that you have built our runbook to Investigate this issue, lets execute it to remediate the performance event.
 
   1. Go to the output tab Cloudformation stack deployed named `walab-ops-sample-application`. Take note following values; OutputECSCluster, OutputECSService, OutputSystemOwnersTopicArn
 

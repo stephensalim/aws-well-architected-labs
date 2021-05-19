@@ -6,17 +6,21 @@ weight: 3
 pre: "<b>3. </b>"
 ---
 
-In the previous section, we sent through large traffic to the API and simulate an increase latency as the application is overwhelmed. 
+In the previous section, you have simulated a performance issue using script that sends large traffic to the sample application API. You have seen how the issue manifests, and represented by cloudwatch alarm triggered. 
 
-For a seasoned systems administrator / engineer, who knows the in and out of the architecture investigating the issue might be a relatively straight forward process. One would already know which service or components are involved as well as which metrics and logs is relevant and which one do not. Over time these administrator / engineer would build a certain method around this allowing them to intuitively understand the route to take to investigate the issue.
-While there is no problem with this, unless all of those knowledge and method are well documented and able to be handed down, this creates the engineer / administrator becoming a single point of failure.
+For an operator who knows the architecture and understands the issue, the investigation path to the issue will be obvious. They would know which service or components are involved in the architecture, which metrics and logs are relevant to the investigation, and which action to take given the result of the scenario presented. However if the same issue is presented to a new operator, this can be challenging.  
 
-This is where [playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) comes into place. [Playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) are essentially a documented predefined steps / guide to perform to identify an issue. The results from each step are used to determine the next steps to take until the issue is identified or escalated. For a playbook to be scalable, automating the process is critical. 
+This is where [playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) comes into place. [Playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) are essentially a documented predefined steps / guide to perform to identify an issue. The results from each step are used to determine the next steps to take until the issue is identified or escalated. For a playbook to be scalable, automating the tasks and process to be taken is very important. 
 
-There are various different tools you can use to build an automated playbook, and AWS you can use [AWS Systems Manager Automation Document](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html) (now called runbook ). The service allows you to create a series of executable steps to orchestrate your investigation into the issue, you can execute python / nodejs script, call the api of AWS service directly, or execute a remote command into the host operating system where your application is potentially running ( Both in EC2 or on-prem ).
+There are various different tools you can use to build an automated playbook, and in AWS you can use [AWS Systems Manager Automation Document](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html) (now called runbook ). The service allows you to create a series of executable steps orchestrating investigation of the issue.
 
-In this part of the lab we will focus on how we build an automated playbook to help troubleshoot the issue with our API.
-Please follow below steps to continue.
+You can execute python / nodejs script, call the api of AWS service directly, or execute a remote command into the host operating system where your application is potentially running ( Both in EC2 or on-prem ).
+
+In this section, you will focus on creating an automated playbook to assist root cause investigation of the issue from a systems operator perspective. 
+
+#### Actions items in this section :
+1. Build Systems Manager Automation document to gather information about the workload & query relevant metrics and logs.
+2. Execute the automation document to investigate issue 
 
 ### 3.0 Prepare Automation Document IAM Role
 
@@ -25,7 +29,7 @@ Please choose one of below deployment step
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
   1. Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/automation_role.yml "Resources template")
-  2. Please follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) for information on how to deploy the cloudformation template.
+  2. Follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) for information on how to deploy the cloudformation template.
   3. Use `waopslab-automation-role` as the **Stack Name**, as this is referenced by other stacks later in the lab.
 
 {{%/expand%}}
@@ -34,43 +38,46 @@ Please choose one of below deployment step
 
 **Note:** To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
 
-In the Cloud9 terminal go to the templates folder using the following command.
+1. From the cloud9 terminal, copy, paste and run below command to get into the working script folder
 
-```
-cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
-```
+  ```
+  cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
+  ```
 
-Then execute below command :
+2. Then copy paste and execute below commands.
 
-```
-aws cloudformation create-stack --stack-name waopslab-automation-role \
-                                --capabilities CAPABILITY_NAMED_IAM \
-                                --template-body file://automation_role.yml 
-```
+  ```
+  aws cloudformation create-stack --stack-name waopslab-automation-role \
+                                  --capabilities CAPABILITY_NAMED_IAM \
+                                  --template-body file://automation_role.yml 
+  ```
 
-Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
+3. Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
 
-```
-aws cloudformation describe-stacks --stack-name waopslab-automation-role
-```
+  ```
+  aws cloudformation describe-stacks --stack-name waopslab-automation-role
+  ```
 
 Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
 {{%/expand%}}
 
-Once you have deployed the cloudformation stack, you should be able to see an IAM role named **AutomationRole** in the IAM console.
+4. Once you have deployed the cloudformation stack, go to IAM Console.
+
+5. On the side menu, click on Roles and locate an IAM role named **AutomationRole**.
+
+6. Take note of the Arn of the role, as we will need it for later step.
 
   
 ![Section3 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-automationrole.png)
 
-Now that we have the IAM role, let's move on to next step to create the actual playbook.
-
 ### 3.1 Building the "Gather-Resources" Playbook.
 
-As an administrator / engineer, before we even investigate anything in the application, we need to know what are the services / components involved. When we receive the alarm from cloudwatch in the inbox, the information presented does not contain straight away these components / services involved, hence in the following steps we will build a playbook to acquire all the related resources using our alarm arn as it's reference. 
+As part of preparation to the investigation, you need to know all related services / resources involved with the issue. When the email notification is sent, information in the email does not contain resources that needs to be investigated.
 
-When creating a playbook or any code in general, re-usability is something that is very important to consider early on. By codifying your playbook, you are enabling the playbook document to be created once and to be executed in multiple different context, this will prevents your operation engineer having to re-write codes that has identical objectives.   
+This is why, in the following steps we will build a playbook to acquire all the related resources using our alarm arn as it's reference. 
 
-Please follow below steps to continue.
+When creating a playbook or any code in general, re-usability is something that is very important to consider early on. 
+By codifying your playbook, you can create your playbook once and used in multiple different context, this will reduce overhead in re-writing codes that has identical objectives.   
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-architecture-graphics1.png)
 
@@ -87,7 +94,7 @@ Download the template [here.](/Operations/200_Automating_operations_with_playboo
 
 If you decide to deploy the stack from the console, ensure that you follow below requirements & step:
 
-  1. Please follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) for information on how to deploy the cloudformation template.
+  1. Follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) for information on how to deploy the cloudformation template.
   2. Use `waopslab-playbook-gather-resources` as the **Stack Name**, as this is referenced by other stacks later in the lab.
 
 {{%/expand%}}
@@ -96,36 +103,37 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 **Note:** To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
 
-In the Cloud9 terminal go to the templates folder using the following command.
+1. From the cloud9 terminal, copy, paste and run below command to get into the working script folder
 
-```
-cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
-```
+  ```
+  cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
+  ```
 
-Then execute below command :
+2. Then copy paste and execute below commands replacing the '<AutomationRoleArn>' with the Arn of **AutomationRole** you took note in previous step 3.0.
 
-```
-aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
-                                --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<ARN of Playbook IAM role (defined in previous step)> \
-                                --template-body file://playbook_gather_resources.yml 
-```
-Example:
+  ```
+  aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
+                                  --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<AutomationRoleArn> \
+                                  --template-body file://playbook_gather_resources.yml 
+  ```
 
-```
-aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
-                                --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/xxxx-playbook-role \
-                                --template-body file://playbook_gather_resources.yml 
-```
+  Example:
 
-**Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
+  
+  ```
+  aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
+                                  --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/xxxx-playbook-role \
+                                  --template-body file://playbook_gather_resources.yml 
+  ```
 
-Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
+  **Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
 
-```
-aws cloudformation describe-stacks --stack-name waopslab-playbook-gather-resources
-```
+3. Confirm that the stack has installed correctly. You can do this by running the describe-stacks command below, locate the StackStatus and confirm it is set to **CREATE_COMPLETE**. 
 
-Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
+  ```
+  aws cloudformation describe-stacks --stack-name waopslab-playbook-gather-resources
+  ```
+
 {{%/expand%}}
 
 
@@ -138,23 +146,23 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
   2. Next, enter in `Playbook-Gather-Resources` in the **Name** and past in below notes in the **Description** box. This is to provide descriptions on what this playbook does. Systems Manager supports putting in nots as markdown, so feel free to format it as needed. 
 
 
-  ```
-  # What is does this playbook do?
+    ```
+    # What is does this playbook do?
 
-  This playbook will query the CloudWatch Synthetics Canary, and look for all resources related to the application based on it's Application Tag. This playbook takes an input of the CloudWatch Alarm ARN triggered by the canary
+    This playbook will query the CloudWatch Synthetics Canary, and look for all resources related to the application based on it's Application Tag. This playbook takes an input of the CloudWatch Alarm ARN triggered by the canary
 
-  Note : Application resources must be deployed using CloudFormation and properly tagged accordingly.
+    Note : Application resources must be deployed using CloudFormation and properly tagged accordingly.
 
-  ## Steps taken in the code
+    ## Steps taken in the code
 
-  ### Step 1
-  1. Describe CloudWatch Alarm ARN, and identify the Canary resource.
-  2. Describe the Canary resource to gather the value of 'Application' tag
-  3. Gather Cloudformation Stack with the same value of 'Application' tag.
-  4. List all resources in Cloudformation Stack.
-  5. Parse list of resources into String Output.
+    ### Step 1
+    1. Describe CloudWatch Alarm ARN, and identify the Canary resource.
+    2. Describe the Canary resource to gather the value of 'Application' tag
+    3. Gather Cloudformation Stack with the same value of 'Application' tag.
+    4. List all resources in Cloudformation Stack.
+    5. Parse list of resources into String Output.
 
-  ```
+    ```
 
   3. Under **Assume role** field, enter in the ARN of the IAM role we created in the previous step.
 
@@ -318,9 +326,13 @@ Once the automation document is created, we can now give it a test.
 
 ### 3.2 Building the "Investigate-Application-Resources" Playbook.
 
-Now that have have defined a playbook that captures all related AWS resources in the application, the next thing we want to do is to investigate these relevant resources and capture recent statistics, logs to look for insights and better understand the root cause of the issue.
+In the previous step, you have created a playbook that finds all related AWS resources in the application.
+In this step you will create a playbook that will interogate resources, capture recent metrics, and logs to look for insights and better understand the root cause of the issue.
 
-In practice there can be various permutations on what resources you will look at depending on the context of the issue. But in this scenario, we will be looking specifically at the Elastic Load Balancer, the Elastic Compute Service, and Relational Database Statistics and logs. We will then highlight the metrics that is considered outside standard norm threshold.
+In practice, there can be various possibilities of actions that the playbook can take to investigate depending on the scenario presented by the issue. The purpose of this Lab is to showcase how you can use playbook to aid investigation, rather than advise on a specific action path. 
+
+Therefore this lab will assume an example scenario, and the playbook look at configurations, metrics, and logs of Elastic Load Balancer, the Elastic Compute Service, and Relational Database in the resource. The playbook will then highlight the metrics and logs that is considered outside normal threshold. 
+
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-architecture-graphics2.png)
 
@@ -346,37 +358,38 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%expand "Click here for CloudFormation CLI deployment step"%}}
 
-In the Cloud9 terminal go to the templates folder using the following command.
 
-```
-cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
-```
+1. From the cloud9 terminal, copy, paste and run below command to get into the working script folder
 
-Then execute below command :
+  ```
+  cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
+  ```
+
+2. Then copy paste and execute below commands replacing the '<AutomationRoleArn>' with the Arn of **AutomationRole** you took note in previous step 3.0.
 
   
-```
-aws cloudformation create-stack --stack-name waopslab-playbook-investigate-resources \
-                                --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<ARN of Playbook IAM role (defined in previous step)> \
-                                --template-body file://playbook_investigate_application_resources.yml 
-```
-Example:
+  ```
+  aws cloudformation create-stack --stack-name waopslab-playbook-investigate-resources \
+                                  --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<AutomationRoleArn> \
+                                  --template-body file://playbook_investigate_application_resources.yml 
+  ```
+  Example:
 
-```
-aws cloudformation create-stack --stack-name waopslab-playbook-investigate-resources \
-                                --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/xxxx-playbook-role \
-                                --template-body file://playbook_investigate_application_resources.yml 
-```
+  ```
+  aws cloudformation create-stack --stack-name waopslab-playbook-investigate-resources \
+                                  --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/xxxx-playbook-role \
+                                  --template-body file://playbook_investigate_application_resources.yml 
+  ```
 
-**Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
+  **Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
 
-Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
+3. Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
 
-```
-aws cloudformation describe-stacks --stack-name waopslab-playbook-investigate-resources
-```
+  ```
+  aws cloudformation describe-stacks --stack-name waopslab-playbook-investigate-resources
+  ```
 
-Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
+4. Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
 
 {{%/expand%}}
 
@@ -622,7 +635,7 @@ Click `confirm subscription` to start confirm subscription to the application al
 
 ### 3.4 Executing investigation Playbook.
 
-Now that we have built all of our our Playbook to Investigate this issue, lets test our traffic high traffic simulation is running, to see what our we'll discover. 
+Now that you have built all of our our Playbook to Investigate this issue, you will now execute the playbook to discover the result of the investigation. 
 
   1. Go to the Output section of the deployed cloudformation stack `walab-ops-sample-application`, and take note of below output values.
 
