@@ -10,7 +10,7 @@ hidden: false
 ## Authors
 * **Stephen Salim**, Well-Architected Geo Solutions Architect.
 
-#### Contributors
+##### Contributors
 * **Brian Carlson**, Well-Architected Operational Excellence Pillar Lead.
 * **Jang Whan Han**, Well-Architected Geo Solutions Architect.
 

@@ -19,11 +19,11 @@ That said, scaling up the service directly as such, may not be suitable as a lon
 
 As mentioned in previous section, when building your playbook or runbooks, repeatability is very important. You want avoid repeating the same effort of writing / building mechanism if it could be re-used for other things in the future.
 
-As described above, the runbook will have an approval mechanism that will wait for a certain amount of time, to give opportunity for the approver to trigger a deny to the scale up. When the time in the runbook lapsed, execution will continue with an automatic approve.
+In this section you will build a approval mechanism runbook component. The component will issue a timer, and give opportunity for the approver to trigger a deny of the request. If the timer runbook lapsed, or the approver approves, the runbook will proceed to move to next step of it's activity.
 
   ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation-graphics1.png)
 
-The way to achieve this is described below :
+The way to achieve this scenario in Systems Manager Automation document is as below :
 
 1. First, the runbook will execute a separate runbook called `Approve-Timer`. This runbook will wait for a designated amount of time that we specify. When the wait time lapse, `Approve-Timer` runbook will automatically send an Approval signal to the gate.
 
@@ -70,8 +70,7 @@ Follow below steps to build this runbook.
 
 5 . Click on **Create automation** once you are done
 
-
-Now that we have created the `Approval-Timer`, what we will do next is create the actual Approval runbook that will have the Approval Step. As it executes this runbook will execute the `Approval-Timer` runbook to wait until the time lapse and trigger an automatic approval asynchronously. Please follow below steps to continue.
+Now that you have created the `Approval-Timer`, the next thing to do is to create the actual Approval runbook that will have the Approval Step. As it executes this runbook will execute the `Approval-Timer` runbook to wait until the time lapse and trigger an automatic approval asynchronously. Please follow below steps to continue.
 
 
 1. Go to the AWS Systems Manager console, from there click on documents to get into the page as per screen shot. Once you are there, click on **Create Automation**
@@ -107,7 +106,7 @@ Now that we have created the `Approval-Timer`, what we will do next is create th
     * `NotificationTopicArn` as the **Parameter name**, set the type as type `String` and **Required** is `Yes`.
     * `ApproverRoleArn` as the **Parameter name**, set the type as type `String` and **Required** is `Yes`.
 
-5. Then under the **Step 1** create a step to execute `aws:executeScript` with name `executeAutoApproveTimer`. Set the Runtime as `Python3.6` and paste in below script into the script section.
+5. Then under the **Step 1** create a step to execute `aws:executeScript` with name `executeAutoApproveTimer`. Set the Runtime as `Python3.6` and paste in below script into the script section. This code snippet will execute the `Approval-Timer` runbook you created before asyncronously.
 
     ```
     import boto3
@@ -188,12 +187,12 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 ### 4.1 Building the "ECS-Scale-Up" runbook.
 
-Now that we've created a repeatable auto approval mechanism ( with automatic approval timer), let's go ahead and use it in our runbook to scape our ECS service. 
+Now that you have created an auto approval mechanism runbook component. The next thing to do is to attach it in the ECS Scale up runbook. 
 
   ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation-graphics2.png)
 
 
-Our next runbook will do the following :
+The next runbook will do the following :
 
 1. Execute the `Approval-Gate` runbook we created in previous step, and the mechanism described previously will follow. 
 2. If the `Approval-Gate` returns successful, then we will execute the next step to increase the number of ECS service by our defined task to meet the immediate demand.
@@ -316,7 +315,7 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 ### 4.2 Executing remediation Runbook.
 
-Now that you have built our runbook to Investigate this issue, lets execute it to remediate the performance event.
+Now that you have built the runbook to remediate this issue, lets execute it to remediate the performance event.
 
   1. Go to the output tab Cloudformation stack deployed named `walab-ops-sample-application`. Take note following values; OutputECSCluster, OutputECSService, OutputSystemOwnersTopicArn
 
