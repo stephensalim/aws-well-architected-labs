@@ -6,7 +6,7 @@ weight: 1
 pre: "<b>1. </b>"
 ---
 
-I this section, you are going to prepare a sample application. The application is an API hosted inside docker container orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. The API will take 2 action that you can trigger by doing a POST call to the */encrypt* / */decrypt* action.
+I this section, you will prepare a sample application. The application is an API hosted inside docker container orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. The API will take 2 action that you can trigger by doing a POST call to the */encrypt* / */decrypt* action.
 
 * The *encrypt* action will allow you to pass a secret message along with a 'Name' key as the identifier, and it will return a 'Secret Key Id' that you can use later to decrypt your message.
 * The *decrypt* action allows you to then decrypt the secret message passing along the 'Name' key and 'Secret Key Id' you obtained before to get your secret message.
@@ -22,7 +22,7 @@ Both actions will subsequently make a write and read call to the application dat
 
 ### 1.0 Prepare Cloud9 workspace.
 
-In this first step you are going to provision a [Cloudformation](https://aws.amazon.com/cloudformation/) stack that builds a Cloud9 workspace along with the VPC for the sample application. This Cloud9 workspace will be used to execute the provisioning script of the sample application. You can choose the to deploy stack in one of the region below. 
+In this first step you will provision a [Cloudformation](https://aws.amazon.com/cloudformation/) stack that builds a Cloud9 workspace along with the VPC for the sample application. This Cloud9 workspace will be used to execute the provisioning script of the sample application. You can choose the to deploy stack in one of the region below. 
 
 1. Click on the link below to deploy the stack. This will take you to the Cloudformation console in your account. Use `walab-ops-base-resources` as the stack name, and take the default values for all options
 
@@ -37,7 +37,7 @@ In this first step you are going to provision a [Cloudformation](https://aws.ama
 
 ### 1.1 Run build application script.
 
-Next, you are going to execute a script to build and deploy our application environment from the Cloud9 workspace you deployed in the first step
+Next, you will to execute a script to build and deploy our application environment from the Cloud9 workspace you deployed in the first step
 
   1. From the main console, search and click for the **Cloud9** to get into the Cloud9 console. 
   2. Click **Your environments** section on the left menu, and locate an environment named `WellArchitectedOps-walab-ops-base-resources` as below, then click **Open IDE**.
