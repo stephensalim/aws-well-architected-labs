@@ -6,7 +6,7 @@ weight: 1
 pre: "<b>1. </b>"
 ---
 
-I this section, you will prepare a sample application. The application is an API hosted inside docker container orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. The API will take 2 action that you can trigger by doing a POST call to the */encrypt* / */decrypt* action.
+I this section, you will prepare a sample application. The application is an API hosted inside docker container, orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. The API will take 2 actions that you will trigger by doing a POST call to the */encrypt* / */decrypt* action.
 
 * The *encrypt* action will allow you to pass a secret message along with a 'Name' key as the identifier, and it will return a 'Secret Key Id' that you can use later to decrypt your message.
 * The *decrypt* action allows you to then decrypt the secret message passing along the 'Name' key and 'Secret Key Id' you obtained before to get your secret message.
