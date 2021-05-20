@@ -40,7 +40,7 @@ In this lab, we will show how you can build an automated [Runbooks](https://wa.a
 
 * Build & execute automated playbooks to support your investigations
 * Build & execute automated runbooks to remediate specific faults
-* Enabling traceability of operations activities in environment
+* Enabling traceability of operations activities in your environment
 
 
 ## Prerequisites:
