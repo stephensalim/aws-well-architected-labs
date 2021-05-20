@@ -85,7 +85,7 @@ Follow below steps to continue :
 13. Click on the **Monitoring** tab
 14. From here you will see the visualization of the metrics that the canary monitor generates.
 15. Locate the 'Duration' metric that is being used to trigger the cloudwatch alarm.
-16. From here you will see the average duration of the canary request to complete. A value above 6000ms signifies that the request has taken more than 6 seconds to receive a response from the application. Indicating a performance issue in the API.  
+16. Here you will see the average Duration value of the canary request representing the time to complete. A value above 6000ms signifies that the request has taken more than 6 seconds to receive a response from the application, indicating a performance issue in the API.
 
     ![Section3 Canary](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-canary-monitor.png)
 
@@ -93,7 +93,7 @@ Follow below steps to continue :
 
 You have now completed the second section of the Lab.
 
-By now you should have a `simulate_request.sh` running in the background, that will simulate large influx of traffic to your API causing it to respond very slowly, and time out occasionally. Along with that, a Cloudwatch Alarm triggering performance issue notification to your System Operator to take action
+You should still have the `simulate_request.sh` running in the background simulating large influx of traffic to your API. This is causing it to respond very slowly and time out periodically. The Cloudwatch Alarm will be triggering and performance issue notifications sent to your System Operator to prompt them into action.
 
 This concludes **Section 2** of this lab. Click Next step to continue to the next section where we will build an Automated playbook to assist investigation of the issue. 
 
