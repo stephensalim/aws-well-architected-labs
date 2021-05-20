@@ -31,7 +31,6 @@ Automation can support improved reliability by preventing the introduction of er
 
 In this lab, we will show how you can build an automated [Runbooks](https://wa.aws.amazon.com/wat.concept.runbook.en.html) and [Playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) to investigate and remediate your application issue using AWS services. Services we will use in this lab include:
 
-* Event Bridge
 * Systems Manager Automation
 * Simple Notification Service
 * CloudWatch Synthetics

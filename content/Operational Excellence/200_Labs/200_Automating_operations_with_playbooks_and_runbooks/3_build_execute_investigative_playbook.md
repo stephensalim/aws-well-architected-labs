@@ -10,13 +10,13 @@ In the previous section, you have simulated a performance issue using script tha
 
 For an operator who knows the architecture and understands the issue, the investigation path to the issue will be obvious. They would know which service or components are involved in the architecture, which metrics and logs are relevant to the investigation, and which action to take given the result of the scenario presented. However if the same issue is presented to a new operator, this can be challenging.  
 
-This is where [playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) comes into place. [Playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) are essentially a documented predefined steps / guide to perform to identify an issue. The results from each step are used to determine the next steps to take until the issue is identified or escalated. For a playbook to be scalable, automating the tasks and process to be taken is very important. 
+This is where [playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) become important. [Playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) are a documented set of predefined steps to perform in order to identify an issue. The results from each step are used to determine the next steps to take, until the issue is identified or an escalation is required. Automating playbook activities is critical to reducing the time to respond to an incident.
 
-There are various different tools you can use to build an automated playbook, and in AWS you can use [AWS Systems Manager Automation Document](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html) (now called runbook ). The service allows you to create a series of executable steps orchestrating investigation of the issue.
+On AWS there are various different tools that you can use to build an automated playbook. [AWS Systems Manager Automation Document](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html) allows you to create a series of executable steps to orchestrate you investigation & remediation.
 
 You can execute python / nodejs script, call the api of AWS service directly, or execute a remote command into the host operating system where your application is potentially running ( Both in EC2 or on-prem ).
 
-In this section, you will focus on creating an automated playbook to assist root cause investigation of the issue from a systems operator perspective. 
+In this section, you will focus on creating an automated playbook to assist in your root cause investigation of the issue, taking a systems operator perspective.
 
 #### Actions items in this section :
 1. You will build a playbook to gather information about the workload & query relevant metrics and logs.
@@ -24,8 +24,7 @@ In this section, you will focus on creating an automated playbook to assist root
 
 ### 3.0 Prepare Automation Document IAM Role
 
-The Systems Manager Automation Document we are building will require to assume a permission to executes the investigative / remediation steps. For this we will need to create an IAM role to assume permission allowed to conduct these playbook. To simplify the deployment process, we have created a cloudformation template that you can deploy via the console or aws cli.
-Please choose one of below deployment step
+The Systems Manager Automation Document you are building will require assumed permissions to execute the investigation and remediation steps. You will need to create the IAM role it will assume granting the permissions to perform the playbook activities. To simplify the deployment process, a cloudformation template has been provided that you can deploy via the console or aws cli. Please choose one of the two following deployment steps.
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
   1. Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/automation_role.yml "Resources template")
