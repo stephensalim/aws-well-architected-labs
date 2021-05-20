@@ -6,9 +6,9 @@ weight: 2
 pre: "<b>2. </b>"
 ---
 
-Being able to understand the health of your workload is essential in building a reliable operational practice. You need to gain visibility, define the baseline, and be able to analyze running state of the workload utilizing the appropriate tool. This will create an opportunity for you to streamline issue detection ,alerting and follow up actions to expedite the remediation process.
+Understanding the health of your workload is essential to performing reliable operations. Establish observability, define metrics and thresholds, and analyze your workload (leveraging appropriate services) to streamline issue detection, enable alerting, and expedite your ability to respond and perform remediation processes.
 
-In this section you will simulate a performance issue with the API. The issue will be detected by a canary monitor utilizing [CloudWatch Synthetics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html) that continuously check the API response time. If the API takes longer than 6 seconds to respond, the application is considered having an issue and a CloudWatch alarm will be triggered. This will in turn will send a notification email to the Systems Operator. The monitoring resources needed for this section is already deployed along with the cloudformation stack of your sample application. 
+In this section you will simulate a performance issue with the API. A [CloudWatch Synthetics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html) canary is continuously checking the API response time to detect the simulated issue. If the API takes longer than 6 seconds to respond it is considered an application issue and a CloudWatch alarm will be triggered. A notification email will be sent to the Systems Operator in response. 
 
 #### Actions items in this section :
 1. You will run a script that will send large amount of traffic to the API

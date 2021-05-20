@@ -106,7 +106,7 @@ The application will take a JSON payload with `Name` ad the identifier and `Text
 It will encrypt the value under text key with a designated KMS key and store the encrypted text in the RDS database with the `Name` as the primary key.
 
 {{% notice note %}}
-**Note:** For simplicity purpose this sample application will re-use same KMS keys for each record generated. For better security practice we recommend that you use a isolate each KMS key for each identifier.
+**Note:** For simplicity purposes the sample application will re-use the same KMS keys for each record generated. Use an individual KMS key for each identifier, to limit the blast radius of exposed keys to individual users.
 {{% /notice %}}
 
 1. In the **Cloud9** terminal, copy , paste, and run below command replacing the < Application Endpoint URL > with the **OutputPattern1ApplicationEndpoint** from previous step. This command will run [curl](https://curl.se/) to send a POST request with the secret message payload `{"Name":"Bob","Text":"Run your operations as code"}` to the API.
