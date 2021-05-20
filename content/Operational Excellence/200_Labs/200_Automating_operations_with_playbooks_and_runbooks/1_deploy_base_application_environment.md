@@ -68,7 +68,7 @@ Next, you will to execute a script to build and deploy you application environme
   `<owner@domain.com>` with email address that represents business owner of the workload.
   {{% /notice %}}
 
-  6. Run the above command to execute to build and provisioning of the application stack.  Wait until the script is complete, this process should take about 20 mins.
+  6. Run the above command to execute the build and provisioning of the application stack. Wait until the script is complete, this process should take about 20 mins.
 
         ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-app-build.png)
 
