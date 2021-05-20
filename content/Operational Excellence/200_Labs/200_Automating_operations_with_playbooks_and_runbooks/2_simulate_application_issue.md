@@ -11,8 +11,8 @@ Being able to understand the health of your workload is essential in building a 
 In this section you will simulate a performance issue with the API. The issue will be detected by a canary monitor utilizing [CloudWatch Synthetics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html) that continuously check the API response time. If the API takes longer than 6 seconds to respond, the application is considered having an issue and a CloudWatch alarm will be triggered. This will in turn will send a notification email to the Systems Operator. The monitoring resources needed for this section is already deployed along with the cloudformation stack of your sample application. 
 
 #### Actions items in this section :
-1. Run a script that will send large amount of traffic to the API
-2. Observe & confirm the issue through AWS monitoring tools.  
+1. You will run a script that will send large amount of traffic to the API
+2. You will observe & confirm the issue through AWS monitoring tools.  
 
 ![Section3 Base Architecture](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-testing-canary-alarm-architecture.png)
 

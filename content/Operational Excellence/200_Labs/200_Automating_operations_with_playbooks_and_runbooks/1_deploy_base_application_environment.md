@@ -6,16 +6,19 @@ weight: 1
 pre: "<b>1. </b>"
 ---
 
-I this section, you will prepare a sample application. The application is an API hosted inside docker container, orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. The API will take 2 actions that you will trigger by doing a POST call to the */encrypt* / */decrypt* action.
+In this section, you will prepare a sample application. The application is an API hosted inside docker container, orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. The API will take 2 actions that you will trigger by doing a POST call to the */encrypt* / */decrypt* action.
 
 * The *encrypt* action will allow you to pass a secret message along with a 'Name' key as the identifier, and it will return a 'Secret Key Id' that you can use later to decrypt your message.
 * The *decrypt* action allows you to then decrypt the secret message passing along the 'Name' key and 'Secret Key Id' you obtained before to get your secret message.
 
-Both actions will subsequently make a write and read call to the application database hosted in RDS, where the encrypted messages are being stored. Because the goal of this lab is to show how you can use runbook and playbook to support the operation of your workload, the steps on how to build / provision this sample application and it's underlying infrastructure along with it, is not within the context of the lab. Therefore so simplify the process, we have created a step by step instruction you can follow to automate the provisioning of this application.  
+Both actions will subsequently make a write and read call to the application database hosted in RDS, where the encrypted messages are being stored. 
+The following step by step instructions will provision the application that you will use with your runbooks and playbooks. 
+Explore the contents of the CloudFormation script to learn more about the environment and application.
+
 
 #### Actions items in this section :
-1. Prepare the [Cloud9](https://aws.amazon.com/cloud9/) workspace launched with a new VPC.
-2. Execute application build script from Cloud9 console, to build the sample application. 
+1. You will prepare the [Cloud9](https://aws.amazon.com/cloud9/) workspace launched with a new VPC.
+2. You will execute the application build script from the Cloud9 console to build the sample application. 
 
 ![Section1 App Arch](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-application.png)
 
@@ -37,7 +40,7 @@ In this first step you will provision a [Cloudformation](https://aws.amazon.com/
 
 ### 1.1 Run build application script.
 
-Next, you will to execute a script to build and deploy our application environment from the Cloud9 workspace you deployed in the first step
+Next, you will to execute a script to build and deploy you application environment from the Cloud9 workspace you deployed in the first step
 
   1. From the main console, search and click for the **Cloud9** to get into the Cloud9 console. 
   2. Click **Your environments** section on the left menu, and locate an environment named `WellArchitectedOps-walab-ops-base-resources` as below, then click **Open IDE**.

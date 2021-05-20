@@ -19,8 +19,8 @@ You can execute python / nodejs script, call the api of AWS service directly, or
 In this section, you will focus on creating an automated playbook to assist root cause investigation of the issue from a systems operator perspective. 
 
 #### Actions items in this section :
-1. Build Systems Manager Automation document to gather information about the workload & query relevant metrics and logs.
-2. Execute the automation document to investigate issue 
+1. You will build a playbook to gather information about the workload & query relevant metrics and logs.
+2. You will execute the automation document to investigate your issue. 
 
 ### 3.0 Prepare Automation Document IAM Role
 
