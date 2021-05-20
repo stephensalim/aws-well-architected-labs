@@ -12,7 +12,7 @@ In this section you will simulate a performance issue with the API. A [CloudWatc
 
 #### Actions items in this section :
 1. You will run a script that will send large amount of traffic to the API
-2. You will observe & confirm the issue through AWS monitoring tools.  
+2. You will observe & confirm the issue through AWS monitoring tools. The following resources had been deployed to perform these actions.
 
 ![Section3 Base Architecture](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-testing-canary-alarm-architecture.png)
 
