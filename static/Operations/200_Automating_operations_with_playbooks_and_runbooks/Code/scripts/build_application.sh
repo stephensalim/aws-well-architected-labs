@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Build Script
 LABEL='latest'
 ECR_REPONAME='walab-ops-sample-application'
 SAMPLE_APPNAME=$ECR_REPONAME
