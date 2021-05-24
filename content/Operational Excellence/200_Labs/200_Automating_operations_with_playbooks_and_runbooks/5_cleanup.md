@@ -6,12 +6,14 @@ weight: 5
 pre: "<b>5. </b>"
 ---
 
-To all resources related to the Lab. execute below commands.
+In this section you will delete all resources related to the lab environment.
 
+1. copy, paste, and execute below command to go into the script folder.
 ```
       cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
 ```
 
+2. execute the teardown_resources.sh script to delete all resources related to the lab.
 ```
       bash teardown_resources.sh
 ```

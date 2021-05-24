@@ -10,7 +10,7 @@ hidden: false
 ## Authors
 * **Stephen Salim**, Well-Architected Geo Solutions Architect.
 
-#### Contributors
+##### Contributors
 * **Brian Carlson**, Well-Architected Operational Excellence Pillar Lead.
 * **Jang Whan Han**, Well-Architected Geo Solutions Architect.
 
@@ -29,9 +29,8 @@ Executing either [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html
 Automation can support improved reliability by preventing the introduction of errors through manual processes, scalability by deploying and decommissioning resources dynamically, traceability of the workloads operational posture through logs of the automation activity, and response time by triggering automation in response to events. We will go into traceability of activities in more detail in our next lab.
 
 
-In this lab, we will show how you can build an automated [Runbooks](https://wa.aws.amazon.com/wat.concept.runbook.en.html) and [Playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) to investigate and remediate an application issue using AWS services. Services we will use in this lab include:
+In this lab, we will show how you can build an automated [Runbooks](https://wa.aws.amazon.com/wat.concept.runbook.en.html) and [Playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) to investigate and remediate your application issue using AWS services. Services we will use in this lab include:
 
-* Event Bridge
 * Systems Manager Automation
 * Simple Notification Service
 * CloudWatch Synthetics
@@ -40,7 +39,7 @@ In this lab, we will show how you can build an automated [Runbooks](https://wa.a
 
 * Build & execute automated playbooks to support your investigations
 * Build & execute automated runbooks to remediate specific faults
-* Enabling traceability of operations activities in environment
+* Enabling traceability of operations activities in your environment
 
 
 ## Prerequisites:

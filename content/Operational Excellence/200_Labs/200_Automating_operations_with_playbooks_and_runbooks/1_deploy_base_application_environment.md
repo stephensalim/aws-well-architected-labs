@@ -6,23 +6,26 @@ weight: 1
 pre: "<b>1. </b>"
 ---
 
-I this section, you are going to prepare a sample application. The application is an API hosted inside docker container orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. The API will take 2 action that you can trigger by doing a POST call to the */encrypt* / */decrypt* action.
+In this section, you will prepare a sample application. The application is an API hosted inside docker container, orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. The API will take 2 actions that you will trigger by doing a POST call to the */encrypt* / */decrypt* action.
 
 * The *encrypt* action will allow you to pass a secret message along with a 'Name' key as the identifier, and it will return a 'Secret Key Id' that you can use later to decrypt your message.
 * The *decrypt* action allows you to then decrypt the secret message passing along the 'Name' key and 'Secret Key Id' you obtained before to get your secret message.
 
-Both actions will subsequently make a write and read call to the application database hosted in RDS, where the encrypted messages are being stored. Because the goal of this lab is to show how you can use runbook and playbook to support the operation of your workload, the steps on how to build / provision this sample application and it's underlying infrastructure along with it, is not within the context of the lab. Therefore so simplify the process, we have created a step by step instruction you can follow to automate the provisioning of this application.  
+Both actions will subsequently make a write and read call to the application database hosted in RDS, where the encrypted messages are being stored. 
+The following step by step instructions will provision the application that you will use with your runbooks and playbooks. 
+Explore the contents of the CloudFormation script to learn more about the environment and application.
+
 
 #### Actions items in this section :
-1. Prepare the [Cloud9](https://aws.amazon.com/cloud9/) workspace launched with a new VPC.
-2. Execute application build script from Cloud9 console, to build the sample application. 
+1. You will prepare the [Cloud9](https://aws.amazon.com/cloud9/) workspace launched with a new VPC.
+2. You will execute the application build script from the Cloud9 console to build the sample application. 
 
 ![Section1 App Arch](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-application.png)
 
 
 ### 1.0 Prepare Cloud9 workspace.
 
-In this first step you are going to provision a [Cloudformation](https://aws.amazon.com/cloudformation/) stack that builds a Cloud9 workspace along with the VPC for the sample application. This Cloud9 workspace will be used to execute the provisioning script of the sample application. You can choose the to deploy stack in one of the region below. 
+In this first step you will provision a [Cloudformation](https://aws.amazon.com/cloudformation/) stack that builds a Cloud9 workspace along with the VPC for the sample application. This Cloud9 workspace will be used to execute the provisioning script of the sample application. You can choose the to deploy stack in one of the region below. 
 
 1. Click on the link below to deploy the stack. This will take you to the Cloudformation console in your account. Use `walab-ops-base-resources` as the stack name, and take the default values for all options
 
@@ -37,7 +40,7 @@ In this first step you are going to provision a [Cloudformation](https://aws.ama
 
 ### 1.1 Run build application script.
 
-Next, you are going to execute a script to build and deploy our application environment from the Cloud9 workspace you deployed in the first step
+Next, you will to execute a script to build and deploy you application environment from the Cloud9 workspace you deployed in the first step
 
   1. From the main console, search and click for the **Cloud9** to get into the Cloud9 console. 
   2. Click **Your environments** section on the left menu, and locate an environment named `WellArchitectedOps-walab-ops-base-resources` as below, then click **Open IDE**.
@@ -65,7 +68,7 @@ Next, you are going to execute a script to build and deploy our application envi
   `<owner@domain.com>` with email address that represents business owner of the workload.
   {{% /notice %}}
 
-  6. Run the above command to execute to build and provisioning of the application stack.  Wait until the script is complete, this process should take about 20 mins.
+  6. Run the above command to execute the build and provisioning of the application stack. Wait until the script is complete, this process should take about 20 mins.
 
         ![Section 2 Cloud9 IDE Welcome Screen](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-base-app-build.png)
 
@@ -103,7 +106,7 @@ The application will take a JSON payload with `Name` ad the identifier and `Text
 It will encrypt the value under text key with a designated KMS key and store the encrypted text in the RDS database with the `Name` as the primary key.
 
 {{% notice note %}}
-**Note:** For simplicity purpose this sample application will re-use same KMS keys for each record generated. For better security practice we recommend that you use a isolate each KMS key for each identifier.
+**Note:** For simplicity purposes the sample application will re-use the same KMS keys for each record generated. Use an individual KMS key for each identifier, to limit the blast radius of exposed keys to individual users.
 {{% /notice %}}
 
 1. In the **Cloud9** terminal, copy , paste, and run below command replacing the < Application Endpoint URL > with the **OutputPattern1ApplicationEndpoint** from previous step. This command will run [curl](https://curl.se/) to send a POST request with the secret message payload `{"Name":"Bob","Text":"Run your operations as code"}` to the API.
