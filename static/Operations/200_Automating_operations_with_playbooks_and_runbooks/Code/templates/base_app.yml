@@ -195,9 +195,9 @@ Resources:
             Value: !GetAtt RDS.Endpoint.Address
           - Name: KeyId
             Value: !Ref KMSKey
-          - NAME: DBSecret
+          - Name: DBSecret
             Value: !Ref RDSSecret
-          - NAME: REGION
+          - Name: REGION
             Value: !Ref AWS::Region
         PortMappings:
         - ContainerPort: 80
