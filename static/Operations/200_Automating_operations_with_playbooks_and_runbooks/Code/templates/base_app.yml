@@ -408,7 +408,8 @@ Resources:
                 cloudwatch:namespace: CloudWatchSynthetics
           - Effect: Allow
             Resource: '*'
-            Action: ec2:CreateNetworkInterface             
+            Action: 
+              - ec2:*            
 
   ResultsBucket:
     Type: AWS::S3::Bucket
