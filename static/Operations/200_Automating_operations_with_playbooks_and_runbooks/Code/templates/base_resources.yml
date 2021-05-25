@@ -25,6 +25,8 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub "${AWS::StackName}-VPC"
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
 
   PublicSubnet1:
     Type: 'AWS::EC2::Subnet'
