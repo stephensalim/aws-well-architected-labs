@@ -559,12 +559,6 @@ aws cloudformation describe-stacks --stack-name waopslab-playbook-investigate-ap
 
 Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
 
-Check for an email on the address you've specified, in **NotificationEmail** parameter.
-Click `confirm subscription` to start confirm subscription to the application alarm.
-
-  ![Section2 DNS Output](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-email-confirm.png)
-
-
 {{%/expand%}}
 
 {{%expand "Click here for Console step by step"%}}
