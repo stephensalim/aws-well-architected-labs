@@ -57,15 +57,15 @@ Next, you will to execute a script to build and deploy you application environme
       cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
       ```
 
-  5. Then copy and paste below command replacing `<sysops@domain.com>` and `<owner@domain.com>` with the email address you would like the application to notify you with.  
+  5. Then copy and paste below command replacing `sysops@domain.com` and `owner@domain.com` with the email address you would like the application to notify you with.  
 
       ```
-      bash build_application.sh walab-ops-base-resources <sysops@domain.com> <owner@domain.com>
+      bash build_application.sh walab-ops-base-resources sysops@domain.com owner@domain.com
       ```
 
   {{% notice note %}}
-  Replace the value of `<sysops@domain.com>` with email address that represents the system operators team of the workload.
-  `<owner@domain.com>` with email address that represents business owner of the workload.
+  Replace the value of `sysops@domain.com` with email address that represents the system operators team of the workload.
+  `owner@domain.com` with email address that represents business owner of the workload.
   {{% /notice %}}
 
   6. Run the above command to execute the build and provisioning of the application stack. Wait until the script is complete, this process should take about 20 mins.
@@ -109,12 +109,12 @@ It will encrypt the value under text key with a designated KMS key and store the
 **Note:** For simplicity purposes the sample application will re-use the same KMS keys for each record generated. Use an individual KMS key for each identifier, to limit the blast radius of exposed keys to individual users.
 {{% /notice %}}
 
-1. In the **Cloud9** terminal, copy , paste, and run below command replacing the < Application Endpoint URL > with the **OutputPattern1ApplicationEndpoint** from previous step. This command will run [curl](https://curl.se/) to send a POST request with the secret message payload `{"Name":"Bob","Text":"Run your operations as code"}` to the API.
+1. In the **Cloud9** terminal, copy , paste, and run below command replacing the `ApplicationEndpoint` with the **OutputPattern1ApplicationEndpoint** from previous step. This command will run [curl](https://curl.se/) to send a POST request with the secret message payload `{"Name":"Bob","Text":"Run your operations as code"}` to the API.
 
     ```
-    ALBURL="< Application Endpoint URL >"
+    ALBEndpoint="ApplicationEndpoint"
 
-    curl --header "Content-Type: application/json" --request POST --data '{"Name":"Bob","Text":"Run your operations as code"}' $ALBURL/encrypt
+    curl --header "Content-Type: application/json" --request POST --data '{"Name":"Bob","Text":"Run your operations as code"}' $ALBEndpoint/encrypt
     ```
 
 2. Once you execute this command you should see an output like below :

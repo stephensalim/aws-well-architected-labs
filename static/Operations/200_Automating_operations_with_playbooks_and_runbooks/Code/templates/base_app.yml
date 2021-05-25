@@ -488,6 +488,19 @@ Resources:
         RunConfig: 
           TimeoutInSeconds: 60
           EnvironmentVariables: { "CANARY_ENDPOINT" : !GetAtt ALB.DNSName }
+        VPCConfig:
+          SecurityGroupIds: 
+            - !Ref ELBSecurityGroup
+          SubnetIds: 
+            -
+              Fn::ImportValue:
+                !Sub "${BaselineVpcStack}-PublicSubnet1"
+            -
+              Fn::ImportValue:
+                !Sub "${BaselineVpcStack}-PublicSubnet2"
+          VpcId: 
+            Fn::ImportValue:
+              !Sub "${BaselineVpcStack}-VpcId"            
         FailureRetentionPeriod: 30
         SuccessRetentionPeriod: 30
         StartCanaryAfterCreation: true
