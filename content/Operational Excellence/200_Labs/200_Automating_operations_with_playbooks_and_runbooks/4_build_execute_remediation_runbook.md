@@ -155,27 +155,27 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%expand "Click here for CloudFormation CLI deployment step"%}}
 
-In the Cloud9 terminal go to the templates folder using the following command.
+1. From the cloud9 terminal, copy, paste and run below command to get into the working script folder
 
-```
-cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
-```
+    ```
+    cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
+    ```
 
 
-To deploy from the command line, ensure that you have installed and configured AWS CLI with the appropriate credentials.
+2. Then copy paste and execute below commands replacing the 'AutomationRoleArn' with the Arn of **AutomationRole** you took note in previous step 3.0.
   
-```
-aws cloudformation create-stack --stack-name waopslab-runbook-approval-gate \
-                                --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<ARN of Playbook IAM role (defined in previous step)> \
-                                --template-body file://runbook_approval_gate.yml 
-```
-Example:
+    ```
+    aws cloudformation create-stack --stack-name waopslab-runbook-approval-gate \
+                                    --parameters ParameterKey=PlaybookIAMRole,ParameterValue=AutomationRoleArn \
+                                    --template-body file://runbook_approval_gate.yml 
+    ```
+    Example:
 
-```
-aws cloudformation create-stack --stack-name waopslab-runbook-approval-gate \
-                                --parameters ParameterKey=arn:aws:iam::000000000000:role/xxxx-runbook-role \
-                                --template-body file://runbook_approval_gate.yml 
-```
+    ```
+    aws cloudformation create-stack --stack-name waopslab-runbook-approval-gate \
+                                    --parameters ParameterKey=arn:aws:iam::000000000000:role/xxxx-runbook-role \
+                                    --template-body file://runbook_approval_gate.yml 
+    ```
 
 **Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
 
@@ -284,26 +284,26 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%expand "Click here for CloudFormation CLI deployment step"%}}
 
-In the Cloud9 terminal go to the templates folder using the following command.
+1. From the cloud9 terminal, copy, paste and run below command to get into the working script folder
 
-```
-cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
-```
+    ```
+    cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
+    ```
 
-Then execute below command :
+2. Then copy paste and execute below commands replacing the 'AutomationRoleArn' with the Arn of **AutomationRole** you took note in previous step 3.0.
   
-```
-aws cloudformation create-stack --stack-name waopslab-runbook-scale-ecs-service \
-                                --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<ARN of Playbook IAM role (defined in previous step)> \
-                                --template-body file://runbook_scale_ecs_service.yml 
-```
-Example:
+    ```
+    aws cloudformation create-stack --stack-name waopslab-runbook-scale-ecs-service \
+                                    --parameters ParameterKey=PlaybookIAMRole,ParameterValue=AutomationRoleArn \
+                                    --template-body file://runbook_scale_ecs_service.yml 
+    ```
+    Example:
 
-```
-aws cloudformation create-stack --stack-name waopslab-runbook-scale-ecs-service \
-                                --parameters ParameterKey=arn:aws:iam::000000000000:role/xxxx-playbook-role \
-                                --template-body file://runbook_scale_ecs_service.yml 
-```
+    ```
+    aws cloudformation create-stack --stack-name waopslab-runbook-scale-ecs-service \
+                                    --parameters ParameterKey=arn:aws:iam::000000000000:role/AutomationRole \
+                                    --template-body file://runbook_scale_ecs_service.yml 
+    ```
 
 **Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
 

@@ -120,7 +120,7 @@ It will encrypt the value under text key with a designated KMS key and store the
 2. Once you execute this command you should see an output like below :
 
     ```
-    {"Message":"Data encrypted and stored, keep your key save","Key":"<encrypt key (take note) >"}
+    {"Message":"Data encrypted and stored, keep your key save","Key":"EncryptKey"}
     ```
 
 3. Take note of the encrypt key value under **Key** .
@@ -129,7 +129,7 @@ It will encrypt the value under text key with a designated KMS key and store the
 
 
     ```
-    curl --header "Content-Type: application/json" --request GET --data '{"Name":"Bob","Key":"<encrypt key (taken from previous command ) >"}' $ALBURL/decrypt
+    curl --header "Content-Type: application/json" --request GET --data '{"Name":"Bob","Key":"EncryptKey"}' $ALBEndpoint/decrypt
 
     ```
 

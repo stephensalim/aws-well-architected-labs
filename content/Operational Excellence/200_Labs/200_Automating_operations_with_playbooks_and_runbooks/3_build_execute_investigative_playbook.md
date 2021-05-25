@@ -108,11 +108,11 @@ If you decide to deploy the stack from the console, ensure that you follow below
   cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
   ```
 
-2. Then copy paste and execute below commands replacing the '<AutomationRoleArn>' with the Arn of **AutomationRole** you took note in previous step 3.0.
+2. Then copy paste and execute below commands replacing the 'AutomationRoleArn' with the Arn of **AutomationRole** you took note in previous step 3.0.
 
   ```
   aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
-                                  --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<AutomationRoleArn> \
+                                  --parameters ParameterKey=PlaybookIAMRole,ParameterValue=AutomationRoleArn \
                                   --template-body file://playbook_gather_resources.yml 
   ```
 
@@ -121,7 +121,7 @@ If you decide to deploy the stack from the console, ensure that you follow below
   
   ```
   aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
-                                  --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/xxxx-playbook-role \
+                                  --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/AutomationRole \
                                   --template-body file://playbook_gather_resources.yml 
   ```
 
@@ -364,12 +364,12 @@ If you decide to deploy the stack from the console, ensure that you follow below
   cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
   ```
 
-2. Then copy paste and execute below commands replacing the '<AutomationRoleArn>' with the Arn of **AutomationRole** you took note in previous step 3.0.
+2. Then copy paste and execute below commands replacing the 'AutomationRoleArn' with the Arn of **AutomationRole** you took note in previous step 3.0.
 
   
   ```
   aws cloudformation create-stack --stack-name waopslab-playbook-investigate-resources \
-                                  --parameters ParameterKey=PlaybookIAMRole,ParameterValue=<AutomationRoleArn> \
+                                  --parameters ParameterKey=PlaybookIAMRole,ParameterValue=AutomationRoleArn \
                                   --template-body file://playbook_investigate_application_resources.yml 
   ```
   Example:
