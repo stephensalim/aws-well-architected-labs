@@ -406,6 +406,12 @@ Resources:
             Condition:
               StringEquals:
                 cloudwatch:namespace: CloudWatchSynthetics
+          - Effect: Allow
+            Resource: '*'
+            Action: ec2:CreateNetworkInterface
+            Condition:
+              StringEquals:
+                cloudwatch:namespace: CloudWatchSynthetics                
 
   ResultsBucket:
     Type: AWS::S3::Bucket
