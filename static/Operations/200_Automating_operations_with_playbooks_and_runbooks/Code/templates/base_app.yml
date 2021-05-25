@@ -55,6 +55,7 @@ Resources:
       LoadBalancerAttributes:
         - Key: idle_timeout.timeout_seconds
           Value: 30
+      Scheme: internal
 
   ALBTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
