@@ -420,6 +420,19 @@ Resources:
               SSEAlgorithm: AES256
     DeletionPolicy: Retain          
 
+  CanarySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Canary Sec Group
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${BaselineVpcStack}-VpcId"
+      Tags:
+      - Key: Name
+        Value: !Join [ "-", [ !Ref AWS::StackName, "CanarySecurityGroup"]]
+      - Key: Application
+        Value: "OpsExcellence-Lab"
+
   SyntheticsCanary:
     Type: 'AWS::Synthetics::Canary'
     Properties:
@@ -494,7 +507,7 @@ Resources:
           EnvironmentVariables: { "CANARY_ENDPOINT" : !GetAtt ALB.DNSName }
         VPCConfig:
           SecurityGroupIds: 
-            - !Ref ELBSecurityGroup
+            - !Ref CanarySecurityGroup
           SubnetIds: 
             -
               Fn::ImportValue:
