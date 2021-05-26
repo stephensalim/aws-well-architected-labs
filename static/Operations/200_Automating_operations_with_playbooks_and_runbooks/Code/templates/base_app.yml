@@ -511,10 +511,10 @@ Resources:
           SubnetIds: 
             -
               Fn::ImportValue:
-                !Sub "${BaselineVpcStack}-PublicSubnet1"
+                !Sub "${BaselineVpcStack}-PrivateSubnet1"
             -
               Fn::ImportValue:
-                !Sub "${BaselineVpcStack}-PublicSubnet2"
+                !Sub "${BaselineVpcStack}-PrivateSubnet2"
           VpcId: 
             Fn::ImportValue:
               !Sub "${BaselineVpcStack}-VpcId"            
