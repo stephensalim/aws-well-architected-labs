@@ -18,6 +18,7 @@ That said, scaling up the service directly as such, may not be suitable as a lon
 #### Actions items in this section :
 1. You will build a runbook to scale up the ECS cluster, with the approval mechanism.
 2. You will execute the runbook and observe the recovery of your application. 
+
 ### 4.0 Building the "Approval-Gate" Runbooks.
 
 As mentioned in previous section, when building your playbook or runbooks, repeatability is very important. You want avoid repeating the same effort of writing / building mechanism if it could be re-used for other things in the future.

@@ -99,10 +99,14 @@ Once the application is deployed successfully, go to your [Cloudformation consol
       ![Section2 DNS Output](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-dns-outputs.png)
 
 
-  4. Check for an email on the address you've specified, in **NotificationEmail** parameter.
+  4. Check for the emails on the address you've specified, in **NotificationEmail** parameter.
   5. Click `confirm subscription` to start confirm subscription to the application alarm.
 
       ![Section2 DNS Output](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section2-email-confirm.png)
+
+  {{% notice note %}}
+  There will be 2 emails send to your address, please ensure to subscribe to both of them
+  {{% /notice %}}
 
 
 ### 1.3. Test the Application launched.
