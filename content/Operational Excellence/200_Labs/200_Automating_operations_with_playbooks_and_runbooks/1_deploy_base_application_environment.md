@@ -6,8 +6,11 @@ weight: 1
 pre: "<b>1. </b>"
 ---
 
-In this section, you will prepare a sample application. The application is an API hosted inside docker container, orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. The API will take 2 actions that you will trigger by doing a POST call to the */encrypt* / */decrypt* action.
+In this section, you will prepare a sample application. The application is an API hosted inside docker container, orchestrated using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/), and with [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) fronting it. 
 
+The API is a private micro-service that sits within your [Amazon Virtual Private Cloud (VPC)](https://aws.amazon.com/vpc/), and communication to the API can only be done privately through connection within the VPC subnet, not via the internet. Therefore in this hypothetical scenario, the business owner agrees to run the API over HTTP protocol, to simplify the implementation. 
+
+The API will take 2 actions that you will trigger by doing a POST call to the */encrypt* / */decrypt* action.
 * The *encrypt* action will allow you to pass a secret message along with a 'Name' key as the identifier, and it will return a 'Secret Key Id' that you can use later to decrypt your message.
 * The *decrypt* action allows you to then decrypt the secret message passing along the 'Name' key and 'Secret Key Id' you obtained before to get your secret message.
 
@@ -15,6 +18,7 @@ Both actions will subsequently make a write and read call to the application dat
 The following step by step instructions will provision the application that you will use with your runbooks and playbooks. 
 Explore the contents of the CloudFormation script to learn more about the environment and application.
 
+You will use this sample application as a sandbox to simulate application performance issue, and execute your [Runbooks](https://wa.aws.amazon.com/wat.concept.runbook.en.html) and [Playbooks](https://wa.aws.amazon.com/wat.concept.playbook.en.html) automation. To Investigate and remediate the issue.
 
 #### Actions items in this section :
 1. You will prepare the [Cloud9](https://aws.amazon.com/cloud9/) workspace launched with a new VPC.
@@ -57,15 +61,17 @@ Next, you will to execute a script to build and deploy you application environme
       cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
       ```
 
-  5. Then copy and paste below command replacing `sysops@domain.com` and `owner@domain.com` with the email address you would like the application to notify you with.  
+  5. Then copy and paste below command replacing `sysops@domain.com` and `owner@domain.com` with the email address you would like the application to notify you with. Replace the `sysops@domain.com` value with email representing system operators team, and `owner@domain.com` with email address representing business owner.
+
 
       ```
       bash build_application.sh walab-ops-base-resources sysops@domain.com owner@domain.com
       ```
 
   {{% notice note %}}
-  Replace the value of `sysops@domain.com` with email address that represents the system operators team of the workload.
-  `owner@domain.com` with email address that represents business owner of the workload.
+  The `build_application.sh` script will build and deploy your sample application, along with the architecture that hosts it.
+  The application architecture will have capabilities to notify systems operator and owner personas leveraging [Amazon Simple Notification Service](https://aws.amazon.com/sns/).
+  You can use the same email address for `sysops@domain.com` and `owner@domain.com`, but you need to have both values specified.
   {{% /notice %}}
 
   6. Run the above command to execute the build and provisioning of the application stack. Wait until the script is complete, this process should take about 20 mins.
@@ -113,7 +119,9 @@ It will encrypt the value under text key with a designated KMS key and store the
 
     ```
     ALBEndpoint="ApplicationEndpoint"
+    ```
 
+    ```
     curl --header "Content-Type: application/json" --request POST --data '{"Name":"Bob","Text":"Run your operations as code"}' $ALBEndpoint/encrypt
     ```
 
