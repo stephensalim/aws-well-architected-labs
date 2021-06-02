@@ -210,7 +210,6 @@ Resources:
       AutomaticStopTimeMinutes: 30
       Description: Well Architected Operational Excellence lab workspace
       InstanceType: t2.small
-      ConnectionType: CONNECT_SSM
       ImageId: amazonlinux-2-x86_64
       Name: !Sub "WellArchitectedOps-${AWS::StackName}"
       Repositories:

@@ -35,6 +35,7 @@ echo 'Deploy Application Stack'
 echo '########################'
 aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
 sleep 10
+
 aws cloudformation create-stack --stack-name $ECR_REPONAME \
                                 --template-body file://../templates/base_app.yml \
                                 --parameters ParameterKey=BaselineVpcStack,ParameterValue=$MAIN_STACK \
