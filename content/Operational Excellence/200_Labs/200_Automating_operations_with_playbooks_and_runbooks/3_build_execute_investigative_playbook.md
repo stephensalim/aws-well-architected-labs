@@ -382,13 +382,11 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%/expand%}}
 
-Once the document is using any of the above method created, you can go ahead and do a quick test.
-You can find the newly created document under the **Owned by me** tab of the Document resource.
+Once completed, you will find the newly created document under the Owned by me tab of the Document resource.
 
-  1. Click on the playbook called `Playbook-Investigate-Application-Resources` and click on **Execute Automation** to execute our playbook.
-  2. Paste in the Resources List you took note from the output of the previous playbook (refer to previous step) under **Resources** and click on **Execute**
-
-  3. Under **Executed Steps** you should be able to each of the step the playbook has executed. If you view the content of the document you will be able to see the code and find out what exactly each step does. But for simplicity, we have created a list on the objective of each step, and what data it will produce.
+  1. Click on the playbook called `Playbook-Investigate-Application-Resources` and click on **Execute Automation** to execute your playbook.
+  2. Paste in the Resources List you took note from the output of the previous playbook (refer to previous step) under Resources and click on **Execute**.
+  3. Under **Executed Steps** you will be able to see each of the steps executed by the playbook. If you view the content of the document you will see the actual code and can review it to see what each step does. For simplicity, listed the objective of each step and what data it will produce.
 
       ![Section3 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-steps-explain.png)
 
