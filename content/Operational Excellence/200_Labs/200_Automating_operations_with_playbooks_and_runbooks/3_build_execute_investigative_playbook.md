@@ -308,8 +308,8 @@ Once the automation document is created, you can now test it.
   ![Section3 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-alarm-email.png)
 
   4. Once the playbook execution is completed, Click on the **Step Id** to see the final message and output of the step. You should be able to see this output listing all the resources of the application
-  5. **Copy** the Resources list output from the section as highlighted in the screenshot below. This list consist of the all the resources defined in the Cloudformation stack related to our application. These information includes the Elastic Load Balancer, ECS, and RDS resource id that we can now use to further our investigation of the underlying issue.  
-  6. You can **Paste** the output into a temporary location like notepad for now. We will need this value for our next step. 
+  5. **Copy** the Resources list output from the section as highlighted in the screenshot below. This list consist of the all the resources defined in the Cloudformation stack related to our application. This information includes the Elastic Load Balancer, ECS, and RDS resource id that we can now use to further our investigation of the underlying issue.  
+  6. **Paste** the output into a temporary location like notepad. You will need this value for your next step. 
 
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-execute-output.png)
