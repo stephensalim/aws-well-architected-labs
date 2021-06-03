@@ -24,7 +24,7 @@ In this section, you will focus on creating an automated playbook to assist in y
 
 ### 3.0 Prepare Automation Document IAM Role
 
-The Systems Manager Automation Document you are building will require assumed permissions to execute the investigation and remediation steps. You will need to create the IAM role it will assume granting the permissions to perform the playbook activities. To simplify the deployment process, a cloudformation template has been provided that you can deploy via the console or aws cli. Please choose one of the two following deployment steps.
+The Systems Manager Automation Document you are building will require assumed permissions to execute the investigation and remediation steps. You will need to create the IAM role it will assume granting the permissions to perform the playbook activities. To simplify the deployment process, a cloudformation template has been provided that you can deploy via the console or AWS CLI. Please choose one of the two following deployment steps.
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
   1. Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/automation_role.yml "Resources template")
@@ -71,12 +71,11 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 ### 3.1 Building the "Gather-Resources" Playbook.
 
-As part of preparation to the investigation, you need to know all related services / resources involved with the issue. When the email notification is sent, information in the email does not contain resources that needs to be investigated.
+When the email notification is sent, it does not include the resources that you need to investigat. You will need to identify all related services and resources involved with the issue.
 
-This is why, in the following steps we will build a playbook to acquire all the related resources using our alarm arn as it's reference. 
+In the following steps you will build a playbook to acquire all the related resources using and will use you alarm ARN as a reference to identify the underlying resources.
 
-When creating a playbook or any code in general, re-usability is something that is very important to consider early on. 
-By codifying your playbook, you can create your playbook once and used in multiple different context, this will reduce overhead in re-writing codes that has identical objectives.   
+When you create a codified playbook, structuring your code so that parts of it can be re-used with other events and in other contexts can simplify your future playbook development. The actions that are codified to collect resource information are applicable to many events.
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-architecture-graphics1.png)
 
