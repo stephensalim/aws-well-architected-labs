@@ -285,7 +285,7 @@ If you decide to deploy the stack from the console, ensure that you follow below
   ```
 
   8. Under **Additional inputs** specify input value to the step passing in the parameter we created before.
-to do this, select `Input Payload` under **Input name** and specify `CloudWatchAlarmARN: '{{AlarmARN}}'` as the **Input Value**. The '{{AlarmARN}}' section essentially references the parameter value we created before.
+to do this, select `Input Payload` under **Input name** and specify `CloudWatchAlarmARN: '{{AlarmARN}}'` as the **Input Value**. The '{{AlarmARN}}' section references the parameter value we created before.
   
   9. Within the same section, specify the outputs of the step. `Resources` as the **Name** `$.Payload.ApplicationStackResources` as the **Selector** and `String` as the **Type**. For more information about Automation Document syntax, please refer [here](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html)
 
@@ -296,7 +296,8 @@ to do this, select `Input Payload` under **Input name** and specify `CloudWatchA
 {{%/expand%}}
 
 
-Once the automation document is created, we can now give it a test.
+Once the automation document is created, you can now test it.
+
   1. You can then find the newly created document under the **Owned by me** tab of the **Document** section of Systems Manager Console.
 
   ![Section3 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-playbook-gather-resource-tab.png)
