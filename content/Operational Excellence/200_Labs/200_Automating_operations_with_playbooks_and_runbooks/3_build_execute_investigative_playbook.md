@@ -163,9 +163,10 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
   5. Under **Add Step** section enter `Gather_Resources_For_Alarm` under the **Step name**, select `aws::executeScript` as the **Action type**. 
   6. Under **Inputs** set `Python3.6` as the **Runtime**, and specify `script_handler` as the **Handler**.
-  7. Paste in below python codes into the **Script** section.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-addstep.png)
+
+  7. Paste the following python codes into the **Script** section.
 
   ```
   import json
