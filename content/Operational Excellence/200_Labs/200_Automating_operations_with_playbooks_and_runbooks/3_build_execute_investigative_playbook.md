@@ -320,9 +320,9 @@ Once the automation document is created, you can now test it.
 In the previous step, you created a playbook that finds all related AWS resources in the application.
 In this step you will create a playbook that will interrogate resources, capture recent metrics, and logs. This information enables you to investigate and better understand the contributing factors of the issue.
 
-In practice, there can be various possibilities of actions that the playbook can take to investigate depending on the scenario presented by the issue. The purpose of this Lab is to showcase how you can use playbook to aid investigation, rather than advise on a specific action path. 
+Depending on the details collected and presented for your issue, there could be multiple possible actions that you would take to continue your investigation. For this lab we are focusing your use of an automated playbook (with the use case of data collection) to assist in your investigation.
 
-Therefore this lab will assume an example scenario, and the playbook look at configurations, metrics, and logs of Elastic Load Balancer, the Elastic Compute Service, and Relational Database in the resource. The playbook will then highlight the metrics and logs that is considered outside normal threshold. 
+Applying that use case, your playbook gathers configurations, metrics, and logs of Elastic Load Balancer, Elastic Compute Service, and Relational Database in the resources. The playbook will then highlight the metrics and logs that is considered outside of expected values.
 
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-architecture-graphics2.png)
