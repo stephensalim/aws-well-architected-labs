@@ -632,7 +632,7 @@ Next, you will run the playbook and collect the results for your investigation.
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook.png)
 
 
-  4. Wait until the playbook is successfully executed. Once it is done, you should see an email coming through to your email. This email will contain summary of the investigation done by our playbook.
+  4. Wait until the playbook is successfully executed. Once it is done, you will see an email. This will contain summary of the investigation done by your playbook.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-email-summary.png)
 
