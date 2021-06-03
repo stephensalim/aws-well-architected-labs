@@ -80,9 +80,8 @@ When you create a codified playbook, structuring your code so that parts of it c
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-architecture-graphics1.png)
 
 
-{{% notice note %}}
-**Note:** For the following step to build and run playbook. You can follow a step by step guide via AWS console or you can deploy a cloudformation template to build the playbook.
-{{% /notice %}}
+For the following step to build and run playbook. You can follow a step by step guide via AWS console or you can deploy a cloudformation template to build the playbook.
+
 
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
