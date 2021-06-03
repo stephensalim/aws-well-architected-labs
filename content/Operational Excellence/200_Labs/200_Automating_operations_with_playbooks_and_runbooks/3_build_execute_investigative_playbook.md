@@ -166,7 +166,7 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-addstep.png)
 
-  7. Paste the following python codes into the **Script** section.
+  7. Paste the following python codes into the **Script** section shown above.
 
   ```
   import json
