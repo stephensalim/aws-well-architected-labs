@@ -112,15 +112,13 @@ If you decide to deploy the stack from the console, ensure that you follow below
                                   --template-body file://playbook_gather_resources.yml 
   ```
 
-  Example:
+  After entering your ARN it should look something like this
 
-  
-  ```
   aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
                                   --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/AutomationRole \
                                   --template-body file://playbook_gather_resources.yml 
-  ```
 
+                
   **Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
 
 3. Confirm that the stack has installed correctly. You can do this by running the describe-stacks command below, locate the StackStatus and confirm it is set to **CREATE_COMPLETE**. 
