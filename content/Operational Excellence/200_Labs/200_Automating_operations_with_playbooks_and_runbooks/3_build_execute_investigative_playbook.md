@@ -391,7 +391,7 @@ Once completed, you will find the newly created document under the Owned by me t
       ![Section3 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-steps-explain.png)
 
 
-      * **Gather_ELB_Statistics:** Go through resource list, and locate the elb resource. Query data from it's cloudwatch metrics looking at below metric and statistics in the last 60 minutes.
+      * **Gather_ELB_Statistics:** In this step the resource list is traversed and the ELB resource is located. It then queries data from CloudWatch metrics examining the metrics and statistics from the last sixty minutes.
 
           {{%expand "Click here for List of Metrics"%}}
 
@@ -413,9 +413,9 @@ Once completed, you will find the newly created document under the Owned by me t
 
           {{%/expand%}}
 
-      * **Gather_RDS_Config:**  Go through resource list, and locate the RDS resource. Describe RDS Instance Config & Parameters.
+      * **Gather_RDS_Config:**  In this step the resource list is traversed and the RDS resource is located. The script them performs a describe RDS instance to collect the configuration and associated parameters.
 
-      * **Gather_RDS_Statistics:** Go through resource list, and locate the RDS resource. Query data from it's cloudwatch metrics looking at below metric and statistics in the last 60 minutes.
+      * **Gather_RDS_Statistics:** In this step the resource list is traversed and the RDS resource is located. It then queries data from CloudWatch metrics examining the metrics and statistics from the last sixty minutes.
 
           {{%expand "Click here for List of Metrics"%}}
 
@@ -446,7 +446,7 @@ Once completed, you will find the newly created document under the Owned by me t
 
           {{%/expand%}}
 
-      * **Gather_ECS_Statistics:** : Go through resource list, and locate the ECS Service resource. Query data from it's cloudwatch metrics looking at below metric and statistics in the last 6 minutes.
+      * **Gather_ECS_Statistics:** : In this step the resource list is traversed and the ECS Service resource is located. It then queries data from CloudWatch metrics examining the metrics and statistics from the last six minutes.
 
           {{%expand "Click here for List of Metrics"%}}
 
@@ -455,11 +455,12 @@ Once completed, you will find the newly created document under the Owned by me t
 
           {{%/expand%}}
 
-      * **Gather_ECS_Error_Logs** : Go through resource list, and locate the ECS Service resource. Search in Cloudwatch logs for any Error occurrence.
+      * **Gather_ECS_Error_Logs** : In this step the resource list is traversed and the ECS Service resource is located. It then queries data from CloudWatch and collects all appropriate Error logs.
 
-      * **Gather_ECS_Config** : Go through resource list, and locate the ECS Service resource. Describe the ECS service configuration.
+      * **Gather_ECS_Config** : In this step the resource list is traversed and the ECS Service resource is located. The script them performs a describe ECS service to capture the configuration.
 
-      * **Inspect_Playbook_Results** : Go through the output of above steps, inspect results, and check if it is above the threshold.
+      * **Inspect_Playbook_Results** : The script then goes through the output from the above steps, inspects the results, and checks if any metrics are above expected thresholds.
+
 
           {{%expand "Click here for List of Threshold"%}}
 
@@ -616,18 +617,16 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 ### 3.4 Executing investigation Playbook.
 
-Now that you have built all of our our Playbook to Investigate this issue, you will now execute the playbook to discover the result of the investigation. 
+Next, you will run the playbook and collect the results for your investigation.
 
-  1. Go to the Output section of the deployed cloudformation stack `walab-ops-sample-application`, and take note of below output values.
+  1. Go to the Output section of the deployed cloudformation stack `walab-ops-sample-application`, and take note of output values of the **Output.SystemEventTopicArn** 
 
   2. Go to the Systems Manager Automation document we just created in the previous step, `Playbook-Investigate-Application-From-Alarm`.
   
   3. And then execute the playbook passing the ARN as the **AlarmARN** input value, along with the **SNSTopicArn**.
      
-     * You can get the **AlarmARN** from the email that you received from CloudWatch Alarm as described in step **3.1 Building the "Gather-Resources" Playbook.** in this lab.
-     * To get the value for **SNSTopicArn**, go to the CloudFormation console output of `walab-ops-sample-application` stack, and copy, paste the value of **OutputSystemEventTopicArn** 
-
-
+     * You can get the **AlarmARN** from the email that you received from CloudWatch Alarm as described in step **3.1 Building the "Gather-Resources" Playbook.**.
+     * To get the value for **SNSTopicArn**, go to the CloudFormation console output of `walab-ops-sample-application` stack, and copy, paste the value of the **OutputSystemEventTopicArn** 
 
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook.png)
