@@ -80,7 +80,7 @@ When you create a codified playbook, structuring your code so that parts of it c
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-architecture-graphics1.png)
 
 
-In this step you can either follow the instruction in the guide to create the script, or you can deploy the cloudformation template to build the playbook.
+In the following, you can either follow the instructions in the guide to create the script, or you can deploy the CloudFormation template to build the playbook for you automatically.
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
 
