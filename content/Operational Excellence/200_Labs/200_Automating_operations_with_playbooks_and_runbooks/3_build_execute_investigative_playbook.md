@@ -129,12 +129,11 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%expand "Click here for Console step by step"%}}
 
-  1. To build our playbook, go ahead and go to the AWS Systems Manager console, click on **Create Automation**
+  1. To build your playbook, go to the AWS Systems Manager console, and click on **Create Automation**.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation.png)
 
-  2. Next, enter in `Playbook-Gather-Resources` in the **Name** and past in below notes in the **Description** box. This is to provide descriptions on what this playbook does. Systems Manager supports putting in nots as markdown, so feel free to format it as needed. 
-
+  2. After clicking on **Creata automation**, in the next dialog enter Playbook-Gather-Resources in the **Name** field. Then paste the following notes in the **Description** box. Providing a robust description can assist other to correctly apply your script and help them recognize that it can be used in other contexts. Systems Manager supports putting in nots as markdown, so you are free to format the notes as desired.
 
     ```
     # What is does this playbook do?
