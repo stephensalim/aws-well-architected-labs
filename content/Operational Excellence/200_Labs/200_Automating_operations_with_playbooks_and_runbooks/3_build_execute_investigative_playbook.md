@@ -114,9 +114,11 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
   After entering your ARN, your command will look something like the following:
 
+  ```
   aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
                                   --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/AutomationRole \
                                   --template-body file://playbook_gather_resources.yml                 
+  ```
 
 3. Confirm that the stack has installed correctly. You can do this by running the describe-stacks command below. Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**. 
 
@@ -327,12 +329,7 @@ Applying that use case, your playbook gathers configurations, metrics, and logs 
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-architecture-graphics2.png)
 
-Please follow below instructions to build this playbook.
-
-{{% notice note %}}
-**Note:** For the majority, this step will be identical with our previous step, we will just be passing in different scripts in each of the step to query the related services and gather it's data. Therefore to reduce the repetition in the steps we will deploy this playbook via cloudformation template.  Please follow the steps below to deploy via cloudformation template via CLI / or Console. 
-{{% /notice %}}
-
+The following step largely duplicate your previous runbook implementation. To reduce repetition you will deploy this playbook using a CloudFormation template. Select one of the two following deployment methods, and using either the Console or the CLI option, invoke the CloudFormation script to implement you next runbook.
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
 
@@ -364,7 +361,8 @@ If you decide to deploy the stack from the console, ensure that you follow below
                                   --parameters ParameterKey=PlaybookIAMRole,ParameterValue=AutomationRoleArn \
                                   --template-body file://playbook_investigate_application_resources.yml 
   ```
-  Example:
+
+  After entering your ARN, your command will look something like the following:
 
   ```
   aws cloudformation create-stack --stack-name waopslab-playbook-investigate-resources \
