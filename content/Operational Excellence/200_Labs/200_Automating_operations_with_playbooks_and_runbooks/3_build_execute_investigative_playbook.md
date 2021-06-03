@@ -317,8 +317,8 @@ Once the automation document is created, you can now test it.
 
 ### 3.2 Building the "Investigate-Application-Resources" Playbook.
 
-In the previous step, you have created a playbook that finds all related AWS resources in the application.
-In this step you will create a playbook that will interogate resources, capture recent metrics, and logs to look for insights and better understand the root cause of the issue.
+In the previous step, you created a playbook that finds all related AWS resources in the application.
+In this step you will create a playbook that will interrogate resources, capture recent metrics, and logs. This information enables you to investigate and better understand the contributing factors of the issue.
 
 In practice, there can be various possibilities of actions that the playbook can take to investigate depending on the scenario presented by the issue. The purpose of this Lab is to showcase how you can use playbook to aid investigation, rather than advise on a specific action path. 
 
