@@ -12,7 +12,7 @@ In this scenario, you identified that the the ECS service CPU utilization was at
 Scaling up the service directly may not be a long term solution depending on the cause of the high CPU utilization. Therefore it is important to communicate this issue to the owner of the workload, and to give them the opportunity to take other corrective actions.
 
 {{% notice note %}}
-**Note:** In the post-mortem review of the event, the team should decide on what is the next course of action they should take to implement a more long term solution, such as implementing Automatic Scaling in the ECS Cluster (This will be discussed further in the next Lab )
+**Note:** In the post-incident review of the event, the team should determine the course of action to implement a more long term solution, such as implementing Automatic Scaling in the ECS Cluster. We will explore this further in a later lab.
 {{% /notice %}}
 
 #### Actions items in this section :
