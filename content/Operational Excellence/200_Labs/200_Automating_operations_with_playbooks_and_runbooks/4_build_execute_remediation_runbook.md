@@ -21,17 +21,17 @@ Scaling up the service directly may not be a long term solution depending on the
 
 ### 4.0 Building the "Approval-Gate" Runbooks.
 
-As mentioned in previous section, when building your playbook or runbooks, repeatability is very important. You want avoid repeating the same effort of writing / building mechanism if it could be re-used for other things in the future.
+When building your playbook or runbooks you want avoid duplicating effort and writing or building mechanisms that could be be re-used with other tasks in the future.
 
-In this section you will build a approval mechanism runbook component. The component will issue a timer, and give opportunity for the approver to trigger a deny of the request. If the timer runbook lapsed, or the approver approves, the runbook will proceed to move to next step of it's activity.
+In this section you will build an approval mechanism runbook component. The component with provide the approver  the opportunity to deny the request if they act within a defined grace period. If the time is exceeded, or the approver approves, the runbook will proceed with its next step activities.
 
   ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation-graphics1.png)
 
 The way to achieve this scenario in Systems Manager Automation document is as below :
 
-1. First, the runbook will execute a separate runbook called `Approve-Timer`. This runbook will wait for a designated amount of time that we specify. When the wait time lapse, `Approve-Timer` runbook will automatically send an Approval signal to the gate.
+1. In the first step, the runbook executes a separate runbook called `Approve-Timer`. The  runbook will then wait for the designated amount of time that you specify. When the wait time is complete, the `Approve-Timer` runbook will send an "approval" signal to the gate.
 
-2. Secondly, the runbook will send the Approval request to the owner via the SNS topic designated for them. 
+2. In the second step, the runbook will send the "approval" request to the owner via a designated SNS topic.
 
     If they choose to approve, the runbook will continue to the next step (which we will define later). At the same time, if the approval is ignored, the `Approve-Timer` runbook will automatically approve the request.
 
