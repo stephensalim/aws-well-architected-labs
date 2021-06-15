@@ -8,8 +8,8 @@ pre: "<b>4. </b>"
 
 In the previous section, you built an automated playbook to investigate the application environment. The playbook collected information and helped you figure out what action to take. In this section, you will build an automated [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) to remediate the issue by manually scaling up the application cluster. In contrast to a playbook, a [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html)  is a procedure that accomplishes a specific task and outcome.
 
-In this scenario, it is visible that the the ECS service CPU utilization was at peak, and there is not enough ECS tasks running to serve incoming requests. This is understood, and the immediate course of action to remediate it is to increase the number of tasks, scaling up the service to meet the demand. 
-That said, scaling up the service directly as such, may not be suitable as a long term solution into the fix. Therefore it is important to communicate this issue to the owner of the workload, and to give them the options to intervene if they choose to do so. 
+In this scenario, you identified that the the ECS service CPU utilization was at peak, and there was not enough ECS tasks running to serve the incoming requests. This is understood, and the immediate course of action is to increase the number of tasks, scaling up the service, to meet the demand.
+Scaling up the service directly may not be a long term solution depending on the cause of the high CPU utilization. Therefore it is important to communicate this issue to the owner of the workload, and to give them the opportunity to take other corrective actions.
 
 {{% notice note %}}
 **Note:** In the post-mortem review of the event, the team should decide on what is the next course of action they should take to implement a more long term solution, such as implementing Automatic Scaling in the ECS Cluster (This will be discussed further in the next Lab )
