@@ -636,17 +636,17 @@ Next, you will run the playbook and collect the results for your investigation.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-email-summary.png)
 
-  5. Copy and paste the message section, and use any tool that understands json format such as [jsonlint.com](http://jsonlint.com) to make it easier for you to read. The result you are seeing from your playbook execution might vary slightly, but the overall findings should show as below. go to the next step for explanation on our findings
+  5. Copy and paste the message section, and use any tool that understands json format such as [jsonlint.com](http://jsonlint.com) to make it easier for you to read. The result you are seeing from your playbook execution might vary slightly, but the overall findings should show as below. 
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-summary.png)
 
   6. From the report being generated you You would be seeing a large number of ELB504 Count error and a high number of the Target Response Time from the Load balancer that explains the delay we are seeing from our canary alarm. 
   
-      If you then look at the ECS CPUtilization summary, you will see that the CPU averages in 99%, and the while the total ECS task count running is only 1. If you refer to the previous step, we have explained that our playbook will create an average of the maximum value of the ECS service's CPUUtilization, in the last 6 minutes time window. ( So this information should be very recent)
+      If you then look at the ECS CPUtilization summary, you will see that the CPU averages in 99%, and the while the total ECS task count running is only 1. If you refer to the previous step, we have explained that our playbook will create an average of the maximum value of the ECS service's CPUUtilization, in the last six minutes.
       
-      There are also some other Errors identified in the application logs, which sort of indicates some issue with the application code. such as ER_CON_COUNT_ERROR: Too many connections.
+      There are also some other Errors identified in the application logs, which indicates a issue with the application code, for example, "ER_CON_COUNT_ERROR: Too many connections".
 
-      Therefore, looking at these information, it is likely that the immediate cause of the latency is resource constraint at the application API level running in ECS. Ideally, if we can increase the number of tasks in the ECS service, the application should be able handle more requests and won't have constraints on the CPU Utilization. With all of these information provided by our playbook findings, we should now be able to determine what is the next course of action to attempt remediation to the issue. Let's move on now to the next section in the lab, to build that remediation runbook.
+      Therefore, it is likely that the immediate cause of the latency is a resource constraint at the application API level running in ECS. If we can increase the number of tasks in the ECS service, the application should be able handle more requests and won't have constraints on the CPU Utilization. Having analyzed the information provided by our playbook findings, we should now be able to determine the next course of action to attempt remediation. In the next section in the lab, you will build a remediation runbook.
 
 This concludes **Section 3** of this lab, click on the link below to move on to the next section.
 

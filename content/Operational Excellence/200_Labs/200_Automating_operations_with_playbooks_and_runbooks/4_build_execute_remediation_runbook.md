@@ -6,9 +6,9 @@ weight: 4
 pre: "<b>4. </b>"
 ---
 
-In the previous section, you have built an automated playbook to investigate the application environment. In this section, you will build an automated [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html). to remediate the issue by manually scaling up the application cluster. A runbook are a pre-defined procedures for a well understood events to achieve a specific outcome. 
+In the previous section, you built an automated playbook to investigate the application environment. The playbook collected information and helped you figure out what action to take. In this section, you will build an automated [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) to remediate the issue by manually scaling up the application cluster. In contrast to a playbook, a [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html)  is a procedure that accomplishes a specific task and outcome.
 
-In this scenario, it is visible that the the ECS service CPU utilization was at peak, and there is enough ECS task running to serve incoming requests. This is understood, and the immediate course of action to remediate it is to increase the number of Task, scaling up the service to mee the demand. 
+In this scenario, it is visible that the the ECS service CPU utilization was at peak, and there is not enough ECS tasks running to serve incoming requests. This is understood, and the immediate course of action to remediate it is to increase the number of tasks, scaling up the service to meet the demand. 
 That said, scaling up the service directly as such, may not be suitable as a long term solution into the fix. Therefore it is important to communicate this issue to the owner of the workload, and to give them the options to intervene if they choose to do so. 
 
 {{% notice note %}}
