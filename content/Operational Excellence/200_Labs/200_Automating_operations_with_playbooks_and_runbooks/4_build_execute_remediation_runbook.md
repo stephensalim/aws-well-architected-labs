@@ -33,9 +33,9 @@ The way to achieve this scenario in Systems Manager Automation document is as be
 
 2. In the second step, the runbook will send the "approval" request to the owner via a designated SNS topic.
 
-    If they choose to approve, the runbook will continue to the next step (which we will define later). At the same time, if the approval is ignored, the `Approve-Timer` runbook will automatically approve the request.
+    If they choose to approve, the runbook will continue to the next step. If they do not response, the `Approve-Timer` runbook will automatically approve the request.
 
-    Alternatively, if they choose to deny then the step in the runbook will fail, blocking any further steps that we will decide later.
+    If they choose to deny, then the step in the runbook will fail, blocking any further runbook activities.
 
 Follow below steps to build this runbook.
 
