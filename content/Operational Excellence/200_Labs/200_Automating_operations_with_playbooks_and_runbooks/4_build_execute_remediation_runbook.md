@@ -37,10 +37,10 @@ The way to achieve this scenario in Systems Manager Automation document is as be
 
     If they choose to deny, then the step in the runbook will fail, blocking any further runbook activities.
 
-Follow below steps to build this runbook.
+Follow below instructions to build the runbook.
 
 {{% notice note %}}
-**Note:** For the following step to build and execute the runbook. You can follow a step by step guide via AWS console or you can deploy a cloudformation template to build the runbook.
+**Note:** For the following step to build and run runbook. You can follow a step by step guide via AWS console or you can deploy a CloudFormation template to build the playbook.
 {{% /notice %}}
 
 {{%expand "Click here for Console step by step"%}}

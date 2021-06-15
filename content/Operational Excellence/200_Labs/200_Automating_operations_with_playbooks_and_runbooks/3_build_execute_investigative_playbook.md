@@ -498,7 +498,7 @@ Therefore in this step we will automate our playbook further by creating a paren
 Follow below instructions to build the Playbook.
 
 {{% notice note %}}
-**Note:** For the following step to build and run playbook. You can follow a step by step guide via AWS console or you can deploy a cloudformation template to build the playbook.
+**Note:** For the following step to build and run playbook. You can follow a step by step guide via AWS console or you can deploy a CloudFormation template to build the playbook.
 {{% /notice %}}
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
