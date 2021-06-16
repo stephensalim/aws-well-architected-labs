@@ -31,7 +31,7 @@ The way to achieve this scenario in Systems Manager Automation document is as be
 
 1. In the first step, the runbook executes a separate runbook called `Approve-Timer`. The  runbook will then wait for the designated amount of time that you specify. When the wait time is complete, the `Approve-Timer` runbook will send an "approval" signal to the gate.
 
-2. In the second step, the runbook will send the "approval" request to the owner via a designated SNS topic.
+2. In the second step, the runbook will send the **approval** request to the owner via a designated SNS topic.
 
     If they choose to approve, the runbook will continue to the next step. If they do not response, the `Approve-Timer` runbook will automatically approve the request.
 
@@ -45,7 +45,7 @@ Follow below instructions to build the runbook.
 
 {{%expand "Click here for Console step by step"%}}
 
-1. Go to the AWS Systems Manager console, from there click on documents to get into the page as per screen shot. Once you are there, click on **Create Automation**
+1. Go to the AWS Systems Manager console. Click on documents to enter the **Documents** page and then click on **Create Automation** as show in the screen shot below.
 
       ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation.png)
 
@@ -147,7 +147,7 @@ Now that you have created the `Approval-Timer`, the next thing to do is to creat
 Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/runbook_approval_gate.yml "Resources template")
 
 
-If you decide to deploy the stack from the console, ensure that you follow below requirements & step:
+If you decide to deploy the stack from the console using CloudFormation, follow the steps below and ensure that you use the provide **Stack Name** value:
 
   1. Please follow this [guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html) for information on how to deploy the cloudformation template.
   2. Use `waopslab-runbook-approval-gate` as the **Stack Name**, as this is referenced by other stacks later in the lab.
@@ -156,21 +156,22 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%expand "Click here for CloudFormation CLI deployment step"%}}
 
-1. From the cloud9 terminal, copy, paste and run below command to get into the working script folder
+1. From the cloud9 terminal, copy, paste and run the following command to navigate into the working script folder
 
     ```
     cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates
     ```
 
 
-2. Then copy paste and execute below commands replacing the 'AutomationRoleArn' with the Arn of **AutomationRole** you took note in previous step 3.0.
-  
+2. Then copy, paste, and execute following commands replacing the `AutomationRoleArn` with the Arn of **AutomationRole** you took note of in step 3.0.
+
     ```
     aws cloudformation create-stack --stack-name waopslab-runbook-approval-gate \
                                     --parameters ParameterKey=PlaybookIAMRole,ParameterValue=AutomationRoleArn \
                                     --template-body file://runbook_approval_gate.yml 
     ```
-    Example:
+    
+    With your AutomationRole Arn in place your command will look similar to the following example:
 
     ```
     aws cloudformation create-stack --stack-name waopslab-runbook-approval-gate \
@@ -180,13 +181,14 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 **Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
 
-Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
+3. Run the describe-stacks command to confirm that the stack has installed correctly by running the following command:
 
 ```
 aws cloudformation describe-stacks --stack-name waopslab-runbook-approval-gate
 ```
 
-Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
+4. Locate the StackStatus and confirm it is set to **CREATE_COMPLETE** 
+
 {{%/expand%}}
 
 ### 4.1 Building the "ECS-Scale-Up" runbook.
@@ -214,7 +216,8 @@ Please follow below steps to build the runbook.
 
       ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation.png)
 
-2. Next, enter in `Runbook-ECS-Scale-Up` in the **Name** and past in below notes in the **Description** box. This is to provide descriptions on what this playbook does. (Systems Manager supports putting in nots as markdown, so feel free to format it as needed.)
+2. Next, enter `Runbook-ECS-Scale-Up` in the **Name** field and paste the notes that follow below in the **Description** box. Providing a description of what your playbook do will help your team members learn and apply the runbook correctly.
+Systems Manager has markdown support for the notes text. You can format your text to make it easier for team members to consume.
 
       ```
         # What is does this automation do?
@@ -240,7 +243,7 @@ Please follow below steps to build the runbook.
     * `ApproverRoleArn`, as the **Parameter name**, set the type as `String` and **Required** is `Yes`.
     * `Timer`, as the **Parameter name**, set the type as `String` and **Required** is `Yes`.
 
-5. Click **Add Step** and  create the first step of `aws:executeAutomation` Action type with StepName `executeApprovalGate`
+5. Click **Add Step** and create the first step using the `aws:executeAutomation` Action type with the Step Name `executeApprovalGate`
 
 6. Specify `Approval-Gate` as the **Document name** under Inputs, and under **Additional inputs** specify `RuntimeParameters` with below values :
 
@@ -251,14 +254,14 @@ Please follow below steps to build the runbook.
     ApproverRoleArn:'{{ApproverRoleArn}}'
   ```
 
-6. Next, click **Add Step** once more and  create the second step of `aws:executeAwsApi` Action type with StepName `updateECSServiceDesiredCount`
+6. Click **Add Step** once more and then create the second step using the `aws:executeAwsApi` Action type with StepName `updateECSServiceDesiredCount`
 
-7. Under **Inputs** specify below settings :
+7. Under **Inputs** specify below settings:
 
     * **Service** as `ecs`
     * **Api** as `UpdateService`
     
-    Then create below input values :
+    Then create following input values:
 
     * `forceNewDeployment` as `true`
     * `desiredCount` as `{{ECSDesiredCount}}`
@@ -266,7 +269,7 @@ Please follow below steps to build the runbook.
     * `cluster` as `{{ECSClusterName}}`
 
 
-8 . Click on **Create automation** once this is done
+8 . Click on **Create automation** once complete
 
 
 {{%/expand%}}
@@ -306,8 +309,6 @@ If you decide to deploy the stack from the console, ensure that you follow below
                                     --template-body file://runbook_scale_ecs_service.yml 
     ```
 
-**Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
-
 Confirm that the stack has installed correctly. You can do this by running the describe-stacks command as follows:
 
 ```
@@ -321,61 +322,61 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 Now that you have built the runbook to remediate this issue, lets execute it to remediate the performance event.
 
-  1. Go to the output tab Cloudformation stack deployed named `walab-ops-sample-application`. Take note following values; OutputECSCluster, OutputECSService, OutputSystemOwnersTopicArn
+  1. Go to the output tab Cloudformation stack deployed named `walab-ops-sample-application`. Take note following values: OutputECSCluster, OutputECSService, and OutputSystemOwnersTopicArn
 
   ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-output.png)
 
-
-  2. Also, take note of your the ARN of the IAM user, or IAM role that you will use to assume execute the approval request. To do this you can go to the IAM User console, and click **Users**/**Roles** on the left side menu, and click on the user User/Roles. Form here you should be able so see something like below, take now the ARN value, as we need it for our next step.
+  2. Locate the ARN of the IAM user that you will use the perform the approval request. You can find this by navigating to the IAM User console and  clicking **Users** on the left side menu, and then Click on the **User** name. You will see something similar to the example below. Take note of the ARN value, as you will use it in the next step.
 
   ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-iam.png)
 
-
   3. Go to the Systems Manager Automation console, click on **Document** under **Shared Resources**, locate and click an automation document called `Runbook-ECS-Scale-Up`. 
   
-  4. Then click *Execute automation* and  passing the values you just noted as per screenshot. (This will be where all the values you took note in step 1-2 be put to use.)
+  4. Then click *Execute automation* providing the values you noted in steps 1 and 2. Once populated the fields will appear similar to the following example screenshot.
 
       ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-scale-up.png)
 
       * Place **OutputECSService** value under for the name of **ECSServiceName**.
       * Place **OutputECSCluster** value under for the name of **ECSClusterName**.
-      * Place the IAM user / role you took note on step 2 above under **ApproverArn**.
+      * Place the IAM user Arn you took note on step 2 above under **ApproverArn**.
       * Enter `100` as the **ECSDesiredCount**.
-      * You can put in any message to the **NotificationMessage** section. Here is a sample :
-
+      * Place a message in the **NotificationMessage** field that can help the approver make an informed decision to approve or deny the recommended action. 
+      
+        For example:
         ```
-        Hello, your mysecretword app is experiencing performance degradation, To manage customer experience we will have to manually scale up the cluster. Action will take in 10 mins, Please deny if you do not consent.  
+        Hello, your mysecretword app is experiencing performance degradation. To maintain quality customer experience we will manually scale up the supporting cluster. This action will be taken 10 minutes after this message is generated unless you do not consent and deny the action within the grace period.
         ```  
+
       * Place **OutputSystemOwnersTopicArn** value under for the name of **NotificationTopicArn**.
-      * You can leave **Timer** as it is, this will be the waiting time until it's automatically approved defined in ISO 8601 duration format
+      * You can leave **Timer** as it is. This is the wait time until automatic approval unless a deny is received. The time is defined in ISO 8601 duration format.
   
   5. Once it's done then click on **Execute**. 
 
-  6. Once the runbook is executed, you should see an email coming with instructions on how to approve / deny. Follow the link in the email, using the **User**/**Role** of the ApproverArn you placed in step. It will take you to the SSM Console where you can approve / deny the request. 
+  6. Once the runbook is executed, you should receive an email with instructions on how to approve or deny. Follow the link in the email using the User of the ApproverArn you placed in the Input parameters. The link will take you to the SSM Console where you can approve or deny the request.
+  
 
       ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-approveordeny.png)
 
-      If you choose leave / ignore this email, the request will be automatically approved after the Timer set in the playbook.
+      If you choose approve, or do not respond to the email, the request will be automatically approved after the Timer set in the playbook expires.
 
-      If you execute deny the runbook will fail, and nothing will be actioned.
+      If you deny the runbook will fail, and no action will be taken.
 
-  7. Once the runbook moved on to the next step, You can observe the ECS task increased to the number of desired count you specified. 
+  7. Once the runbook completes the next step, you can see that the ECS task count increased to the value you specified. 
 
-      Go to ECS console, and click in **Clusters** and select `mysecretword-cluster`, then click on `mysecretword-service` **Service**. you should see as the number of running tasks reaches 100, the CPUUtilization average comes down. 
+      Go to ECS console, and click on **Clusters**, and select `mysecretword-cluster`. Click on the  `mysecretword-service` **Service**. you should see the number of running tasks increasing to 100 and average CPUUtilization decreasing.
 
       ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-scale-up2.png)
 
       ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-scale-up3.png)
 
+  8. After the service is scaled up, you should see the API response time return to normal and the Alarm return to the OK state. You can check both using your CloudWatch Console, following the steps you used in "2. Simulate Application Issue", "Section 2.1 Observing the alarm being triggered".
 
-  8. Following after the service is scaled up, you should be seeing the API response time back to normal, and the Alarm gone back to OK state. You can check them via your CloudWatch Console, as per previous step.
 
-
-This concludes **Section 6** of this lab, click on the link below to move on to the next section.
+This concludes **Section 4** of this lab, click on the link below to move on to the next section.
 {{< prev_next_button link_prev_url="../3_build_execute_investigative_playbook/" link_next_url="../5_cleanup/" />}}
 
 
 
 ___
-**END OF SECTION 5**
+**END OF SECTION 4**
 ___
