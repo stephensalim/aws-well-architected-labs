@@ -6,9 +6,7 @@ weight: 1
 pre: "<b>1. </b>"
 ---
 
-In this section, you will prepare a sample application. 
-
-The application is an API hosted inside a docker container, using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/). The container is accessed via an [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html). 
+In this section, you will prepare a sample application. The application is an API hosted inside a docker container, using [Amazon Elastic Compute Service (ECS)](https://aws.amazon.com/ecs/). The container is accessed via an [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html). 
 
 The API is a private microservice within your [Amazon Virtual Private Cloud (VPC)](https://aws.amazon.com/vpc/). Communication to the API can only be done privately through routes within the VPC subnet. In our lab example, the business owner has agreed to run the API over HTTP protocol to simplify the implementation. 
 
@@ -17,13 +15,13 @@ The API has two actions available which encrypt and decrypt information. This is
 * The *encrypt* action will allow you to pass a secret message along with a 'Name' key as the identifier and it will return a 'Secret Key Id' that you can use later to decrypt your message.
 * The *decrypt* action allows you to then decrypt the secret message passing along the 'Name' key and 'Secret Key Id' you obtained before to get your secret message.
 
-Both actions will make a write and read call to the application database hosted in (RDS)[https://aws.amazon.com/rds/], where the encrypted messages are stored. 
+Both actions will make a write and read call to the application database hosted in [Amazon Relation Database Service (RDS)](https://aws.amazon.com/rds/), where the encrypted messages are stored. 
 
-The following step-by-step instructions will provision the application that you will use with your runbooks and playbooks. 
+The following step-by-step instructions will provision the application that you will use with your  **runbooks**  and  **playbooks** . 
 
 Explore the contents of the CloudFormation script to learn more about the environment and application.
 
-You will use this sample application as a sandbox to simulate application performance issue, and start your runbooks and playbooks to autonomously investigate and remediate the issue.
+You will use this sample application as a sandbox to simulate application performance issue, and start your  **runbooks**  and  **playbooks**  to autonomously investigate and remediate the issue.
 
 #### Actions items in this section:
 
@@ -35,9 +33,9 @@ You will use this sample application as a sandbox to simulate application perfor
 
 ### 1.0 Prepare Cloud9 workspace.
 
-In this first step you will provision a [Cloudformation](https://aws.amazon.com/cloudformation/) stack that builds a Cloud9 workspace along with the VPC for the sample application. This Cloud9 workspace will be used to run the provisioning script of the sample application. You can choose the to deploy stack in one of the region below. 
+In this first step you will provision a [CloudFormation](https://aws.amazon.com/cloudformation/) stack that builds a Cloud9 workspace along with the VPC for the sample application. This Cloud9 workspace will be used to run the provisioning script of the sample application. You can choose the to deploy stack in one of the region below. 
 
-1. Click on the link below to deploy the stack. This will take you to the Cloudformation console in your account. Use `walab-ops-base-resources` as the stack name, and take the default values for all options
+1. Click on the link below to deploy the stack. This will take you to the CloudFormation console in your account. Use `walab-ops-base-resources` as the stack name, and take the default values for all options
 
     * **us-west-2** : [here](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)
     * **ap-southeast-2** : [here](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/create/review?stackName=walab-ops-base-resources&templateURL=https://sssalim-cfn-template-temp.s3-ap-southeast-2.amazonaws.com/base_resources.yml)

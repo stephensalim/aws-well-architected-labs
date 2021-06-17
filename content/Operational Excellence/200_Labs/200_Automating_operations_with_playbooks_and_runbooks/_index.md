@@ -1,5 +1,5 @@
 ---
-title: "200 - Automating your operations with Playbooks and Runbooks"
+title: "200 - Automating operations with Playbooks and Runbooks"
 ## menutitle: "Lab #1"
 date: 2020-04-24T11:16:08-04:00
 chapter: false
@@ -40,7 +40,7 @@ We will show how you can build automated runbooks and playbooks to investigate a
 
 * [Systems Manager Automation](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html)
 * [Simple Notification Service](https://aws.amazon.com/sns/?whats-new-cards.sort-by=item.additionalFields.postDateTime&whats-new-cards.sort-order=desc)
-* [CloudWatch synthetic monitoring](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html)
+* [Amazon CloudWatch synthetic monitoring](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html)
 
 ## Goals: 
 

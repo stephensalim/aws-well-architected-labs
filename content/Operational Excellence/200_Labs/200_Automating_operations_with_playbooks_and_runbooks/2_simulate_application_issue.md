@@ -6,13 +6,9 @@ weight: 2
 pre: "<b>2. </b>"
 ---
 
-Understanding the health of your workload is an essential component of Operational Excellence. Defining metrics and thresholds, together with appropriate alerts will ensure that issues can be responded to quickly. This allows for appropriate remediation to be performed where appropriate.
+Understanding the health of your workload is an essential component of Operational Excellence. Defining metrics and thresholds, together with appropriate alerts will ensure that issues can be responded quickly and appropriate remediation to be performed.
 
-In this section of the lab, you will simulate a performance issue with the API. 
-
-[CloudWatch synthetic monitoring](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html) allows for the creation of canaries, which  continuously check the API response time to detect the simulated issue. 
-
-In our example application, should the API take longer than 6 seconds to respond, it is considered an application issue and a CloudWatch alarm will be triggered. A notification email will be sent to the Systems Operator in response. 
+In this section of the lab, you will simulate a performance on the API. Using Amazon CloudWatch synthetic, your API will have canary monitors which continuously check the response time to detect the issue. In this example, should the API takes longer than 6 seconds to respond, it is considered that the performance has degraded. In which case a CloudWatch alarm will be triggered and a notification email will be sent to the Systems Operator. 
 
 #### Actions items in this section:
 
@@ -72,7 +68,7 @@ Follow below steps to continue:
 
     ![Section3 Email](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-email.png)
  
-2. Check and confirm the alarm by going to the Cloudwatch console.
+2. Check and confirm the alarm by going to the CloudWatch console.
 
 3. Click on the Alarms section on the left menu.
 
@@ -110,15 +106,13 @@ Follow below steps to continue:
 
     ![Section3 Canary](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-canary-monitor.png)
 
-## Congratulations ! 
-
 You have now completed the second section of the lab.
 
-You should still have the `simulate_request.sh` running in the background simulating a large influx of traffic to your API. This causes the application to respond slowly and time out periodically. The Cloudwatch Alarm will be triggering and performance issue notifications sent to your System Operator to prompt them into action.
+You should still have the `simulate_request.sh` running in the background simulating a large influx of traffic to your API. This causes the application to respond slowly and time out periodically. The CloudWatch Alarm will be triggering and performance issue notifications sent to your System Operator to prompt them into action.
 
-This concludes **Section 2** of this lab. Click 'Next step' to continue to the next section of the lab where we will build an automated playbook to assist investigation of the issue. 
+This concludes **Section 2** of this lab. Click 'Next step' to continue to the next section of the lab where we will build an automated **playbook** to assist investigation of the issue. 
 
-{{< prev_next_button link_prev_url="../2_configure_ecs_repository_and_deploy_application_stack/" link_next_url="../3_build_execute_investigative_playbook/" />}}
+{{< prev_next_button link_prev_url="../2_configure_ecs_repository_and_deploy_application_stack/" link_next_url="../3_build_run_investigative_playbook/" />}}
 
 ___
 **END OF SECTION 2**

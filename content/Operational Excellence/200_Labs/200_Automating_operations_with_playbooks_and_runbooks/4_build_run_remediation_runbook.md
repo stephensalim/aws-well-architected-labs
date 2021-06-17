@@ -1,41 +1,45 @@
 ---
-title: "Build & Execute Remediation Runbook"
+title: "Build & Run Remediation Runbook"
 date: 2020-04-24T11:16:09-04:00
 chapter: false
 weight: 4
 pre: "<b>4. </b>"
 ---
 
-In the previous section, you built an automated playbook to investigate the application environment. The playbook collected information and helped you figure out what action to take. In this section, you will build an automated [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html) to remediate the issue by manually scaling up the application cluster. In contrast to a playbook, a [Runbook](https://wa.aws.amazon.com/wat.concept.runbook.en.html)  is a procedure that accomplishes a specific task and outcome.
+In the previous section, you have built an automated playbook to investigate issue in the application API. The playbook collected information and provided data that helps you decide the remediation action to take. 
 
-In this scenario, you identified that the the ECS service CPU utilization was at peak, and there was not enough ECS tasks running to serve the incoming requests. This is understood, and the immediate course of action is to increase the number of tasks, scaling up the service, to meet the demand.
-Scaling up the service directly may not be a long term solution depending on the cause of the high CPU utilization. Therefore it is important to communicate this issue to the owner of the workload, and to give them the opportunity to take other corrective actions.
+In contrast to a playbook, a **runbook** is a procedure that accomplishes a specific task and outcome. In this scenario, you have identified that the the Amazon ECS service CPU utilization was at peak and there was not enough tasks running in the cluster to serve the incoming requests. The immediate course of action you can take is to increase the number of tasks in the cluster to meet the immediate demand. However, changing service configuration directly as such will not be the appropriate long term solution. The ideal approach is to implement application auto scaling in the ECS cluster giving the workload capability to automatically scale up and down according to demand, which require some time and planning to implement.
+
+Therefore, while it acceptable for the **runbook** to implement the change directly eliminate the immediate impact. It is important that the procedures in the **runbook** allows appropriate mechanism to communicate this event to the owner of the workload and to give them the opportunity to take other corrective actions if needed.
+
+In this section, you will build an automated **runbook** to remediate the issue by increasing the number of tasks in the ECS cluster. Your automated runbook, will also have the capability to notify the owner and allow them to intercept the action should they choose to do so. 
+
 
 {{% notice note %}}
 **Note:** In the post-incident review of the event, the team should determine the course of action to implement a more long term solution, such as implementing Automatic Scaling in the ECS Cluster. We will explore this further in a later lab.
 {{% /notice %}}
 
 #### Actions items in this section :
-1. You will build a runbook to scale up the ECS cluster, with the approval mechanism.
-2. You will execute the runbook and observe the recovery of your application. 
+1. You will build a **runbook** to scale up the ECS cluster, with the approval mechanism.
+2. You will execute the **runbook** and observe the recovery of your application. 
 
 ### 4.0 Building the "Approval-Gate" Runbooks.
 
 When building your playbook or runbooks you want avoid duplicating effort and writing or building mechanisms that could be be re-used with other tasks in the future.
 
-In this section you will build an approval mechanism runbook component. The component with provide the approver  the opportunity to deny the request if they act within a defined grace period. If the time is exceeded, or the approver approves, the runbook will proceed with its next step activities.
+In this section you will build an approval mechanism **runbook** component. The component with provide the approver  the opportunity to deny the request if they act within a defined grace period. If the time is exceeded, or the approver approves, the **runbook** will proceed with its next step activities.
 
   ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation-graphics1.png)
 
 The way to achieve this scenario in Systems Manager Automation document is as below :
 
-1. In the first step, the runbook executes a separate runbook called `Approve-Timer`. The  runbook will then wait for the designated amount of time that you specify. When the wait time is complete, the `Approve-Timer` runbook will send an "approval" signal to the gate.
+1. In the first step, the **runbook** executes a separate **runbook** called `Approve-Timer`. The  **runbook** will then wait for the designated amount of time that you specify. When the wait time is complete, the `Approve-Timer` **runbook** will send an "approval" signal to the gate.
 
-2. In the second step, the runbook will send the **approval** request to the owner via a designated SNS topic.
+2. In the second step, the **runbook** will send the **approval** request to the owner via a designated SNS topic.
 
-    If they choose to approve, the runbook will continue to the next step. If they do not response, the `Approve-Timer` runbook will automatically approve the request.
+    If they choose to approve, the **runbook** will continue to the next step. If they do not response, the `Approve-Timer` **runbook** will automatically approve the request.
 
-    If they choose to deny, then the step in the runbook will fail, blocking any further runbook activities.
+    If they choose to deny, then the step in the **runbook** will fail, blocking any further **runbook** activities.
 
 Follow below instructions to build the runbook.
 
@@ -74,7 +78,7 @@ Follow below instructions to build the runbook.
 
 5 . Click on **Create automation** once you are done
 
-Now that you have created the `Approval-Timer`, the next thing to do is to create the actual Approval runbook that will have the Approval Step. As it executes this runbook will execute the `Approval-Timer` runbook to wait until the time lapse and trigger an automatic approval asynchronously. Please follow below steps to continue.
+Now that you have created the `Approval-Timer`, the next thing to do is to create the actual Approval **runbook** that will have the Approval Step. As it executes this **runbook** will execute the `Approval-Timer` **runbook** to wait until the time lapse and trigger an automatic approval asynchronously. Please follow below steps to continue.
 
 
 1. Go to the AWS Systems Manager console, from there click on documents to get into the page as per screen shot. Once you are there, click on **Create Automation**
@@ -110,7 +114,7 @@ Now that you have created the `Approval-Timer`, the next thing to do is to creat
     * `NotificationTopicArn` as the **Parameter name**, set the type as type `String` and **Required** is `Yes`.
     * `ApproverRoleArn` as the **Parameter name**, set the type as type `String` and **Required** is `Yes`.
 
-5. Then under the **Step 1** create a step to execute `aws:executeScript` with name `executeAutoApproveTimer`. Set the Runtime as `Python3.6` and paste in below script into the script section. This code snippet will execute the `Approval-Timer` runbook you created before asyncronously.
+5. Then under the **Step 1** create a step to execute `aws:executeScript` with name `executeAutoApproveTimer`. Set the Runtime as `Python3.6` and paste in below script into the script section. This code snippet will execute the `Approval-Timer` **runbook** you created before asyncronously.
 
     ```
     import boto3
@@ -163,7 +167,7 @@ If you decide to deploy the stack from the console using CloudFormation, follow 
     ```
 
 
-2. Then copy, paste, and execute following commands replacing the `AutomationRoleArn` with the Arn of **AutomationRole** you took note of in step 3.0.
+2. Then copy, paste and execute following commands replacing the `AutomationRoleArn` with the Arn of **AutomationRole** you took note of in step 3.0.
 
     ```
     aws cloudformation create-stack --stack-name waopslab-runbook-approval-gate \
@@ -193,14 +197,14 @@ aws cloudformation describe-stacks --stack-name waopslab-runbook-approval-gate
 
 ### 4.1 Building the "ECS-Scale-Up" runbook.
 
-Now that you have created an auto approval mechanism runbook component. The next thing to do is to attach it in the ECS Scale up runbook. 
+Now that you have created an auto approval mechanism **runbook** component. The next thing to do is to attach it in the ECS Scale up runbook. 
 
   ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation-graphics2.png)
 
 
-The next runbook will do the following :
+The next **runbook** will do the following :
 
-1. Execute the `Approval-Gate` runbook we created in previous step, and the mechanism described previously will follow. 
+1. Execute the `Approval-Gate` **runbook** we created in previous step and the mechanism described previously will follow. 
 2. If the `Approval-Gate` returns successful, then we will execute the next step to increase the number of ECS service by our defined task to meet the immediate demand.
 
 Please follow below steps to build the runbook.
@@ -216,7 +220,7 @@ Please follow below steps to build the runbook.
 
       ![Section5 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section5-create-automation.png)
 
-2. Next, enter `Runbook-ECS-Scale-Up` in the **Name** field and paste the notes that follow below in the **Description** box. Providing a description of what your playbook do will help your team members learn and apply the runbook correctly.
+2. Next, enter `Runbook-ECS-Scale-Up` in the **Name** field and paste the notes that follow below in the **Description** box. Providing a description of what your playbook do will help your team members learn and apply the **runbook** correctly.
 Systems Manager has markdown support for the notes text. You can format your text to make it easier for team members to consume.
 
       ```
@@ -224,7 +228,7 @@ Systems Manager has markdown support for the notes text. You can format your tex
 
         This automation will scale up a given ECS service task desired count by an N number.
         The automation will first trigger an approval / deny request using the Approval-Gate mechanism.
-        When the timer lapsed runbook will automatically execute the scale up, when the request is denied within the time, runbook will fail to execute. 
+        When the timer lapsed **runbook** will automatically execute the scale up, when the request is denied within the time, **runbook** will fail to execute. 
 
         ## Steps 
 
@@ -245,7 +249,7 @@ Systems Manager has markdown support for the notes text. You can format your tex
 
 5. Click **Add Step** and create the first step using the `aws:executeAutomation` Action type with the Step Name `executeApprovalGate`
 
-6. Specify `Approval-Gate` as the **Document name** under Inputs, and under **Additional inputs** specify `RuntimeParameters` with below values :
+6. Specify `Approval-Gate` as the **Document name** under Inputs and under **Additional inputs** specify `RuntimeParameters` with below values :
 
   ```
     Timer:'{{Timer}}'
@@ -320,13 +324,13 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 ### 4.2 Executing remediation Runbook.
 
-Now that you have built the runbook to remediate this issue, lets execute it to remediate the performance event.
+Now that you have built the **runbook** to remediate this issue, lets execute it to remediate the performance event.
 
-  1. Go to the output tab Cloudformation stack deployed named `walab-ops-sample-application`. Take note following values: OutputECSCluster, OutputECSService, and OutputSystemOwnersTopicArn
+  1. Go to the output tab CloudFormation stack deployed named `walab-ops-sample-application`. Take note following values: OutputECSCluster, OutputECSService and OutputSystemOwnersTopicArn
 
   ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-output.png)
 
-  2. Locate the ARN of the IAM user that you will use the perform the approval request. You can find this by navigating to the IAM User console and  clicking **Users** on the left side menu, and then Click on the **User** name. You will see something similar to the example below. Take note of the ARN value, as you will use it in the next step.
+  2. Locate the ARN of the IAM user that you will use the perform the approval request. You can find this by navigating to the IAM User console and  clicking **Users** on the left side menu and then Click on the **User** name. You will see something similar to the example below. Take note of the ARN value, as you will use it in the next step.
 
   ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-iam.png)
 
@@ -352,18 +356,18 @@ Now that you have built the runbook to remediate this issue, lets execute it to 
   
   5. Once it's done then click on **Execute**. 
 
-  6. Once the runbook is executed, you should receive an email with instructions on how to approve or deny. Follow the link in the email using the User of the ApproverArn you placed in the Input parameters. The link will take you to the SSM Console where you can approve or deny the request.
+  6. Once the **runbook** is executed, you should receive an email with instructions on how to approve or deny. Follow the link in the email using the User of the ApproverArn you placed in the Input parameters. The link will take you to the SSM Console where you can approve or deny the request.
   
 
       ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-approveordeny.png)
 
       If you choose approve, or do not respond to the email, the request will be automatically approved after the Timer set in the playbook expires.
 
-      If you deny the runbook will fail, and no action will be taken.
+      If you deny the **runbook** will fail and no action will be taken.
 
-  7. Once the runbook completes the next step, you can see that the ECS task count increased to the value you specified. 
+  7. Once the **runbook** completes the next step, you can see that the ECS task count increased to the value you specified. 
 
-      Go to ECS console, and click on **Clusters**, and select `mysecretword-cluster`. Click on the  `mysecretword-service` **Service**. you should see the number of running tasks increasing to 100 and average CPUUtilization decreasing.
+      Go to ECS console and click on **Clusters** and select `mysecretword-cluster`. Click on the  `mysecretword-service` **Service**. you should see the number of running tasks increasing to 100 and average CPUUtilization decreasing.
 
       ![ Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-scale-up2.png)
 
@@ -372,8 +376,10 @@ Now that you have built the runbook to remediate this issue, lets execute it to 
   8. After the service is scaled up, you should see the API response time return to normal and the Alarm return to the OK state. You can check both using your CloudWatch Console, following the steps you used in "2. Simulate Application Issue", "Section 2.1 Observing the alarm being triggered".
 
 
-This concludes **Section 4** of this lab, click on the link below to move on to the next section.
-{{< prev_next_button link_prev_url="../3_build_execute_investigative_playbook/" link_next_url="../5_cleanup/" />}}
+#### Congratulations ! 
+You have now completed the **Automating operations with Playbooks and Runbooks** lab, click on the link below to cleanup the lab resources.
+
+{{< prev_next_button link_prev_url="../3_build_run_investigative_playbook/" link_next_url="../5_cleanup/" />}}
 
 
 
