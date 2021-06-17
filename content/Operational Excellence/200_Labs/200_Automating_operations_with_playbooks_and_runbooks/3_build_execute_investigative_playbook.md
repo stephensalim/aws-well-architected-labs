@@ -1,5 +1,5 @@
 ---
-title: "Build & Execute Investigative Playbook"
+title: "Build & Execute an Investigative Playbook"
 date: 2020-04-24T11:16:09-04:00
 chapter: false
 weight: 3
@@ -24,7 +24,7 @@ In this section, you will focus on creating an automated playbook to assist in y
 
 ### 3.0 Prepare Automation Document IAM Role
 
-The Systems Manager Automation Document you are building will require assumed permissions to execute the investigation and remediation steps. You will need to create the IAM role it will assume granting the permissions to perform the playbook activities. To simplify the deployment process, a cloudformation template has been provided that you can deploy via the console or AWS CLI. Please choose one of the two following deployment steps.
+The Systems Manager Automation Document you are building will require assumed permissions to execute the investigation and remediation steps. You will need to create the IAM role it will assume granting the permissions to perform the playbook activities. To simplify the deployment process, a cloudformation template has been provided that you can deploy via the console or aws cli. Please choose one of the two following deployment steps.
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
   1. Download the template [here.](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/templates/automation_role.yml "Resources template")
@@ -71,16 +71,20 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 ### 3.1 Building the "Gather-Resources" Playbook.
 
-When the email notification is sent, it does not include the resources that you need to investigat. You will need to identify all related services and resources involved with the issue.
+As part of preparation to the investigation, you need to know all related services / resources involved with the issue. When the email notification is sent, information in the email does not contain resources that needs to be investigated.
 
-In the following steps you will build a playbook to acquire all the related resources using and will use you alarm ARN as a reference to identify the underlying resources.
+This is why, in the following steps we will build a playbook to acquire all the related resources using our alarm arn as it's reference. 
 
-When you create a codified playbook, structuring your code so that parts of it can be re-used with other events and in other contexts can simplify your future playbook development. The actions that are codified to collect resource information are applicable to many events.
+When creating a playbook or any code in general, re-usability is something that is very important to consider early on. 
+By codifying your playbook, you can create your playbook once and used in multiple different context, this will reduce overhead in re-writing codes that has identical objectives.   
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-architecture-graphics1.png)
 
 
-In the following, you can either follow the instructions in the guide to create the script, or you can deploy the CloudFormation template to build the playbook for you automatically.
+{{% notice note %}}
+**Note:** For the following step to build and run playbook. You can follow a step by step guide via AWS console or you can deploy a cloudformation template to build the playbook.
+{{% /notice %}}
+
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
 
@@ -112,15 +116,18 @@ If you decide to deploy the stack from the console, ensure that you follow below
                                   --template-body file://playbook_gather_resources.yml 
   ```
 
-  After entering your ARN, your command will look something like the following:
+  Example:
 
+  
   ```
   aws cloudformation create-stack --stack-name waopslab-playbook-gather-resources \
                                   --parameters ParameterKey=PlaybookIAMRole,ParameterValue=arn:aws:iam::000000000000:role/AutomationRole \
-                                  --template-body file://playbook_gather_resources.yml                 
+                                  --template-body file://playbook_gather_resources.yml 
   ```
 
-3. Confirm that the stack has installed correctly. You can do this by running the describe-stacks command below. Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**. 
+  **Note:** Please adjust your command-line if you are using profiles within your aws command line as required.
+
+3. Confirm that the stack has installed correctly. You can do this by running the describe-stacks command below, locate the StackStatus and confirm it is set to **CREATE_COMPLETE**. 
 
   ```
   aws cloudformation describe-stacks --stack-name waopslab-playbook-gather-resources
@@ -131,11 +138,12 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%expand "Click here for Console step by step"%}}
 
-  1. To build your playbook, go to the AWS Systems Manager console, and click on **Create Automation**.
+  1. To build our playbook, go ahead and go to the AWS Systems Manager console, click on **Create Automation**
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation.png)
 
-  2. After clicking on **Creata automation**, in the next dialog enter Playbook-Gather-Resources in the **Name** field. Then paste the following notes in the **Description** box. Providing a robust description can assist other to correctly apply your script and help them recognize that it can be used in other contexts. Systems Manager supports putting in nots as markdown, so you are free to format the notes as desired.
+  2. Next, enter in `Playbook-Gather-Resources` in the **Name** and past in below notes in the **Description** box. This is to provide descriptions on what this playbook does. Systems Manager supports putting in nots as markdown, so feel free to format it as needed. 
+
 
     ```
     # What is does this playbook do?
@@ -159,16 +167,15 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-role.png)
 
-  4. Under **Input Parameters** field, enter `AlarmARN` as the **Parameter name**, set the type as `String` and **Required** as `Yes`. This defines the Parameter in your playbook, that you will use to pass the value of the CloudWatch Alarm ARN to the main step that will do the action.
+  4. Under **Input Parameters** field, enter `AlarmARN` as the **Parameter name**, set the type as `String` and **Required** as `Yes`. This will essentially define a Parameter into our playbook, so that we can pass on the value of the CloudWatch Alarm to the main step that will do the action.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-parameter-input.png)
 
   5. Under **Add Step** section enter `Gather_Resources_For_Alarm` under the **Step name**, select `aws::executeScript` as the **Action type**. 
   6. Under **Inputs** set `Python3.6` as the **Runtime**, and specify `script_handler` as the **Handler**.
+  7. Paste in below python codes into the **Script** section.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-addstep.png)
-
-  7. Paste the following python codes into the **Script** section shown above.
 
   ```
   import json
@@ -287,7 +294,7 @@ If you decide to deploy the stack from the console, ensure that you follow below
   ```
 
   8. Under **Additional inputs** specify input value to the step passing in the parameter we created before.
-to do this, select `Input Payload` under **Input name** and specify `CloudWatchAlarmARN: '{{AlarmARN}}'` as the **Input Value**. The '{{AlarmARN}}' section references the parameter value we created before.
+to do this, select `Input Payload` under **Input name** and specify `CloudWatchAlarmARN: '{{AlarmARN}}'` as the **Input Value**. The '{{AlarmARN}}' section essentially references the parameter value we created before.
   
   9. Within the same section, specify the outputs of the step. `Resources` as the **Name** `$.Payload.ApplicationStackResources` as the **Selector** and `String` as the **Type**. For more information about Automation Document syntax, please refer [here](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html)
 
@@ -298,8 +305,7 @@ to do this, select `Input Payload` under **Input name** and specify `CloudWatchA
 {{%/expand%}}
 
 
-Once the automation document is created, you can now test it.
-
+Once the automation document is created, we can now give it a test.
   1. You can then find the newly created document under the **Owned by me** tab of the **Document** section of Systems Manager Console.
 
   ![Section3 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-playbook-gather-resource-tab.png)
@@ -310,8 +316,8 @@ Once the automation document is created, you can now test it.
   ![Section3 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-alarm-email.png)
 
   4. Once the playbook execution is completed, Click on the **Step Id** to see the final message and output of the step. You should be able to see this output listing all the resources of the application
-  5. **Copy** the Resources list output from the section as highlighted in the screenshot below. This list consist of the all the resources defined in the Cloudformation stack related to our application. This information includes the Elastic Load Balancer, ECS, and RDS resource id that we can now use to further our investigation of the underlying issue.  
-  6. **Paste** the output into a temporary location like notepad. You will need this value for your next step. 
+  5. **Copy** the Resources list output from the section as highlighted in the screenshot below. This list consist of the all the resources defined in the Cloudformation stack related to our application. These information includes the Elastic Load Balancer, ECS, and RDS resource id that we can now use to further our investigation of the underlying issue.  
+  6. You can **Paste** the output into a temporary location like notepad for now. We will need this value for our next step. 
 
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-execute-output.png)
@@ -319,17 +325,22 @@ Once the automation document is created, you can now test it.
 
 ### 3.2 Building the "Investigate-Application-Resources" Playbook.
 
-In the previous step, you created a playbook that finds all related AWS resources in the application.
-In this step you will create a playbook that will interrogate resources, capture recent metrics, and logs. This information enables you to investigate and better understand the contributing factors of the issue.
+In the previous step, you have created a playbook that finds all related AWS resources in the application.
+In this step you will create a playbook that will interogate resources, capture recent metrics, and logs to look for insights and better understand the root cause of the issue.
 
-Depending on the details collected and presented for your issue, there could be multiple possible actions that you would take to continue your investigation. For this lab we are focusing your use of an automated playbook (with the use case of data collection) to assist in your investigation.
+In practice, there can be various possibilities of actions that the playbook can take to investigate depending on the scenario presented by the issue. The purpose of this Lab is to showcase how you can use playbook to aid investigation, rather than advise on a specific action path. 
 
-Applying that use case, your playbook gathers configurations, metrics, and logs of Elastic Load Balancer, Elastic Compute Service, and Relational Database in the resources. The playbook will then highlight the metrics and logs that is considered outside of expected values.
+Therefore this lab will assume an example scenario, and the playbook look at configurations, metrics, and logs of Elastic Load Balancer, the Elastic Compute Service, and Relational Database in the resource. The playbook will then highlight the metrics and logs that is considered outside normal threshold. 
 
 
 ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-architecture-graphics2.png)
 
-The following step largely duplicate your previous runbook implementation. To reduce repetition you will deploy this playbook using a CloudFormation template. Select one of the two following deployment methods, and using either the Console or the CLI option, invoke the CloudFormation script to implement you next runbook.
+Please follow below instructions to build this playbook.
+
+{{% notice note %}}
+**Note:** For the majority, this step will be identical with our previous step, we will just be passing in different scripts in each of the step to query the related services and gather it's data. Therefore to reduce the repetition in the steps we will deploy this playbook via cloudformation template.  Please follow the steps below to deploy via cloudformation template via CLI / or Console. 
+{{% /notice %}}
+
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
 
@@ -361,8 +372,7 @@ If you decide to deploy the stack from the console, ensure that you follow below
                                   --parameters ParameterKey=PlaybookIAMRole,ParameterValue=AutomationRoleArn \
                                   --template-body file://playbook_investigate_application_resources.yml 
   ```
-
-  After entering your ARN, your command will look something like the following:
+  Example:
 
   ```
   aws cloudformation create-stack --stack-name waopslab-playbook-investigate-resources \
@@ -382,16 +392,18 @@ If you decide to deploy the stack from the console, ensure that you follow below
 
 {{%/expand%}}
 
-Once completed, you will find the newly created document under the Owned by me tab of the Document resource.
+Once the document is using any of the above method created, you can go ahead and do a quick test.
+You can find the newly created document under the **Owned by me** tab of the Document resource.
 
-  1. Click on the playbook called `Playbook-Investigate-Application-Resources` and click on **Execute Automation** to execute your playbook.
-  2. Paste in the Resources List you took note from the output of the previous playbook (refer to previous step) under Resources and click on **Execute**.
-  3. Under **Executed Steps** you will be able to see each of the steps executed by the playbook. If you view the content of the document you will see the actual code and can review it to see what each step does. For simplicity, listed the objective of each step and what data it will produce.
+  1. Click on the playbook called `Playbook-Investigate-Application-Resources` and click on **Execute Automation** to execute our playbook.
+  2. Paste in the Resources List you took note from the output of the previous playbook (refer to previous step) under **Resources** and click on **Execute**
+
+  3. Under **Executed Steps** you should be able to each of the step the playbook has executed. If you view the content of the document you will be able to see the code and find out what exactly each step does. But for simplicity, we have created a list on the objective of each step, and what data it will produce.
 
       ![Section3 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-steps-explain.png)
 
 
-      * **Gather_ELB_Statistics:** In this step the resource list is traversed and the ELB resource is located. It then queries data from CloudWatch metrics examining the metrics and statistics from the last sixty minutes.
+      * **Gather_ELB_Statistics:** Go through resource list, and locate the elb resource. Query data from it's cloudwatch metrics looking at below metric and statistics in the last 60 minutes.
 
           {{%expand "Click here for List of Metrics"%}}
 
@@ -413,9 +425,9 @@ Once completed, you will find the newly created document under the Owned by me t
 
           {{%/expand%}}
 
-      * **Gather_RDS_Config:**  In this step the resource list is traversed and the RDS resource is located. The script them performs a describe RDS instance to collect the configuration and associated parameters.
+      * **Gather_RDS_Config:**  Go through resource list, and locate the RDS resource. Describe RDS Instance Config & Parameters.
 
-      * **Gather_RDS_Statistics:** In this step the resource list is traversed and the RDS resource is located. It then queries data from CloudWatch metrics examining the metrics and statistics from the last sixty minutes.
+      * **Gather_RDS_Statistics:** Go through resource list, and locate the RDS resource. Query data from it's cloudwatch metrics looking at below metric and statistics in the last 60 minutes.
 
           {{%expand "Click here for List of Metrics"%}}
 
@@ -446,7 +458,7 @@ Once completed, you will find the newly created document under the Owned by me t
 
           {{%/expand%}}
 
-      * **Gather_ECS_Statistics:** : In this step the resource list is traversed and the ECS Service resource is located. It then queries data from CloudWatch metrics examining the metrics and statistics from the last six minutes.
+      * **Gather_ECS_Statistics:** : Go through resource list, and locate the ECS Service resource. Query data from it's cloudwatch metrics looking at below metric and statistics in the last 6 minutes.
 
           {{%expand "Click here for List of Metrics"%}}
 
@@ -455,12 +467,11 @@ Once completed, you will find the newly created document under the Owned by me t
 
           {{%/expand%}}
 
-      * **Gather_ECS_Error_Logs** : In this step the resource list is traversed and the ECS Service resource is located. It then queries data from CloudWatch and collects all appropriate Error logs.
+      * **Gather_ECS_Error_Logs** : Go through resource list, and locate the ECS Service resource. Search in Cloudwatch logs for any Error occurrence.
 
-      * **Gather_ECS_Config** : In this step the resource list is traversed and the ECS Service resource is located. The script them performs a describe ECS service to capture the configuration.
+      * **Gather_ECS_Config** : Go through resource list, and locate the ECS Service resource. Describe the ECS service configuration.
 
-      * **Inspect_Playbook_Results** : The script then goes through the output from the above steps, inspects the results, and checks if any metrics are above expected thresholds.
-
+      * **Inspect_Playbook_Results** : Go through the output of above steps, inspect results, and check if it is above the threshold.
 
           {{%expand "Click here for List of Threshold"%}}
 
@@ -498,7 +509,7 @@ Therefore in this step we will automate our playbook further by creating a paren
 Follow below instructions to build the Playbook.
 
 {{% notice note %}}
-**Note:** For the following step to build and run playbook. You can follow a step by step guide via AWS console or you can deploy a CloudFormation template to build the playbook.
+**Note:** For the following step to build and run playbook. You can follow a step by step guide via AWS console or you can deploy a cloudformation template to build the playbook.
 {{% /notice %}}
 
 {{%expand "Click here for CloudFormation Console deployment step"%}}
@@ -617,36 +628,38 @@ Locate the StackStatus and confirm it is set to **CREATE_COMPLETE**
 
 ### 3.4 Executing investigation Playbook.
 
-Next, you will run the playbook and collect the results for your investigation.
+Now that you have built all of our our Playbook to Investigate this issue, you will now execute the playbook to discover the result of the investigation. 
 
-  1. Go to the Output section of the deployed cloudformation stack `walab-ops-sample-application`, and take note of output values of the **Output.SystemEventTopicArn** 
+  1. Go to the Output section of the deployed cloudformation stack `walab-ops-sample-application`, and take note of below output values.
 
   2. Go to the Systems Manager Automation document we just created in the previous step, `Playbook-Investigate-Application-From-Alarm`.
   
   3. And then execute the playbook passing the ARN as the **AlarmARN** input value, along with the **SNSTopicArn**.
      
-     * You can get the **AlarmARN** from the email that you received from CloudWatch Alarm as described in step **3.1 Building the "Gather-Resources" Playbook.**.
-     * To get the value for **SNSTopicArn**, go to the CloudFormation console output of `walab-ops-sample-application` stack, and copy, paste the value of the **OutputSystemEventTopicArn** 
+     * You can get the **AlarmARN** from the email that you received from CloudWatch Alarm as described in step **3.1 Building the "Gather-Resources" Playbook.** in this lab.
+     * To get the value for **SNSTopicArn**, go to the CloudFormation console output of `walab-ops-sample-application` stack, and copy, paste the value of **OutputSystemEventTopicArn** 
+
+
 
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook.png)
 
 
-  4. Wait until the playbook is successfully executed. Once it is done, you will see an email. This will contain summary of the investigation done by your playbook.
+  4. Wait until the playbook is successfully executed. Once it is done, you should see an email coming through to your email. This email will contain summary of the investigation done by our playbook.
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-email-summary.png)
 
-  5. Copy and paste the message section, and use any tool that understands json format such as [jsonlint.com](http://jsonlint.com) to make it easier for you to read. The result you are seeing from your playbook execution might vary slightly, but the overall findings should show as below. 
+  5. Copy and paste the message section, and use a json linter tool such as [jsonlint.com](http://jsonlint.com) to give the json better structure for visibility. The result you are seeing from your playbook execution might vary slightly, but the overall findings should show as below. go to the next step for explanation on our findings
 
   ![Section4 ](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section4-create-automation-playbook-test-execute-playbook-summary.png)
 
   6. From the report being generated you You would be seeing a large number of ELB504 Count error and a high number of the Target Response Time from the Load balancer that explains the delay we are seeing from our canary alarm. 
   
-      If you then look at the ECS CPUtilization summary, you will see that the CPU averages in 99%, and the while the total ECS task count running is only 1. If you refer to the previous step, we have explained that our playbook will create an average of the maximum value of the ECS service's CPUUtilization, in the last six minutes.
+      If you then look at the ECS CPUtilization summary, you will see that the CPU averages in 99%, and the while the total ECS task count running is only 1. If you refer to the previous step, we have explained that our playbook will create an average of the maximum value of the ECS service's CPUUtilization, in the last 6 minutes time window. ( So this information should be very recent)
       
-      There are also some other Errors identified in the application logs, which indicates a issue with the application code, for example, "ER_CON_COUNT_ERROR: Too many connections".
+      There are also some other Errors identified in the application logs, which sort of indicates some issue with the application code. such as ER_CON_COUNT_ERROR: Too many connections.
 
-      Therefore, it is likely that the immediate cause of the latency is a resource constraint at the application API level running in ECS. If we can increase the number of tasks in the ECS service, the application should be able handle more requests and won't have constraints on the CPU Utilization. Having analyzed the information provided by our playbook findings, we should now be able to determine the next course of action to attempt remediation. In the next section in the lab, you will build a remediation runbook.
+      Therefore, looking at these information, it is likely that the immediate cause of the latency is resource constraint at the application API level running in ECS. Ideally, if we can increase the number of tasks in the ECS service, the application should be able handle more requests and won't have constraints on the CPU Utilization. With all of these information provided by our playbook findings, we should now be able to determine what is the next course of action to attempt remediation to the issue. Let's move on now to the next section in the lab, to build that remediation runbook.
 
 This concludes **Section 3** of this lab, click on the link below to move on to the next section.
 

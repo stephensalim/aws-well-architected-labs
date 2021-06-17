@@ -1,52 +1,65 @@
 ---
-title: "Simulate Application Issue"
+title: "Simulate an Application Issue"
 date: 2020-04-24T11:16:09-04:00
 chapter: false
 weight: 2
 pre: "<b>2. </b>"
 ---
 
-Understanding the health of your workload is essential to performing reliable operations. Establish observability, define metrics and thresholds, and analyze your workload (leveraging appropriate services) to streamline issue detection, enable alerting, and expedite your ability to respond and perform remediation processes.
+Understanding the health of your workload is an essential component of Operational Excellence. Defining metrics and thresholds, together with appropriate alerts will ensure that issues can be responded to quickly. This allows for appropriate remediation to be performed where appropriate.
 
-In this section you will simulate a performance issue with the API. A [CloudWatch Synthetics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html) canary is continuously checking the API response time to detect the simulated issue. If the API takes longer than 6 seconds to respond it is considered an application issue and a CloudWatch alarm will be triggered. A notification email will be sent to the Systems Operator in response. 
+In this section of the lab, you will simulate a performance issue with the API. 
 
-#### Actions items in this section :
-1. You will run a script that will send large amount of traffic to the API
-2. You will observe & confirm the issue through AWS monitoring tools. The following resources had been deployed to perform these actions.
+[CloudWatch synthetic monitoring](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html) allows for the creation of canaries, which  continuously check the API response time to detect the simulated issue. 
+
+In our example application, should the API take longer than 6 seconds to respond, it is considered an application issue and a CloudWatch alarm will be triggered. A notification email will be sent to the Systems Operator in response. 
+
+#### Actions items in this section:
+
+1. You will run a script that will send a large amount of traffic to the API.
+2. You will observe & confirm the issue through AWS monitoring tools. 
+
+The following resources had been deployed to perform these actions.
 
 ![Section3 Base Architecture](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-testing-canary-alarm-architecture.png)
 
-### 2.0 Sending traffic to Application
+### 2.0 Sending traffic to the application
 
-In this section, you will send multiple concurrent requests to the application simulating a large surge of incoming traffic. This will overwhelm the API and gradually the response time of the application will decrease, triggering the Canary monitoring threshold and the CloudWatch Alarm that will notify the Operations team via email.
+In this section, you will send multiple concurrent requests to the application simulating a large surge of incoming traffic. This will overwhelm the API, which will gradually increase the response time of the application. This will trigger the Canary monitoring threshold and the CloudWatch Alarm that will notify the Operations team via email.
 
-Follow below steps to continue :
+Follow below steps to continue:
 
-1. From the cloud9 terminal, copy, paste and run below command to get into the working script folder
+1. From the Cloud9 terminal, run the command shown below to change directory to the working script folder:
 
     ```
     cd ~/environment/aws-well-architected-labs/static/Operations/200_Automating_operations_with_playbooks_and_runbooks/Code/scripts/
     ```
 
-2. Confirm that you have the `test.json` in the folder, and it contains this text.
+2. Confirm that you have the `test.json` in the folder and it contains the following text:
 
     ```
     {"Name":"Test User","Text":"This Message is a Test!"}
     ```
 
-3. Once that's confirmed go to cloudformation console, and take note of the **OutputApplicationEndpoint** value under Output tab of `walab-ops-sample-application` stack. This is the DNS endpoint of the application ALB.
+3. Go to CloudFormation console and take note of the **OutputApplicationEndpoint** value under Output tab of `walab-ops-sample-application` stack. This is the DNS endpoint of the Application Load Balancer.
 
 
     ![Section3 Succces Screenshot](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-stackoutput.png)
 
 
-4. Then copy paste and execute below commands replacing the 'OutputApplicationEndpoint' with the DNS endpoint value you took note before.
+4. Execute the command below, replacing the 'OutputApplicationEndpoint' with the DNS endpoint value you recorded previously:
 
     ```
     bash simulate_request.sh OutputApplicationEndpoint
     ```
 
-    Your script uses the [Apache Benchmark](https://httpd.apache.org/docs/2.4/programs/ab.html) to send 60,000,000 requests, 3000 concurrent request at a time. When you execute the command you will see the output gradually change from consistent successful 200 response to include 504 time out responses. The requests generated by the script are overwhelming the application API and resulting in occasional timeouts by your load balancer. Keep the command running in the background as you proceed through the lab.
+    This script uses the [Apache Benchmark](https://httpd.apache.org/docs/2.4/programs/ab.html) to send 60,000,000 requests, 3000 concurrent request at a time. 
+    
+    When you run the command you will see the output gradually change from a consistently successful 200 response to include 504 time out responses. 
+    
+    The requests generated by the script are overwhelming the application API and result in occasional timeouts by your load balancer. 
+    
+    Keep the command running in the background as you proceed through the lab.
 
     ![Section3 Succces Screenshot](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-success-traffic-requests.png)
 
@@ -55,19 +68,23 @@ Follow below steps to continue :
 
 ### 2.1 Observing the alarm being triggered.
 
-1. After approximately 6 minutes, you will see an alarm. In response an email will be generated and sent to your inbox indicating the CloudWatch alarm has been triggered.
+1. After approximately 6 minutes, you will see an alarm which is triggered as a response to the generated activity. This will trigger an email indicating that the CloudWatch alarm has been triggered.
 
     ![Section3 Email](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-email.png)
  
 2. Check and confirm the alarm by going to the Cloudwatch console.
+
 3. Click on the Alarms section on the left menu.
-4. Click on the Alarms called `mysecretword-canary-duation-alarm`, which should currently be in an Alarm State.
+
+4. Click on the Alarms called `mysecretword-canary-duation-alarm`, which should be in an alarm state.
 
     ![Section3 Failure Screenshot](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-alarm.png)
 
-5. Click on the Alarm to display the CloudWatch metrics that the alarm data is based from.
-6. The alarm is based on the `Duration` metric data emitted by the `mysecretword-canary` CloudWatch Synthetics canary monitor. The Duration metric measures how long it takes for the canary requests to receive a response from the application. 
-7. The alarm is triggered whenever the value of the `Duration` metric is above 6 seconds within 1 minute duration.
+5. Click on the alarm to display the CloudWatch metrics that the alarm data is based from.
+
+6. The alarm is based on the `Duration` metric data emitted by the `mysecretword-canary` CloudWatch synthetic canary monitor. The Duration metric measures how long it takes for the canary requests to receive a response from the application. 
+
+7. The alarm is triggered whenever the value of the `Duration` metric is above 6 seconds within a 1 minute duration.
 
     ![Section3 Failure Screenshot](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-alarm-detail.png)
 
@@ -75,27 +92,31 @@ Follow below steps to continue :
 
     ![Section3 Canary](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-canary.png)
 
-9. Click on the canary and click on the **Configuration** tab.
-10. From here you will see the Canary configuration a snippet of the Canary Script.
-11. In the Canary Script section, scroll down to the section that contains `let requestOptionStep1` as shown in the screenshot below.
-12. This is the configuration that controls the destination of the request ( hostname, path, payload body).
+9. Click on the canary and the select the **Configuration** tab.
+
+10. From here you will see the canary configuration and a snippet of the canary script.
+
+11. In the canary script section, scroll down to the section that contains `let requestOptionStep1` as shown in the screenshot below. This is the configuration that controls the destination of the request (hostname, path and payload body).
 
     ![Section3 Canary](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-canary-detail.png)
 
-13. Click on the **Monitoring** tab
-14. From here you will see the visualization of the metrics that the canary monitor generates.
-15. Locate the 'Duration' metric that is being used to trigger the cloudwatch alarm.
-16. Here you will see the average Duration value of the canary request representing the time to complete. A value above 6000ms signifies that the request has taken more than 6 seconds to receive a response from the application, indicating a performance issue in the API.
+12. Click on the **Monitoring** tab.
+
+13. From here you will see the visualization of the metrics that the canary monitor generates.
+
+14. Locate the 'Duration' metric that is being used to trigger the CloudWatch alarm.
+
+15. You will see the average duration value of the canary request representing the time to complete. A value above 6000ms signifies that the request has taken more than 6 seconds to receive a response from the application, indicating a performance issue in the API.
 
     ![Section3 Canary](/Operations/200_Automating_operations_with_playbooks_and_runbooks/Images/section3-canary-monitor.png)
 
 ## Congratulations ! 
 
-You have now completed the second section of the Lab.
+You have now completed the second section of the lab.
 
-You should still have the `simulate_request.sh` running in the background simulating large influx of traffic to your API. This is causing it to respond very slowly and time out periodically. The Cloudwatch Alarm will be triggering and performance issue notifications sent to your System Operator to prompt them into action.
+You should still have the `simulate_request.sh` running in the background simulating a large influx of traffic to your API. This causes the application to respond slowly and time out periodically. The Cloudwatch Alarm will be triggering and performance issue notifications sent to your System Operator to prompt them into action.
 
-This concludes **Section 2** of this lab. Click Next step to continue to the next section where we will build an Automated playbook to assist investigation of the issue. 
+This concludes **Section 2** of this lab. Click 'Next step' to continue to the next section of the lab where we will build an automated playbook to assist investigation of the issue. 
 
 {{< prev_next_button link_prev_url="../2_configure_ecs_repository_and_deploy_application_stack/" link_next_url="../3_build_execute_investigative_playbook/" />}}
 
